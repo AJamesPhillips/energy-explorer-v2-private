@@ -20,5 +20,6 @@ export interface PublishableEvents
     }
     on_hover_tile: CellData | null
     will_update_tile: CellData | null
+    tile_power_changed: { tile: CellData; change_gw: number }
     show_info_and_data_sources: InfoSectionId | true
 }

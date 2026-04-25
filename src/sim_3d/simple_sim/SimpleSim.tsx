@@ -137,6 +137,7 @@ function SimpleSim3d(props: SimpleSim3dProps)
         })
     })
 
+
     const on_click_tile = useCallback(({ x, y }: { x: number; y: number }) =>
     {
         props.set_data(prev =>
@@ -145,15 +146,22 @@ function SimpleSim3d(props: SimpleSim3dProps)
             if (!cell) return prev
 
             const new_cell = cycle_cell_contents(cell)
-            pub_sub.pub("will_update_tile", new_cell)
-
-            return {
+            const new_cells: CellsData = {
                 ...prev,
                 [x]: {
                     ...prev[x],
                     [y]: new_cell
                 },
             }
+
+            const prev_power_supply = calculate_power_supply_from_data(prev)
+            const new_power_supply = calculate_power_supply_from_data(new_cells)
+            const change_in_supply_gw = new_power_supply - prev_power_supply
+
+            pub_sub.pub("will_update_tile", new_cell)
+            pub_sub.pub("tile_power_changed", { tile: new_cell, change_gw: change_in_supply_gw })
+
+            return new_cells
         })
     }, [])
 

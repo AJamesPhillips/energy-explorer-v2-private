@@ -7,6 +7,7 @@ import { CellData, CellsData } from "./interface"
 import { IsoMetricGridContentTiles } from "./IsoMetricGridContentTiles"
 import { bevel_colours, box_geometry_for_cell_size } from "./IsoMetricTileConstants"
 import { tile_colour } from "./tile"
+import { TilePowerChangeAnimations } from "./TilePowerChangeAnimation"
 
 
 interface IsoMetricGridProps
@@ -123,6 +124,7 @@ export function IsoMetricGrid(props: IsoMetricGridProps)
         </Instances>
 
         {rendered_once && <IsoMetricGridContentTiles cell_size={cell_size} tiles={tiles} />}
+        {rendered_once && <TilePowerChangeAnimations cell_size={cell_size} />}
 
         <group ref={hover_ref} visible={hover_visible}>
             <lineSegments args={[hover_outline_geo, hover_outline_mat]} />
