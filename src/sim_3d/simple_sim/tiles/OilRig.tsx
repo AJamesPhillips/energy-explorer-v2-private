@@ -1,10 +1,11 @@
 import { useFrame } from "@react-three/fiber"
 import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
+
 import { CellData, OilRigState } from "../interface"
 
 
-const NUM_SMOKE = 4
+const NUM_SMOKE = 5
 
 
 interface SingleOilRigProps
@@ -46,6 +47,9 @@ function SingleOilRig({ x, y, cell_size, state }: SingleOilRigProps)
     const flame_h     = s * 0.20
     const flame_r     = s * 0.07
 
+    // ── Subsea depths ──────────────────────────────────────────────────────
+    const riser_depth  = s * 2.0
+
     // ── Geometries ─────────────────────────────────────────────────────────
     const leg_geo      = useMemo(() => new THREE.CylinderGeometry(leg_r, leg_r, leg_h, 8), [leg_r, leg_h])
     const deck_geo     = useMemo(() => new THREE.BoxGeometry(deck_w, deck_h, deck_d), [deck_w, deck_h, deck_d])
@@ -56,6 +60,7 @@ function SingleOilRig({ x, y, cell_size, state }: SingleOilRigProps)
     const flare_geo    = useMemo(() => new THREE.CylinderGeometry(flare_r, flare_r, flare_h, 6), [flare_r, flare_h])
     const flame_geo    = useMemo(() => new THREE.ConeGeometry(flame_r, flame_h, 8), [flame_r, flame_h])
     const smoke_geo    = useMemo(() => new THREE.SphereGeometry(s * 0.08, 6, 6), [s])
+    const riser_geo    = useMemo(() => new THREE.CylinderGeometry(s * 0.02, s * 0.02, riser_depth, 6), [s, riser_depth])
 
     // ── Materials ──────────────────────────────────────────────────────────
     const struct_mat   = useMemo(() => new THREE.MeshStandardMaterial({ color: rig_active ? 0xcc9900 : 0x778899 }), [])
@@ -70,7 +75,7 @@ function SingleOilRig({ x, y, cell_size, state }: SingleOilRigProps)
         opacity:          0.92,
     }), [])
     // One material per smoke puff so opacity can be set independently
-    const smoke_mats   = useMemo(() =>
+    const smoke_mats = useMemo(() =>
         Array.from({ length: NUM_SMOKE }, () => new THREE.MeshStandardMaterial({
             color:      0x555555,
             transparent: true,
@@ -79,14 +84,20 @@ function SingleOilRig({ x, y, cell_size, state }: SingleOilRigProps)
         })),
     [])
 
+    const riser_mat = useMemo(() => new THREE.MeshStandardMaterial({ color: 0x5a6e7a }), [])
+
     useEffect(() => () =>
     {
-        for (const g of [leg_geo, deck_geo, mod_geo, mod2_geo, helipad_geo, derrick_geo, flare_geo, flame_geo, smoke_geo])
+        for (const g of [leg_geo, deck_geo, mod_geo, mod2_geo, helipad_geo, derrick_geo, flare_geo, flame_geo, smoke_geo,
+                         riser_geo])
             g.dispose()
-        for (const m of [struct_mat, module_mat, derrick_mat, helipad_mat, flame_mat, ...smoke_mats])
+        for (const m of [struct_mat, module_mat, derrick_mat, helipad_mat, flame_mat, ...smoke_mats,
+                         riser_mat])
             m.dispose()
     }, [leg_geo, deck_geo, mod_geo, mod2_geo, helipad_geo, derrick_geo, flare_geo, flame_geo, smoke_geo,
-        struct_mat, module_mat, derrick_mat, helipad_mat, flame_mat, smoke_mats])
+        riser_geo,
+        struct_mat, module_mat, derrick_mat, helipad_mat, flame_mat, smoke_mats,
+        riser_mat])
 
     // ── Animation refs ─────────────────────────────────────────────────────
     const flame_ref = useRef<THREE.Mesh>(null)
@@ -179,6 +190,10 @@ function SingleOilRig({ x, y, cell_size, state }: SingleOilRigProps)
                 />
             ))}
 
+            {/* Riser pipe running from rig base down to reservoir depth */}
+            <mesh geometry={riser_geo} material={riser_mat}
+                position={[0, -riser_depth / 2, -s * 0.13]}
+            />
         </group>
     )
 }

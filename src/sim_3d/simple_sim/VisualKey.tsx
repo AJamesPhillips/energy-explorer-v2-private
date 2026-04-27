@@ -49,7 +49,8 @@ Object.values(land_or_sea_types).forEach((entry, i) =>
         y: i,
         has_wind_turbine: false,
         has_solar_farm: false,
-        has_oil_rig: undefined
+        has_oil_rig: undefined,
+        has_oil_pocket: undefined,
     }
     cells_data[i] = { [i]: cell_data }
 })

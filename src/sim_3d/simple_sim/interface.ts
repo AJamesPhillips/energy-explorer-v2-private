@@ -9,6 +9,7 @@ export type CellData = LandOrSea &
     has_wind_turbine: boolean
     has_solar_farm: boolean
     has_oil_rig: OilRigConfig | undefined
+    has_oil_pocket: boolean | undefined
     // has_hydro: boolean
     // altitude_m: number
 }

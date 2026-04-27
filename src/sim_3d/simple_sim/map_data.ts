@@ -52,10 +52,10 @@ ____________________
 ____________________
 _________________z__
 ____________________
-_____x______z_______
+_o___x______z_______
 `.trim()
 
-type InfraColumn = Record<number, { has_oil_rig: OilRigConfig }>
+type InfraColumn = Record<number, { has_oil_rig: OilRigConfig, has_oil_pocket?: boolean } | { has_oil_rig?: OilRigConfig, has_oil_pocket: boolean }>
 const xy_to_infra: Record<number, InfraColumn> = {}
 infrastructure_map_data.split("\n")
     .forEach((line, y) =>
@@ -70,6 +70,10 @@ infrastructure_map_data.split("\n")
                 const state: OilRigState = cell === "x" ? "extracting" : "dormant"
                 const config: OilRigConfig = { state }
                 xy_to_infra[x][y] = { has_oil_rig: config }
+            }
+            else if (cell === "o")
+            {
+                xy_to_infra[x][y] = { has_oil_pocket: true }
             }
         })
     })
@@ -92,6 +96,7 @@ export const map_data_cells: CellsData = map_data
                     has_wind_turbine: false,
                     has_solar_farm: false,
                     has_oil_rig: xy_to_infra[x]![y]?.has_oil_rig,
+                    has_oil_pocket: xy_to_infra[x]![y]?.has_oil_pocket,
                 }
                 acc[x][y] = cell_data
             })
