@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
 
-import { InfoBox } from "../../components/InfoBox"
-import { Link } from "../../components/Link"
-import { InfoLogo } from "../../components/svgs"
-import { asset_url } from "../../utils/asset_url"
-import pub_sub from "../state/pub_sub"
-import { InfoSectionId } from "../state/pub_sub/interface"
+import { InfoBox } from "../../../components/InfoBox"
+import { Link } from "../../../components/Link"
+import { InfoLogo } from "../../../components/svgs"
+import { asset_url } from "../../../utils/asset_url"
+import pub_sub from "../../state/pub_sub"
+import { InfoSectionId } from "../../state/pub_sub/interface"
 import "./Info.css"
 const SEWTHA_url = asset_url("/imgs/SEWTHA_book_cover.png")
 const bgs_url = asset_url("/imgs/logos_BGS.png")

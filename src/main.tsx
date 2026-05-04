@@ -16,7 +16,6 @@ import { DataComponentAsJSON } from "core/supabase"
 
 import { BalanceSheet } from "./balance_sheet/BalanceSheet"
 import { factors_up_to } from "./balance_sheet/EnergyBoxesHelper"
-import { GraphPopulation } from "./components/GraphPopulation"
 import { Options, ViewType } from "./components/Options"
 import { SelectCountry } from "./components/SelectCountry"
 import {
@@ -30,8 +29,9 @@ import { DataComponentExtended, PerspectiveKnowledgeGraph } from "./data/interfa
 import { GraphViewer } from "./graph/GraphViewer"
 import "./main.css"
 import { Sim3d } from "./sim_3d/Sim3d"
-import { DataPortal } from "./sim_3d/simple_sim/DataPortal"
-import { Info } from "./sim_3d/simple_sim/Info"
+import { DataPortal } from "./sim_3d/simple_sim/ui/DataPortal"
+import { GraphPopulation } from "./sim_3d/simple_sim/ui/GraphPopulation"
+import { Info } from "./sim_3d/simple_sim/ui/Info"
 
 
 function App ()

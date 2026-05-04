@@ -1,4 +1,4 @@
-import { GraphLogo } from "../../components/svgs"
+import { GraphLogo } from "../../../components/svgs"
 
 
 export function DataPortal()

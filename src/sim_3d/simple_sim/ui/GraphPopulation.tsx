@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-import pub_sub from "../sim_3d/state/pub_sub"
+import pub_sub from "../../state/pub_sub"
 import "./GraphPopulation.css"
 
 
