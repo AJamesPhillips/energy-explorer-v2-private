@@ -8,9 +8,9 @@ const HIDE_ALL_IN_DEV = false
 
 interface InfoBoxProps
 {
-    message: string | JSX.Element
+    message: string | JSX.Element | ((p: { close_info_box: (() => void) }) => JSX.Element)
     on_close: () => void
-    confirmation_button?: ((p: { on_click: (() => void) }) => JSX.Element)
+    confirmation_button?: ((p: { close_info_box: (() => void) }) => JSX.Element)
     wider_info_box?: boolean
 }
 export function InfoBox(props: InfoBoxProps)
@@ -18,7 +18,7 @@ export function InfoBox(props: InfoBoxProps)
     const [hiding, set_hiding] = useState(false)
     const [show_nothing, set_show_nothing] = useState(HIDE_ALL_IN_DEV || false)
 
-    const on_click = useCallback(() =>
+    const close_info_box = useCallback(() =>
     {
         set_hiding(true)
     }, [])
@@ -42,18 +42,18 @@ export function InfoBox(props: InfoBoxProps)
 
 
     const confirmation_button = props.confirmation_button
-        ? props.confirmation_button({ on_click })
-        : <DefaultConfirmationButton on_click={on_click}/>
+        ? props.confirmation_button({ close_info_box })
+        : <DefaultConfirmationButton close_info_box={close_info_box}/>
 
 
     return <div id="info_box" className={(hiding ? "hidden" : "")}>
-        <div id="info_box_text_holder" onPointerDown={on_click}>
+        <div id="info_box_text_holder" onPointerDown={close_info_box}>
             <div
                 id="info_box_text"
                 className={props.wider_info_box ? "wider_info_box" : ""}
                 onPointerDown={e => e.stopPropagation()}
             >
-                {props.message}
+                {message_as_jsx(props.message, close_info_box)}
 
                 {confirmation_button}
             </div>
@@ -62,9 +62,17 @@ export function InfoBox(props: InfoBoxProps)
 }
 
 
-function DefaultConfirmationButton(props: { on_click: () => void })
+function message_as_jsx(message: string | JSX.Element | ((p: { close_info_box: (() => void) }) => JSX.Element), close_info_box: () => void)
 {
-    return <button onClick={props.on_click}>
+    if (typeof message === "string") return <p>{message}</p>
+    if (typeof message === "function") return message({ close_info_box })
+    return message
+}
+
+
+function DefaultConfirmationButton(props: { close_info_box: () => void })
+{
+    return <button onClick={props.close_info_box}>
         Got it!
     </button>
 }
@@ -73,9 +81,9 @@ function DefaultConfirmationButton(props: { on_click: () => void })
 interface OnceOffInfoBoxProps
 {
     id: string
-    message: string | JSX.Element
+    message: string | JSX.Element | ((p: { close_info_box: (() => void) }) => JSX.Element)
     on_close?: () => void
-    confirmation_button?: ((p: { on_click: (() => void) }) => JSX.Element)
+    confirmation_button?: ((p: { close_info_box: (() => void) }) => JSX.Element)
 }
 export function OnceOffInfoBox(props: OnceOffInfoBoxProps)
 {
@@ -84,10 +92,10 @@ export function OnceOffInfoBox(props: OnceOffInfoBoxProps)
     if (local_storage_info_box_shown) return null
 
 
-    function confirmation_button_fn(p: { on_click: () => void })
+    function confirmation_button_fn(p: { close_info_box: () => void })
     {
         return <>
-            <button onClick={p.on_click}>
+            <button onClick={p.close_info_box}>
                 Got it!
             </button>
 
@@ -96,7 +104,7 @@ export function OnceOffInfoBox(props: OnceOffInfoBoxProps)
                 id="info_box_checkbox"
                 onChange={() =>
                 {
-                    p.on_click()
+                    p.close_info_box()
                     localStorage.setItem(props.id, new Date().toISOString())
                 }}
             />

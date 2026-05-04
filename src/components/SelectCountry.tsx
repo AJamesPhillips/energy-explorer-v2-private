@@ -43,7 +43,6 @@ export function SelectCountry(props: SelectCountryProps)
             </span>
 
             {show_info_box && <InfoBox
-                id="select_country"
                 message={
                     <>
                         <h1>Vote for a Country ⚡</h1>
@@ -90,9 +89,9 @@ export function SelectCountry(props: SelectCountryProps)
                         </p>
                     </>
                 }
-                confirmation_button={({ on_click }) =>
+                confirmation_button={({ close_info_box }) =>
                 {
-                    return <button onClick={on_click}>Close</button>
+                    return <button onClick={close_info_box}>Close</button>
                 }}
                 on_close={() => set_show_info_box(false)}
             />}
