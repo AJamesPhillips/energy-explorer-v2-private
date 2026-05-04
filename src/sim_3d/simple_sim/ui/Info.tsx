@@ -6,7 +6,7 @@ import { InfoLogo } from "../../../components/svgs"
 import { asset_url } from "../../../utils/asset_url"
 import pub_sub from "../../state/pub_sub"
 import { InfoSectionId } from "../../state/pub_sub/interface"
-import "./Info.css"
+import "./ui.css"
 const SEWTHA_url = asset_url("/imgs/SEWTHA_book_cover.png")
 const bgs_url = asset_url("/imgs/logos_BGS.png")
 const ons_url = asset_url("/svgs/logos_ONS.svg")
@@ -30,7 +30,7 @@ export function Info()
 
     return <div>
         <span
-            id="info_button"
+            className="ui_button"
             onClick={() => set_show_info_box(true)}
         >
             Info <InfoLogo style={{ marginLeft: 5 }} />
