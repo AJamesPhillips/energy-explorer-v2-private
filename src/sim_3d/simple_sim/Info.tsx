@@ -33,11 +33,10 @@ export function Info()
             id="info_button"
             onClick={() => set_show_info_box(true)}
         >
-            Info & Sources <InfoLogo style={{ marginLeft: 5 }} />
+            Info <InfoLogo style={{ marginLeft: 5 }} />
         </span>
 
         {show_info_box && <InfoBox
-            id="simple_sim_info"
             wider_info_box={true}
             message={<>
                 <h1>Info and Data Sources <InfoLogo style={{ height: 30 }} /></h1>

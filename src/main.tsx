@@ -30,6 +30,7 @@ import { DataComponentExtended, PerspectiveKnowledgeGraph } from "./data/interfa
 import { GraphViewer } from "./graph/GraphViewer"
 import "./main.css"
 import { Sim3d } from "./sim_3d/Sim3d"
+import { DataPortal } from "./sim_3d/simple_sim/DataPortal"
 import { Info } from "./sim_3d/simple_sim/Info"
 
 
@@ -150,8 +151,13 @@ function App ()
                 <div id="app_top_bar">
                     <div id="app_top_bar_side">
                         <div className="app_controls_row">
-                            <Info />
                             <SelectCountry selected_country_ISO2="GB" />
+                        </div>
+                        <div className="app_controls_row">
+                            <Info />
+                        </div>
+                        <div className="app_controls_row">
+                            <DataPortal />
                         </div>
                         {!sim_or_dt && <SelectPerspective
                             force_single={sim_or_dt}

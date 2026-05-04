@@ -136,6 +136,7 @@ html, body, #app, #app_html {
 {
     background-color: white;
     padding: 0px 12px;
+    min-height: 36px;
     border: 1px solid rgb(204, 204, 204);
     border-radius: 4px;
 }
