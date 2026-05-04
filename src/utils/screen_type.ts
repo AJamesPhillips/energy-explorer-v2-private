@@ -1,3 +1,3 @@
 
 
-export const is_narrow_screen = window.innerWidth <= 800
+export const is_narrow_screen = () => window.innerWidth <= 800

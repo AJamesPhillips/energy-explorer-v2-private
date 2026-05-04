@@ -1,13 +1,22 @@
 
-
-#footer_links
+#app_footer
 {
     position: absolute;
-    bottom: 8px;
-    width: 100%;
-    text-align: center;
-    font-size: var(--font-medium);
+    right: 0px;
+    bottom: 0px;
+    padding: 10px;
+
     z-index: var(--z-index-app-html);
 
     user-select: none;
+
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}
+
+#app_footer .footer_row
+{
+    display: flex;
+    gap: 8px;
 }

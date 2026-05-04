@@ -40,21 +40,20 @@ export function SelectCountry(props: SelectCountryProps)
     }), [])
 
     return (
-        <div id="select_country" className={on_wikisim ? "on_wikisim" : ""}>
-            <span
-                id="select_country_button"
-                onClick={() => set_show_info_box(true)}
-            >
-                <span style={{ fontSize: "24px" }}>{country?.emoji}</span>
-                 {/* <span style={{ fontSize: "18px" }}>❤️</span> */}
-            </span>
+        <div
+            id="select_country"
+            className={"ui_button " + (on_wikisim ? "on_wikisim" : "")}
+            onClick={() => set_show_info_box(true)}
+        >
+            <span style={{ fontSize: "24px" }}>{country?.emoji}</span>
 
             {show_info_box && <InfoBox
                 message={
                     <>
-                        <h1>Vote for a Country ⚡</h1>
+                        <h1>Vote for a Country</h1>
                         <p>
-                            Press ⚡ to vote for a country.
+                            Press ⚡ to vote for a country to be added to this
+                            simulation.
                         </p>
                         {/* <p>
                             I hope you enjoyed and learnt something, if so <a href="https://www.patreon.com/WikiSim">we'd be grateful for your support to let us do more ❤️</a>
@@ -92,7 +91,8 @@ export function SelectCountry(props: SelectCountryProps)
                         />
 
                         <p>
-                            I hope you enjoyed and learnt something, if so <a href="https://www.patreon.com/WikiSim">we'd be grateful for your support to let us do more ❤️</a>
+                            I hope you enjoyed and learnt something from this simulation.
+                            It took a lot of work to make this so please consider <a href="https://www.patreon.com/WikiSim">donating ❤️</a>
                         </p>
                     </>
                 }
@@ -181,7 +181,7 @@ function SubscribeOrFollow(props: SubscribeOrFollowProps)
     const has_voted = JSON.stringify(props.user_votes_by_country_code2) !== JSON.stringify(props.initial_user_votes_by_country_code2)
 
     return <p id="subscribe_or_follow" className={has_voted ? "visible" : "hidden"}>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdKpO2KkvlXnhEoo9VejTID8tfGbHA_BEbZuFrsAku_TahH8w/viewform?entry.1843888779=">Subscribe <MailLogo height={18} /> </a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdKpO2KkvlXnhEoo9VejTID8tfGbHA_BEbZuFrsAku_TahH8w/viewform?entry.1843888779=">Subscribe <MailLogo style={{ height: 18 }} /> </a>
         to be notified when this country is added... or
         lend us a hand on <a href="https://github.com/AJamesPhillips/energy-explorer-v2/issues/new?title=[REQUEST]%20I%27d%20like%20to%20be%20able%20to%20play%20country%20...">GitHub <GitHubLogo height={18} /> </a>
         or <a href="https://bsky.app/profile/ajamesphillips.com">BlueSky <BlueSkyLogo height={18} /></a>

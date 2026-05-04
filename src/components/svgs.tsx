@@ -40,7 +40,7 @@ export function MagnifyingGlassLogo(props: { height?: number })
     return <img src={magnifying_logo_url} style={{ ...default_style, height: props.height }} />
 }
 
-export function MailLogo(props: { height?: number })
+export function MailLogo(props: { style?: CSSProperties })
 {
-    return <img src={mail_logo_url} style={{ ...default_style, height: props.height }} />
+    return <img src={mail_logo_url} style={{ ...default_style, ...props.style }} />
 }

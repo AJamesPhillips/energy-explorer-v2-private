@@ -137,14 +137,6 @@ html, body, #app, #app_html {
     flex-direction: row;
     justify-content: flex-end;
 }
-#app_top_bar_side .app_controls_row > *
-{
-    background-color: white;
-    padding: 0px 12px;
-    min-height: 36px;
-    border: 1px solid rgb(204, 204, 204);
-    border-radius: 4px;
-}
 
 #app_main_view
 {

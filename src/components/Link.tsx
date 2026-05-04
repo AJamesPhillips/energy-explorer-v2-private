@@ -3,7 +3,7 @@
 // losing their changes, we force any link clicks to open in a new tab, for now.
 const target = "_blank"
 
-export function Link(props: { url: string, children: React.ReactNode })
+export function Link(props: { url: string, noWrap?: boolean, children: React.ReactNode })
 {
     const { url } = props
 
@@ -11,6 +11,7 @@ export function Link(props: { url: string, children: React.ReactNode })
         href={url}
         target={target}
         rel="noopener noreferrer"
+        style={{ whiteSpace: props.noWrap ? "nowrap" : undefined }}
         onClick={e => {
             e.preventDefault()
 

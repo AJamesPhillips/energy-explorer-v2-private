@@ -21,18 +21,19 @@ export function DataPortal(props: DataPortalProps)
 
     const { population_by_year, population } = props
 
-    return <div style={{ zIndex: "var(--z-index-app-html-data_portal)" }}>
-        <span
-            className="ui_button"
-            onClick={() => set_show_data_portal(true)}
-        >
-            {is_narrow_screen ? "" : "Graphs "}<GraphLogo style={{ marginLeft: 5 }} />
+    return <div
+        className="ui_button"
+        style={{ zIndex: "var(--z-index-app-html-data_portal)" }}
+        onClick={() => set_show_data_portal(true)}
+    >
+        <span>
+            {is_narrow_screen() ? "" : "Graphs "}<GraphLogo style={{ marginLeft: is_narrow_screen() ? 0 : 5 }} />
         </span>
 
         {show_data_portal && <InfoBox
             wider_info_box={true}
             message={<>
-                <h1>Data Portal <GraphLogo style={{ height: 30 }} /></h1>
+                <h1>Data Graphs <GraphLogo style={{ height: 30 }} /></h1>
 
                 <div style={{ overflowY: "scroll", maxHeight: "50vh", paddingRight: 10 }}>
                     <Section id="" title="Population" />

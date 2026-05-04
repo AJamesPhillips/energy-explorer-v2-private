@@ -19,16 +19,6 @@
 }
 
 
-#select_country_button
-{
-    display: inline-flex;
-
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-}
-
-
 #countries_list
 {
     overflow-y: scroll;

@@ -29,12 +29,12 @@ export function Info()
         if (element) element.scrollIntoView({ behavior: "smooth" })
     }, [show_info_box])
 
-    return <div>
-        <span
-            className="ui_button"
-            onClick={() => set_show_info_box(true)}
-        >
-            {is_narrow_screen ? "" : "Sources "}<InfoLogo style={{ marginLeft: 5 }} />
+    return <div
+        className="ui_button"
+        onClick={() => set_show_info_box(true)}
+    >
+        <span>
+            {is_narrow_screen() ? "" : "Sources "}<InfoLogo style={{ marginLeft: is_narrow_screen() ? 0 : 5 }} />
         </span>
 
         {show_info_box && <InfoBox
