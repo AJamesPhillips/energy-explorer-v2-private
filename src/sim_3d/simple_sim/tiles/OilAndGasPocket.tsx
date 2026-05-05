@@ -83,6 +83,7 @@ function OilAndGasPocket({ x, y, depth, ratio_remaining, cell_size }: OilAndGasP
     }, [])
 
 
+    const any_highlighted = highlighted_pocket !== null
     const this_is_highlighted = highlighted_pocket?.x === x && highlighted_pocket?.y === y
 
 
@@ -131,7 +132,7 @@ function OilAndGasPocket({ x, y, depth, ratio_remaining, cell_size }: OilAndGasP
                 }}
             />}
 
-            {this_is_highlighted && <Text
+            {any_highlighted && <Text
                 position={[0, (-1.5 -depth) * s, 0]}
                 rotation={[0, Math.PI / 4, 0]}
                 fontSize={cell_size * 0.5}
@@ -145,7 +146,7 @@ function OilAndGasPocket({ x, y, depth, ratio_remaining, cell_size }: OilAndGasP
                     pub_sub.pub("show_info_and_data_sources", "oil_and_gas_reserves")
                 }}
             >
-                (source)
+                {`Oil & Gas ${Math.round(ratio_remaining * 100)}%`}
             </Text>}
 
         </group>

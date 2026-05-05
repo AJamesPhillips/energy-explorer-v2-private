@@ -52,7 +52,7 @@ ____________________
 ____________________
 _________________z__
 ____________________
-_o___x______z_______
+_o___z______x_______
 `.trim()
 
 type InfraColumn = Record<number, { has_oil_rig: OilRigConfig, has_oil_pocket?: boolean } | { has_oil_rig?: OilRigConfig, has_oil_pocket: boolean }>
