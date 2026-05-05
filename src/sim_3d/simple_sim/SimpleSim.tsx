@@ -1,6 +1,6 @@
 import { MapControls, Text } from "@react-three/drei"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 
 import { uk_coverage } from "../data/coverage/uk/data"
@@ -169,7 +169,6 @@ function SimpleSim3d(props: SimpleSim3dProps)
             camera.position.x += dx
             camera.position.z += dz
         }
-        console.log(Math.round(camera.position.x), Math.round(camera.position.y), Math.round(camera.position.z))
     })
 
 
@@ -214,11 +213,13 @@ function SimpleSim3d(props: SimpleSim3dProps)
         }))
     }, [props.data])
 
+    const map_controls_target = useMemo(() => new THREE.Vector3(-30, -30, -30), [])
+
     return <>
         <IsoCamera grid_size={GRID_SIZE} cell_size={CELL_SIZE} />
         <MapControls
             ref={controls_ref as React.Ref<any>}
-            target={new THREE.Vector3(-30, -30, -30)}
+            target={map_controls_target}
             makeDefault
             enableRotate={false}
             minZoom={is_narrow_screen() ? 1 : 3}
