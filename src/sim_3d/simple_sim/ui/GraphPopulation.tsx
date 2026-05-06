@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { SINGLETON } from "../../../utils/singleton"
 import { PopulationByYear } from "../../data/population/process_data_component"
 import pub_sub from "../../state/pub_sub"
-import "./GraphPopulation.css"
+import "./Graph.css"
 
 
 const WIDTH = 320
@@ -138,10 +138,7 @@ export function GraphPopulation(props: GraphPopulationProps)
     const x_tick_years = known_years.filter((_, i) => i % Math.ceil(known_years.length / 4) === 0)
 
     return (
-        <div
-            id="graph_population"
-            className="ui_info_box"
-        >
+        <div className="data_graph ui_info_box">
             <div className="ui_info_box_header">
                 <span
                     className="source_info_label"

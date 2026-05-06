@@ -1,5 +1,5 @@
 
-#graph_population
+.data_graph
 {
     user-select: none;
     pointer-events: initial;
@@ -18,11 +18,11 @@
     cursor: pointer;
 }
 
-#graph_population:hover .source_info_link
+.data_graph:hover .source_info_link
 {
     opacity: 1;
 }
-#graph_population:hover .source_info_label
+.data_graph:hover .source_info_label
 {
     color: var(--colour-link);
     text-decoration: underline;
