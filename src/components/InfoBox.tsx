@@ -1,6 +1,5 @@
 import { JSX, useCallback, useEffect, useState } from "react"
 
-import { SINGLETON } from "../utils/singleton"
 import "./InfoBox.css"
 
 // const HIDE_ALL_IN_DEV = true
@@ -54,8 +53,8 @@ export function InfoBox(props: InfoBoxProps)
             // darkened background behind the info box.
             e.stopPropagation()
 
-            // Close the info box if no other mouse events lock are in place (e.g. from dragging on a graph)
-            if (!SINGLETON.any_mouse_events_locked()) close_info_box()
+            // Close the info box
+            close_info_box()
         }}>
             <div
                 id="info_box_text"

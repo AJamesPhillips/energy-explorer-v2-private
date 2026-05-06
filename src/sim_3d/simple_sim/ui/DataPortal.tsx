@@ -32,7 +32,13 @@ export function DataPortal(props: DataPortalProps)
 
         {show_data_portal && <InfoBox
             wider_info_box={true}
-            message={<>
+            message={<div
+                // Stop the click from propagating to the background and closing
+                // this info box
+                onTouchEnd={e => e.stopPropagation()}
+                onMouseUp={e => e.stopPropagation()}
+                onClick={e => e.stopPropagation()}
+            >
                 <h1>Data Graphs <GraphIcon style={{ height: 30 }} /></h1>
 
                 <div style={{ overflowY: "scroll", maxHeight: "50vh", paddingRight: 10 }}>
@@ -44,7 +50,7 @@ export function DataPortal(props: DataPortalProps)
                         population_by_year={population_by_year}
                     />}
                 </div>
-            </>}
+            </div>}
             on_close={() => set_show_data_portal(false)}
         />}
     </div>

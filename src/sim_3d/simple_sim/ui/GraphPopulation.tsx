@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-import { SINGLETON } from "../../../utils/singleton"
 import { PopulationByYear } from "../../data/population/process_data_component"
 import pub_sub from "../../state/pub_sub"
 import "./Graph.css"
@@ -102,25 +101,18 @@ export function GraphPopulation(props: GraphPopulationProps)
             const client_x = "touches" in e ? e.touches[0]!.clientX : e.clientX
             handle_move(client_x)
         }
-        const on_up = () =>
-        {
-            // Delay to allow any click events on the graph to be processed
-            // before we release the lock
-            setTimeout(() => set_dragging(false), 0)
-        }
+        const on_up = () => set_dragging(false)
+
         window.addEventListener("mousemove", on_move)
         window.addEventListener("mouseup", on_up)
         window.addEventListener("touchmove", on_move)
         window.addEventListener("touchend", on_up)
-        // Prevent other handlers from running and causing issues while dragging
-        const lock = SINGLETON.acquire_mouse_events_lock("GraphPopulation")
         return () =>
         {
             window.removeEventListener("mousemove", on_move)
             window.removeEventListener("mouseup", on_up)
             window.removeEventListener("touchmove", on_move)
             window.removeEventListener("touchend", on_up)
-            lock.release()
         }
     }, [dragging, handle_move])
 
