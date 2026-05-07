@@ -3,11 +3,12 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { DataPoint } from "../../data/fossil_fuels/process_data_component"
 import pub_sub from "../../state/pub_sub"
 import { InfoSectionId } from "../../state/pub_sub/interface"
+import { GRAPH_CONSTANTS } from "../constants"
 import "./Graph.css"
-import { graph_compute_data_series, GRAPH_CONSTANTS, GraphDataSeries } from "./graph_compute_data_series"
+import { graph_compute_data_series, GraphDataSeries } from "./graph_compute_data_series"
 
 
-const { WIDTH, HEIGHT, PADDING, PLOT_W, PLOT_H } = GRAPH_CONSTANTS
+const { HEIGHT, PADDING, PLOT_W, PLOT_H } = GRAPH_CONSTANTS
 
 function fmt_pop(n: number, detailed = 0): string
 {
@@ -25,13 +26,14 @@ export interface GraphProps<Fields extends string[] = []>
     graph_title: string
     data_source_name: InfoSectionId
 
-    data_by_year: Record<number, {[f in Fields[number]]: DataPoint}>
-    colour_by_series: {[f in Fields[number]]: string}
     year: number
+    data_by_year: Record<number, {[f in Fields[number]]: DataPoint}>
+    colour_by_series: {[f in Fields[number]]: string | false}
+    get_values_description: (year: number, values: {[f in Fields[number]]: DataPoint}) => { description: string, is_projected: boolean }
 }
 export function Graph<Fields extends string[]>(props: GraphProps<Fields>)
 {
-    const { data_by_year, colour_by_series } = props
+    const { data_by_year, colour_by_series, get_values_description } = props
 
     const [year, set_year] = useState(props.year)
 
@@ -47,7 +49,7 @@ export function Graph<Fields extends string[]>(props: GraphProps<Fields>)
     const min_value = Math.min(...all_values) * 0.97
     const max_value = Math.max(...all_values) * 1.03
 
-    function x_of(year: number) { return ((year - min_year) / (max_year - min_year)) * PLOT_W }
+    function x_of(year: number) { return ((year - min_year) / (max_year - min_year)) * PLOT_W() }
     function y_of(pop: number) { return PLOT_H - ((pop - min_value) / (max_value - min_value)) * PLOT_H }
 
     // Dragging
@@ -59,7 +61,7 @@ export function Graph<Fields extends string[]>(props: GraphProps<Fields>)
         if (!svg_ref.current) return year
         const rect = svg_ref.current.getBoundingClientRect()
         const px = client_x - rect.left - PADDING.left
-        const ratio = Math.max(0, Math.min(1, px / PLOT_W))
+        const ratio = Math.max(0, Math.min(1, px / PLOT_W()))
         return Math.round(min_year + ratio * (max_year - min_year))
     }, [min_year, max_year, year])
 
@@ -96,7 +98,7 @@ export function Graph<Fields extends string[]>(props: GraphProps<Fields>)
 
     const cursor_x = x_of(year)
     const values_at_cursor = get_values_at_year(year, data_by_year)
-    const is_projected = false // values_at_cursor.is_projected
+    const { description, is_projected } = get_values_description(year, values_at_cursor)
 
     const y_tick_count = 3
     const y_ticks = Array.from({ length: y_tick_count }, (_, i) =>
@@ -118,12 +120,12 @@ export function Graph<Fields extends string[]>(props: GraphProps<Fields>)
                 </span>
 
                 <span style={{ fontWeight: "bold", color: is_projected ? "#e07020" : "#333" }}>
-                    {"fmt_pop(population, 1)"} ({year}{is_projected ? " proj." : ""})
+                    {description} ({year}{is_projected ? " proj." : ""})
                 </span>
             </div>
             <svg
                 ref={svg_ref}
-                width={WIDTH}
+                width={GRAPH_CONSTANTS.WIDTH()}
                 height={HEIGHT}
                 style={{
                     display: "block",
@@ -147,7 +149,7 @@ export function Graph<Fields extends string[]>(props: GraphProps<Fields>)
                     {/* Y axis ticks */}
                     {y_ticks.map(({ pop, y }) => (
                         <g key={pop}>
-                            <line x1={-4} y1={y} x2={PLOT_W} y2={y} stroke="#e0e0e0" strokeWidth={1} />
+                            <line x1={-4} y1={y} x2={PLOT_W()} y2={y} stroke="#e0e0e0" strokeWidth={1} />
                             <text x={-6} y={y} textAnchor="end" dominantBaseline="middle" fontSize="var(--font-small)" fill="#888">
                                 {fmt_pop(pop)}
                             </text>
@@ -168,7 +170,7 @@ export function Graph<Fields extends string[]>(props: GraphProps<Fields>)
                         <polyline
                             points={series.proj_points_polyline}
                             fill="none"
-                            stroke="#e07020"
+                            stroke={series.colour_projected}
                             strokeWidth={1.5}
                             strokeDasharray="4 3"
                             opacity={0.7}

@@ -49,6 +49,7 @@ export function DataPortal(props: DataPortalProps)
                 <div style={{ overflowY: "scroll", maxHeight: "50vh", paddingRight: 10, paddingBottom: 30 }}>
                     <Section id="" title="Oil & Gas" />
                     {oil_gas_by_year && <GraphOilGas
+                        year={props.year}
                         oil_gas_by_year={oil_gas_by_year}
                     />}
 

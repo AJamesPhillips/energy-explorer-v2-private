@@ -18,3 +18,25 @@ export const DEFAULTS = {
         direct_position: [ 15, 5, 7 ] as [number, number, number],
     }
 }
+
+
+const WIDTH = () => Math.min(window.innerWidth - 60, 500)
+const HEIGHT = 160
+const PADDING = { top: 10, right: 10, bottom: 22, left: 48 }
+const PLOT_W = () => WIDTH() - PADDING.left - PADDING.right
+const PLOT_H = HEIGHT - PADDING.top - PADDING.bottom
+
+export const GRAPH_CONSTANTS = {
+    WIDTH,
+    HEIGHT,
+    PADDING,
+    PLOT_W,
+    PLOT_H,
+}
+
+
+export const COLOURS = {
+    coal: "#333",
+    oil: "#e07020",
+    gas: "#2a7ae4",
+}
