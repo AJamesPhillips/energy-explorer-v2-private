@@ -50,3 +50,40 @@ https://www.ecologie.gouv.fr/sites/default/files/documents/202604_France%27s_roa
 This report shows that existing UK housing stock could have 47.5 GW of rooftop
 solar PV potential.  It's important to note that this is the nameplate capacity
 not the average annual output: https://anot8.org/r/?url=https%3A%2F%2Fwww.cpre.org.uk%2Fwp-content%2Fuploads%2F2023%2F05%2FRooftop-Revolution-Report.pdf&h=0-ajp&ta=%5B%5B0%2C10%2C%22%22%2C%22%22%2C%5B%5D%2C%2221.5%22%2C%22424.5%22%2C%22790.5%22%2C%22416%22%2C%22AJP%22%5D%5D
+
+
+## Oil and gas
+
+### Regions
+
+Source: Figure 1 of https://onlinelibrary.wiley.com/doi/full/10.1111/rge.12323
+
+CNS - Central North Sea
+EIS - East Irish Sea
+ESPA - East Shetland Platform Area
+MF - Moray Firth
+NNS - Northern North Sea
+SNS - Southern North Sea
+WoS - West of Shetland
+SW Britain
+
+### Prediction
+
+In 1998, prediction that Clair oilfield contained 3-5 bboe (where as estimate is now 7 bboe):
+https://www.sciencedirect.com/science/article/abs/pii/S0146638098001831
+
+In 2019, prediction that by 2025 WoS would produce 30% of UK oil and gas:
+https://www.mckinsey.com/industries/oil-and-gas/our-insights/the-west-of-shetland-comes-of-age
+
+
+### Seismic surveys:
+
+* https://open-data-ukcs-transition.hub.arcgis.com/datasets/456714d80ae74e04b1232e544cb18ecb_0/explore
+* https://ukogl.org.uk/map/?e=-1062959,7283323,404632,8250710&l=1431655685,4288,0&sm=true&b=3
+
+### West of Shetland
+
+* Clair oilfield
+https://web.archive.org/web/20250818213809/https://www.bp.com/en_gb/united-kingdom/home/where-we-operate/north-sea.html
+  * estimated to contain seven billion barrels of oil in place
+  * estimated 640 million barrels of oil will be recovered by 1st and 2nd phase of development (Clair and Clair Ridge)
