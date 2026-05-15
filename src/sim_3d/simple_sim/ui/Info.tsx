@@ -155,10 +155,10 @@ export function Info()
 
                     <Section id="oil_and_gas_data" title="Oil and Gas Data" />
                     <p>
-                        Includes data on reserves, resources and production from
+                        Data on reserves, resources and production is from
                         the <a href="https://wikisim.org/wiki/1283">
                             North Sea Transition Authority
-                        </a>'s data processed and contextualised here: <a href="https://wikisim.org/wiki/1284v19">
+                        </a>.  Data is contextualised and processed here: <a href="https://wikisim.org/wiki/1284v19">
                             UK oil and gas production, reserves and resources
                         </a>.  Specifically this sim uses the {OIL_GAS_RESERVES_CONFIDENCE} reserves
                         and the {OIL_GAS_RESOURCES_CONFIDENCE} resources (to set an maximal
