@@ -104,3 +104,22 @@ https://www.mckinsey.com/industries/oil-and-gas/our-insights/the-west-of-shetlan
 https://web.archive.org/web/20250818213809/https://www.bp.com/en_gb/united-kingdom/home/where-we-operate/north-sea.html
   * estimated to contain seven billion barrels of oil in place
   * estimated 640 million barrels of oil will be recovered by 1st and 2nd phase of development (Clair and Clair Ridge)
+
+
+# Policy
+
+> 1. Rebalancing levies and taxes across fuels, so that gas carries its share of the policy and environmental costs rather than electricity carrying most of them.
+> 2. Letting temporal and locational price signals reach consumers, so that flexible demand can respond to what the system actually needs.
+> 3. Protecting vulnerable consumers through safety valve mechanisms and targeted support rather than through suppressed energy prices for everyone.
+> 4. And spreading the recovery of grid investment costs over a longer period, so that today’s bills do not have to carry the full cost of building the system tomorrow’s electrified economy will use.
+>
+> Retail reform is not the only outstanding piece. Wholesale market design itself is still in motion:
+> 1. long-term contracts (PPAs and CfDs)
+> 2. supplier hedging
+> 3. locational signals
+> 4. demand-side access to balancing markets
+> 5. cross-border infrastructure cost sharing.
+>
+> Getting those right will matter at least as much as fixing retail.
+
+https://janrosenow.substack.com/p/do-renewables-make-electricity-cheaper
