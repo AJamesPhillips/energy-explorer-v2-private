@@ -100,7 +100,7 @@ function App ()
             solar_farms_by_year = process_solar_farms_data_component(solar_farms_component)
         }
 
-        return { population_by_year, oil_gas_by_year }
+        return { population_by_year, oil_gas_by_year, solar_farms_by_year }
     }, [population_component, oil_gas_component, solar_farms_component])
 
 

@@ -10,11 +10,9 @@ const carbon_fuels_options: ActionOption[] = [
     // { text: "Terminals", enabled: false },
 ]
 
-export function CarbonFuelsOptions(props: { show_options: boolean, toggle_showing: () => void })
+export function CarbonFuelsOptions()
 {
     return <FooterBuildOptions
-        show_options={props.show_options}
-        toggle_showing={props.toggle_showing}
         options={carbon_fuels_options}
         build_aria_label={option => `Build ${option}`}
         toggle_aria_label="Toggle carbon fuels options"
