@@ -24,13 +24,14 @@ import {
     SelectPerspective
 } from "./components/SelectPerspective"
 import { get_wikisim_components } from "./data/get_wikisim_components"
-import { all_ids_to_fetch } from "./data/ids"
+import { all_ids_to_fetch, oil_gas_id, population_id, solar_farms_id, wind_farms_id } from "./data/ids"
 import { DataComponentExtended, PerspectiveKnowledgeGraph } from "./data/interface"
 import { GraphViewer } from "./graph/GraphViewer"
 import "./main.css"
 import { OilGasByYear, process_uk_oil_gas_data_component } from "./sim_3d/data/fossil_fuels/process_data_component"
 import { PopulationByYear, process_uk_population_data_component } from "./sim_3d/data/population/process_data_component"
 import { process_solar_farms_data_component, SolarFarmsByYear } from "./sim_3d/data/solar_pv/process_data_component"
+import { process_wind_farms_data_component, WindFarmsByYear } from "./sim_3d/data/wind/process_data_component"
 import { Sim3d } from "./sim_3d/Sim3d"
 import { DataPortal } from "./sim_3d/simple_sim/ui/DataPortal"
 import { Info } from "./sim_3d/simple_sim/ui/Info"
@@ -73,14 +74,11 @@ function App ()
     const components_map_by_ido = useMemo(() => data_components_by_ido(components), [components])
 
 
-    // Must also update version in data/ids.ts
-    const population_id = "1011v12" // UK population
-    const oil_gas_id = "1284v19" // UK oil and gas production, reserves and resources
-    const solar_farms_id = "1295v2" // UK solar farms by year
     const population_component = components_map_by_idv[population_id]
     const oil_gas_component = components_map_by_idv[oil_gas_id]
     const solar_farms_component = components_map_by_idv[solar_farms_id]
-    const { population_by_year, oil_gas_by_year } = useMemo(() =>
+    const wind_farms_component = components_map_by_idv[wind_farms_id]
+    const { population_by_year, oil_gas_by_year, solar_farms_by_year, wind_farms_by_year } = useMemo(() =>
     {
         let population_by_year: PopulationByYear | undefined = undefined
         if (population_component)
@@ -100,8 +98,14 @@ function App ()
             solar_farms_by_year = process_solar_farms_data_component(solar_farms_component)
         }
 
-        return { population_by_year, oil_gas_by_year, solar_farms_by_year }
-    }, [population_component, oil_gas_component, solar_farms_component])
+        let wind_farms_by_year: WindFarmsByYear | undefined = undefined
+        if (wind_farms_component)
+        {
+            wind_farms_by_year = process_wind_farms_data_component(wind_farms_component)
+        }
+
+        return { population_by_year, oil_gas_by_year, solar_farms_by_year, wind_farms_by_year }
+    }, [population_component, oil_gas_component, solar_farms_component, wind_farms_component])
 
 
     const [year, _set_year] = useState(2026)
@@ -198,6 +202,8 @@ function App ()
                                     set_population={set_population}
 
                                     oil_gas_by_year={oil_gas_by_year}
+                                    solar_farms_by_year={solar_farms_by_year}
+                                    wind_farms_by_year={wind_farms_by_year}
                                 />
                             </div>
                         </>}

@@ -22,6 +22,8 @@ export const INCLUDE_PROJECTION_UNTIL = false
 export const PROJECTION_UNTIL_YEAR = 2031
 export const OIL_GAS_RESERVES_CONFIDENCE = "2P"
 export const OIL_GAS_RESOURCES_CONFIDENCE = "3C"
+export const OIL_UNITS = { long: "million tonnes", short: "Mt" }
+export const GAS_UNITS = { long: "billion cubic metres", short: "bcm" }
 
 export function process_uk_oil_gas_data_component(component: DataComponentExtended): OilGasByYear
 {

@@ -5,8 +5,11 @@ import { GraphIcon } from "../../../components/svgs"
 import { is_narrow_screen } from "../../../utils/screen_type"
 import { OilGasByYear } from "../../data/fossil_fuels/process_data_component"
 import { PopulationByYear } from "../../data/population/process_data_component"
+import { SolarFarmsByYear } from "../../data/solar_pv/process_data_component"
+import { WindFarmsByYear } from "../../data/wind/process_data_component"
 import { GraphOilGasProduction, GraphOilGasReserves, GraphOilGasResources } from "./GraphOilGas"
 import { GraphPopulation } from "./GraphPopulation"
+import { GraphSolarFarms, GraphWindFarms } from "./GraphSolarAndWind"
 import "./ui.css"
 
 
@@ -19,12 +22,19 @@ interface DataPortalProps
     set_population: (population: number) => void
 
     oil_gas_by_year: OilGasByYear | undefined
+    solar_farms_by_year: SolarFarmsByYear | undefined
+    wind_farms_by_year: WindFarmsByYear | undefined
 }
 export function DataPortal(props: DataPortalProps)
 {
     const [show_data_portal, set_show_data_portal] = useState<boolean>(false)
 
-    const { population_by_year, population, oil_gas_by_year } = props
+    const {
+        population_by_year, population,
+        oil_gas_by_year,
+        solar_farms_by_year,
+        wind_farms_by_year,
+    } = props
 
     return <div
         className="ui_button"
@@ -71,6 +81,18 @@ export function DataPortal(props: DataPortalProps)
                         population={population}
                         set_population={props.set_population}
                         population_by_year={population_by_year}
+                    />}
+
+                    <Section id="" title="Solar Farms" />
+                    {population && population_by_year && <GraphSolarFarms
+                        year={props.year}
+                        solar_farms_by_year={solar_farms_by_year}
+                    />}
+
+                    <Section id="" title="Wind Farms" />
+                    {population && population_by_year && <GraphWindFarms
+                        year={props.year}
+                        wind_farms_by_year={wind_farms_by_year}
                     />}
                 </div>
             </div>}

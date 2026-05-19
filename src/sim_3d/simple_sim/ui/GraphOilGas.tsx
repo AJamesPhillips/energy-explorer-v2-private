@@ -1,5 +1,5 @@
 
-import { DATA_UNTIL_YEAR, OilGasByYear, OilGasDataByYear } from "../../data/fossil_fuels/process_data_component"
+import { DATA_UNTIL_YEAR, GAS_UNITS, OIL_GAS_RESERVES_CONFIDENCE, OIL_GAS_RESOURCES_CONFIDENCE, OIL_UNITS, OilGasByYear, OilGasDataByYear } from "../../data/fossil_fuels/process_data_component"
 import { DataPoint } from "../../data/interface"
 import { InfoSectionId } from "../../state/pub_sub/interface"
 import { Graph, GraphProps } from "./Graph"
@@ -21,11 +21,17 @@ type Fields = [
     "oil_production", "gas_production",
 ]
 
+function to_str (num: number | undefined, units: string)
+{
+    if (!num) return "n/a "
+    return `${num.toLocaleString()} ${units} `
+}
+
 function get_oil_gas_description(oil: number | undefined, gas: number | undefined)
 {
     return <>
-        <span style={{ color: OIL_COLOUR }}>Oil</span>: {oil ?? "n/a"}{" "}
-        <span style={{ color: GAS_COLOUR }}>Gas</span>: {gas ?? "n/a"}
+        <span style={{ color: OIL_COLOUR }}>Oil</span>: {to_str(oil, OIL_UNITS.short)}
+        <span style={{ color: GAS_COLOUR }}>Gas</span>: {to_str(gas, GAS_UNITS.short)}
     </>
 }
 
@@ -82,7 +88,12 @@ export function GraphOilGasReserves(props: GraphOilGasProps)
         is_projected: year => year > DATA_UNTIL_YEAR,
     })
 
-    return <Graph<Fields> {...graph_props} />
+    return <div>
+        <Graph<Fields> {...graph_props} />
+        <div style={{ fontSize: "var(--font-small)" }}>
+            Showing {OIL_GAS_RESERVES_CONFIDENCE} reserves
+        </div>
+    </div>
 }
 
 
@@ -108,7 +119,12 @@ export function GraphOilGasResources(props: GraphOilGasProps)
         is_projected: year => year > DATA_UNTIL_YEAR,
     })
 
-    return <Graph<Fields> {...graph_props} />
+    return <div>
+        <Graph<Fields> {...graph_props} />
+        <div style={{ fontSize: "var(--font-small)" }}>
+            Showing {OIL_GAS_RESOURCES_CONFIDENCE} resources
+        </div>
+    </div>
 }
 
 
