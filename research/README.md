@@ -61,6 +61,8 @@ not the [average annual output](https://anot8.org/r/?url=https%3A%2F%2Fwww.cpre.
 
 ## Wind
 
+* Data at wind farm level: https://www.tgs4c.com/ (courtesy of Ole Anders Nost)
+  * global map: https://map.tgs4c.com/offshorewind/
 * https://github.com/microsoft/global-renewables-watch
 * (unfavourable license: https://www.iea.org/data-and-statistics/data-product/renewables-2025-dataset)
 
