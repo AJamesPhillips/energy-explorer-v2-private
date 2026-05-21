@@ -16,13 +16,12 @@ export function process_solar_farms_data_component(component: DataComponentExten
 {
     const { data } = JSON.parse(component.computed_value!) as { data: [number, Record<string, number>][] }
     const by_year: SolarFarmsByYear = {}
-    let cumulative_area_km2 = 0
 
     data.forEach(row =>
     {
         const year = row[0]
         const total_area_km2 = row[1]["total area (km^2)"] ?? 0
-        cumulative_area_km2 += total_area_km2
+        const cumulative_area_km2 = row[1]["total area (km^2) cumulative"] ?? 0
 
         const values: DataRow = {
             net_area_km2: { value: total_area_km2 },

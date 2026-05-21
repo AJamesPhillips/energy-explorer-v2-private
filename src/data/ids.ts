@@ -62,8 +62,8 @@ export const map_factor_name_to_ido: Record<EnergyFactorName, IdOnly | undefined
 
 export const population_id = "1011v12" // UK population
 export const oil_gas_id = "1284v19" // UK oil and gas production, reserves and resources
-export const solar_farms_id = "1295v2" // UK solar farms by year
-export const wind_farms_id = "1297v1" // UK wind farms by year with estimated area
+export const solar_farms_id = "1295v3" // UK solar farms by year
+export const wind_farms_id = "1297v3" // UK wind farms by year with estimated area
 
 // This is not necessary but it slightly increases the initial loading speed of
 // the application.  It has been manually created by copying and pasting the
