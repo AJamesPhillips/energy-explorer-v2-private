@@ -1,4 +1,4 @@
-import { JSX, useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 import { IdAndVersion } from "core/data/id"
 
@@ -185,7 +185,7 @@ interface GraphViewerProps
     // display_width: number
     // start_depth?: number
 }
-export function GraphViewer(props: GraphViewerProps): JSX.Element
+export function GraphViewer(props: GraphViewerProps)
 {
     // const { graph, apex_component_id, display_depth, display_width, start_depth = 0 } = props
     const { persectives } = props
@@ -240,6 +240,20 @@ export function GraphViewer(props: GraphViewerProps): JSX.Element
     const visible = build_tree(display_root, display_depth, display_width, show_agreements)
     const tree_w = subtree_min_width(compact, visible)
 
+    // Clear and remount if the tree width changes, to avoid svg size being
+    // kept larger than necessary
+    const tree_w_ref = useRef(tree_w)
+    const [_, refresh] = useState({})
+    if (tree_w_ref.current !== tree_w)
+    {
+        setTimeout(() =>
+        {
+            tree_w_ref.current = tree_w
+            refresh({})
+        }, 0)
+        return null
+    }
+
     // Centre the tree within whichever is wider: the tree itself or the container.
     const content_w = Math.max(tree_w, container_w - 2 * SVG_PADDING)
     const apex_cx = content_w / 2 + SVG_PADDING
@@ -257,7 +271,8 @@ export function GraphViewer(props: GraphViewerProps): JSX.Element
                 style={{
                     position: "fixed",
                     top: 30,
-                    width: "100%",
+                    left: 0,
+                    right: 0,
                     pointerEvents: "none",
                     textAlign: "center",
                 }}
