@@ -74,7 +74,10 @@ export const other_ids_performance_boost: IdsToFetchAndMaybeCompute[] = [
     { id: "1145v1" },
     { id: "1157v3" },
     { id: "1181v1" },
+    { id: "1183v3" },  // repeated
+    { id: "1183v4" },  // repeated
     { id: "1183v5" },
+    { id: "1184v17" },
     { id: "1186v4" },
     { id: "1187v6" },
     { id: "1188v3" },
@@ -123,16 +126,23 @@ export const other_ids_performance_boost: IdsToFetchAndMaybeCompute[] = [
     { id: "1276v2" },
     { id: "1277v1" },
     { id: "1279v5" },
+    { id: "1280v13" },  // repeated
     { id: "1280v15" },
     // UK Oil and gas reserves and production
+    { id: "1184v15" },  // repeated
     { id: oil_gas_id, compute_value: true, args_for_compute: `true,${INCLUDE_PROJECTION_UNTIL ? PROJECTION_UNTIL_YEAR : undefined}` },
+    { id: "1285v4" },  // repeated
     { id: "1285v5" },
+    { id: "1286v7" },  // repeated
     { id: "1286v8" },
     // UK Solar Farms
     { id: solar_farms_id, compute_value: true, args_for_compute: `` },
-    { id: "1296v3" },
+    { id: "1296v3" },  // repeated
+    { id: "1296v5" },
     // UK Wind Farms (with estimated area)
     { id: wind_farms_id, compute_value: true, args_for_compute: `` },
+    { id: "1299v4" },
+    { id: "1300v1" },
 ].map(({ id, compute_value, args_for_compute }) =>
 {
     if (!compute_value)

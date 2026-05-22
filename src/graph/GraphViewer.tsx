@@ -227,6 +227,10 @@ export function GraphViewer(props: GraphViewerProps)
     }, [])
 
 
+    const tree_w_ref = useRef(0)
+    const [_, refresh] = useState({})
+
+
     if (!graph || !graph_for_rendering) return <Loading />
 
 
@@ -242,8 +246,6 @@ export function GraphViewer(props: GraphViewerProps)
 
     // Clear and remount if the tree width changes, to avoid svg size being
     // kept larger than necessary
-    const tree_w_ref = useRef(tree_w)
-    const [_, refresh] = useState({})
     if (tree_w_ref.current !== tree_w)
     {
         setTimeout(() =>
