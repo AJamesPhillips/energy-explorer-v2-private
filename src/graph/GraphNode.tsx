@@ -1,25 +1,54 @@
 import { component_is_number } from "core/data/component_is"
-import { truncate } from "core/utils/truncate"
+import { JSX } from "react"
 
 import { PlacedNode } from "./interface"
-import { NODE_H, NODE_W } from "./layout_constants"
+import { NODE_H, NODE_TEXT_SIZE, NODE_TEXT_SIZE_SMALL, NODE_TEXT_V_FACTOR, NODE_W } from "./layout_constants"
 import {
-    compute_differences,
+    AGGREEMENT_COLOUR,
     format_diff_text,
     get_color_for_relative_difference,
     get_numeric_result_value,
+    LIKELY_AGGREEMENT_COLOUR,
     render_component,
 } from "./utils"
 
 
-const MAX_TITLE_CHARS = 40
+const MAX_TITLE_CHARS = 25
+const TITLE_CHARS_WRAP = MAX_TITLE_CHARS
 const MIN_REL_DIFF = 0.01
 const MAX_REL_DIFF = 0.25
 
-export function GraphNode(props: { node: PlacedNode, key?: string })
+
+function truncate_wrap_text(text: string, max_chars: number, wrap_at: number, cx: number): JSX.Element | string
 {
-    const { node } = props
-    const x = node.cx - NODE_W / 2
+    if (text.length <= max_chars) return text
+
+    const lines: string[] = []
+    let reversed = text.trim().split("").reverse().join("")
+
+    while (reversed.length > wrap_at)
+    {
+        // Break on nearest white space before wrap_at, or if there isn't one, just break at wrap_at.
+        const break_at = reversed.lastIndexOf(" ", wrap_at) || wrap_at
+        const chunk = reversed.slice(0, break_at).split("").reverse().join("")
+        reversed = reversed.slice(break_at)
+        lines.push(chunk)
+    }
+    lines.push(reversed.split("").reverse().join(""))
+    lines.reverse()
+
+    // Join with <tspan>s to allow multi-line text in SVG.
+    return <>
+        {lines.map((line, i) => <tspan key={i} x={cx} dy={(i === 0 ? 0 : 1.2) + "em"}>{line}</tspan>)}
+    </>
+}
+
+
+export function GraphNode(props: { compact: boolean, node: PlacedNode, key?: string, set_show_agreements: (show: boolean) => void }): JSX.Element
+{
+    const { compact, node } = props
+    const { diff } = node
+    const x = node.cx - NODE_W(compact) / 2
     const y = node.y
 
     if (node.graph === null)
@@ -28,37 +57,38 @@ export function GraphNode(props: { node: PlacedNode, key?: string })
             <rect
                 x={x}
                 y={y}
-                width={NODE_W}
-                height={NODE_H}
+                width={NODE_W(compact)}
+                height={NODE_H(compact)}
                 rx={6}
                 fill="#f5f5f5"
-                stroke="#ccc"
+                stroke={AGGREEMENT_COLOUR}
                 strokeWidth={1}
                 strokeDasharray="4 3"
+                cursor="pointer"
+                onClick={() => props.set_show_agreements(true)}
             />
             <text
                 x={node.cx}
-                y={y + NODE_H / 2}
+                y={y + NODE_H(compact) / 2}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize={12}
-                fill="#666"
+                fontSize={NODE_TEXT_SIZE(compact)}
+                fill={AGGREEMENT_COLOUR}
+                cursor="pointer"
+                pointerEvents="none"
             >
-                {`show ${node.overflow_count} more`}
+                <tspan x={node.cx} dy={0} pointerEvents="none">{`${node.hidden_count} nodes in agreement`}</tspan>
+                <tspan x={node.cx} dy={20} pointerEvents="none">Click to show all</tspan>
             </text>
         </g>
     }
 
-    const diff = compute_differences(
-        node.graph.component,
-        node.graph.alternative,
-    )
     const background_colour = diff === false
-        ? "#aaa"
+        ? LIKELY_AGGREEMENT_COLOUR
         : get_color_for_relative_difference(diff?.relative || 0, MIN_REL_DIFF, MAX_REL_DIFF)
     const title = render_component(node.graph.component)
     // @ts-ignore
-    const title_short = truncate(title, MAX_TITLE_CHARS)
+    const title_short = truncate_wrap_text(title, MAX_TITLE_CHARS, TITLE_CHARS_WRAP, node.cx)
     const diff_text = diff ? format_diff_text(diff.absolute, diff.relative) : false
 
     const numeric_value = component_is_number(node.graph.component) ? get_numeric_result_value(node.graph.component) : undefined
@@ -80,8 +110,8 @@ export function GraphNode(props: { node: PlacedNode, key?: string })
             <rect
                 x={x}
                 y={y}
-                width={NODE_W}
-                height={NODE_H}
+                width={NODE_W(compact)}
+                height={NODE_H(compact)}
                 rx={6}
                 fill={background_colour}
                 stroke="#999"
@@ -91,26 +121,26 @@ export function GraphNode(props: { node: PlacedNode, key?: string })
                 <title>{title}</title>
             </rect>
 
-            {/* <text
+            <text
                 x={node.cx}
-                y={y + 22}
+                y={y + NODE_TEXT_V_FACTOR(22, compact)}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize={12}
+                fontSize={NODE_TEXT_SIZE(compact)}
                 fontWeight="bold"
                 fill="#222"
                 cursor="default"
                 pointerEvents="none"
             >
                 {title_short}
-            </text> */}
+            </text>
             {diff_text && <>
                 <text
                     x={node.cx}
-                    y={y + 15}
+                    y={y + NODE_TEXT_V_FACTOR(55, compact)}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fontSize={11}
+                    fontSize={NODE_TEXT_SIZE_SMALL(compact)}
                     fill="#444"
                     pointerEvents="none"
                 >
@@ -118,10 +148,10 @@ export function GraphNode(props: { node: PlacedNode, key?: string })
                 </text>
                 <text
                     x={node.cx}
-                    y={y + 28}
+                    y={y + NODE_TEXT_V_FACTOR(68, compact)}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fontSize={11}
+                    fontSize={NODE_TEXT_SIZE_SMALL(compact)}
                     fill="#444"
                     pointerEvents="none"
                 >
@@ -130,10 +160,10 @@ export function GraphNode(props: { node: PlacedNode, key?: string })
             </>}
             {!diff_text && numeric_value !== undefined && <text
                 x={node.cx}
-                y={y + 21}
+                y={y + NODE_TEXT_V_FACTOR(41, compact)}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize={11}
+                fontSize={NODE_TEXT_SIZE_SMALL(compact)}
                 fill="#444"
                 pointerEvents="none"
             >
@@ -141,8 +171,8 @@ export function GraphNode(props: { node: PlacedNode, key?: string })
             </text>}
 
             {newer_version_available && <UpdateVersionIcon
-                x={x + NODE_W - 22}
-                y={y + NODE_H - 22}
+                x={x + NODE_W(compact) - 22}
+                y={y + NODE_H(compact) - 22}
                 version={multiple_versions!.latest_version}
             />}
         </a>

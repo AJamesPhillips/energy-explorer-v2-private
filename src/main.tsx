@@ -39,13 +39,20 @@ import { Info } from "./sim_3d/simple_sim/ui/Info"
 
 function App ()
 {
-    // const [view, set_view] = useState<ViewType>("balance_sheet")
-    // const [view, set_view] = useState<ViewType>("digital_twin")
-    const [view, set_view] = useState<ViewType>("simulation")
-    const [selected_perspectives, set_selected_perspectives] = useState<PerspectiveType[]>([
-        perspective_id_general,
-        // perspective_id_2009_mackay,
-    ])
+    const initial_view = (
+        new URLSearchParams(document.location.search).get("view")
+        || "simulation"
+        // || "balance_sheet"
+        // || "digital_twin"
+    ) as ViewType
+    const initial_selected_perspectives = (
+        new URLSearchParams(document.location.search).get("perspectives")
+        || `${perspective_id_general}`
+        // || `${perspective_id_general},${perspective_id_2009_mackay}`
+    ).split(",").map(id => parseInt(id) as PerspectiveType)
+
+    const [view, set_view] = useState<ViewType>(initial_view)
+    const [selected_perspectives, set_selected_perspectives] = useState<PerspectiveType[]>(initial_selected_perspectives)
 
 
     function log_error(error: string)

@@ -60,7 +60,7 @@ export const map_factor_name_to_ido: Record<EnergyFactorName, IdOnly | undefined
 }
 
 
-export const population_id = "1011v12" // UK population
+export const population_id = "1011v13" // UK population
 export const oil_gas_id = "1284v19" // UK oil and gas production, reserves and resources
 export const solar_farms_id = "1295v3" // UK solar farms by year
 export const wind_farms_id = "1297v3" // UK wind farms by year with estimated area
@@ -69,40 +69,26 @@ export const wind_farms_id = "1297v3" // UK wind farms by year with estimated ar
 // the application.  It has been manually created by copying and pasting the
 // "Fetching N dependencies... 1191v7, " ... etc. log from the console.
 export const other_ids_performance_boost: IdsToFetchAndMaybeCompute[] = [
-    // UK population
-    { id: "1011v7" }, // repeated
-    { id: "1011v10" }, // repeated
     { id: population_id, compute_value: true, args_for_compute: `undefined,"United Kingdom"` },
     { id: "1132v4" },
     { id: "1145v1" },
-    { id: "1154v1" },
     { id: "1157v3" },
     { id: "1181v1" },
-    { id: "1183v1" }, // repeated
-    { id: "1183v2" }, // repeated
-    { id: "1183v3" }, // repeated
-    { id: "1183v4" }, // repeated
     { id: "1183v5" },
-    { id: "1184v5" }, // repeated
-    { id: "1184v11" }, // repeated
-    { id: "1184v12" }, // repeated
-    { id: "1184v15" },
-    { id: "1186v2" }, // repeated
     { id: "1186v4" },
-    { id: "1187v1" }, // repeated
-    { id: "1187v3" },
+    { id: "1187v6" },
     { id: "1188v3" },
     { id: "1189v2" },
     { id: "1190v1" },
-    { id: "1191v8" },
-    { id: "1192v4" },
+    { id: "1191v9" },
+    { id: "1192v5" },
     { id: "1193v1" },
     { id: "1194v1" },
     { id: "1200v1" },
     { id: "1201v2" },
-    { id: "1202v10" },
-    { id: "1203v2" },
-    { id: "1204v4" },
+    { id: "1202v12" },
+    { id: "1203v3" },
+    { id: "1204v6" },
     { id: "1205v5" },
     { id: "1206v5" },
     { id: "1208v1" },
@@ -110,9 +96,8 @@ export const other_ids_performance_boost: IdsToFetchAndMaybeCompute[] = [
     { id: "1210v6" },
     { id: "1220v10" },
     { id: "1221v4" },
-    { id: "1222v7" }, // repeated
-    { id: "1222v10" },
-    { id: "1223v9" },
+    { id: "1222v11" },
+    { id: "1223v10" },
     { id: "1224v4" },
     { id: "1225v3" },
     { id: "1226v3" },
@@ -123,29 +108,26 @@ export const other_ids_performance_boost: IdsToFetchAndMaybeCompute[] = [
     { id: "1231v4" },
     { id: "1232v3" },
     { id: "1237v1" },
-    { id: "1238v6" }, // repeated
-    { id: "1238v10" },
+    { id: "1238v11" },
     { id: "1244v5" },
     { id: "1245v4" },
     { id: "1246v4" },
     { id: "1248v4" },
     { id: "1251v3" },
-    { id: "1253v1" },
-    { id: "1254v2" },
-    { id: "1255v2" },
+    { id: "1253v7" },
+    { id: "1254v3" },
+    { id: "1255v3" },
     { id: "1257v1" },
-    { id: "1258v2" }, // repeated
     { id: "1258v5" },
     { id: "1275v1" },
-    { id: "1276v1" },
+    { id: "1276v2" },
     { id: "1277v1" },
-    { id: "1279v4" },
-    { id: "1280v4" }, // repeated
-    { id: "1280v13" },
+    { id: "1279v5" },
+    { id: "1280v15" },
     // UK Oil and gas reserves and production
     { id: oil_gas_id, compute_value: true, args_for_compute: `true,${INCLUDE_PROJECTION_UNTIL ? PROJECTION_UNTIL_YEAR : undefined}` },
-    { id: "1285v4" },
-    { id: "1286v7" },
+    { id: "1285v5" },
+    { id: "1286v8" },
     // UK Solar Farms
     { id: solar_farms_id, compute_value: true, args_for_compute: `` },
     { id: "1296v3" },
