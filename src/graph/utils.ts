@@ -92,10 +92,10 @@ export function get_numeric_result_value(component: DataComponentExtended): numb
 }
 
 
-export function format_diff_text(absolute: number, relative: number)
+export function format_diff_text(absolute: number, relative: number, units: string | undefined)
 {
     const sign = absolute >= 0 ? "+" : ""
-    const line1 = `${sign}${absolute.toFixed(1)}`
+    const line1 = `${sign}${absolute.toFixed(1)}` + (units ? ` ${units}` : "")
     const line2 = `(${sign}${(relative * 100).toFixed(0)}%)`
     return { line1, line2 }
 }

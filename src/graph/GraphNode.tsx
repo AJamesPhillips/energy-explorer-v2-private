@@ -89,7 +89,7 @@ export function GraphNode(props: { compact: boolean, node: PlacedNode, key?: str
     const title = render_component(node.graph.component)
     // @ts-ignore
     const title_short = truncate_wrap_text(title, MAX_TITLE_CHARS, TITLE_CHARS_WRAP, node.cx)
-    const diff_text = diff ? format_diff_text(diff.absolute, diff.relative) : false
+    const diff_text = diff ? format_diff_text(diff.absolute, diff.relative, node.graph.component.units) : false
 
     const numeric_value = component_is_number(node.graph.component) ? get_numeric_result_value(node.graph.component) : undefined
 
