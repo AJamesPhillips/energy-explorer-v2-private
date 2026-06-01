@@ -14,11 +14,18 @@ interface SingleOilRigProps
     y: number
     cell_size: number
     state: OilRigState
+    built_progress: number
 }
 
-function SingleOilRig({ x, y, cell_size, state }: SingleOilRigProps)
+function SingleOilRig({ x, y, cell_size, state, built_progress }: SingleOilRigProps)
 {
     const s = cell_size
+
+    // ── Construction stage ─────────────────────────────────────────────────
+    // stage 1 (0 ≤ p < 0.5): legs only (foundation work)
+    // stage 2 (0.5 ≤ p < 1): legs + deck + derrick (main structure up)
+    // stage 3 (p = 1):       fully built
+    const stage = built_progress < 0.5 ? 1 : built_progress < 1 ? 2 : 3
 
     // ── Structural dimensions ──────────────────────────────────────────────
     const leg_h       = s * 0.3
@@ -143,44 +150,58 @@ function SingleOilRig({ x, y, cell_size, state }: SingleOilRigProps)
     return (
         <group position={[x * s, 0, y * s]}>
 
-            {/* Legs */}
+            {/* Stage 1+: Legs */}
             {leg_corners.map((pos, i) => (
                 <mesh key={i} geometry={leg_geo} material={struct_mat} position={pos} />
             ))}
 
-            {/* Main deck */}
-            <mesh geometry={deck_geo} material={struct_mat} position={[0, deck_y + deck_h / 2, 0]} />
+            {/* Stage 2+: Main deck */}
+            {stage >= 2 && (
+                <mesh geometry={deck_geo} material={struct_mat} position={[0, deck_y + deck_h / 2, 0]} />
+            )}
 
-            {/* Accommodation / equipment module */}
-            <mesh geometry={mod_geo} material={module_mat}
-                position={[-s * 0.10, platform_top + mod_h / 2, s * 0.05]} />
+            {/* Stage 3: Accommodation / equipment module */}
+            {stage >= 3 && (
+                <mesh geometry={mod_geo} material={module_mat}
+                    position={[-s * 0.10, platform_top + mod_h / 2, s * 0.05]} />
+            )}
 
-            {/* Secondary equipment module */}
-            <mesh geometry={mod2_geo} material={module_mat}
-                position={[s * 0.18, platform_top + mod2_h / 2, -s * 0.07]} />
+            {/* Stage 3: Secondary equipment module */}
+            {stage >= 3 && (
+                <mesh geometry={mod2_geo} material={module_mat}
+                    position={[s * 0.18, platform_top + mod2_h / 2, -s * 0.07]} />
+            )}
 
-            {/* Helipad on top of main module */}
-            <mesh geometry={helipad_geo} material={helipad_mat}
-                position={[-s * 0.10, platform_top + mod_h + s * 0.005, s * 0.05]} />
+            {/* Stage 3: Helipad on top of main module */}
+            {stage >= 3 && (
+                <mesh geometry={helipad_geo} material={helipad_mat}
+                    position={[-s * 0.10, platform_top + mod_h + s * 0.005, s * 0.05]} />
+            )}
 
-            {/* Drilling derrick (4-sided pyramid) */}
-            <mesh geometry={derrick_geo} material={derrick_mat}
-                position={[-s * 0.05, platform_top + derrick_h / 2, -s * 0.13]} />
+            {/* Stage 2+: Drilling derrick (4-sided pyramid) */}
+            {stage >= 2 && (
+                <mesh geometry={derrick_geo} material={derrick_mat}
+                    position={[-s * 0.05, platform_top + derrick_h / 2, -s * 0.13]} />
+            )}
 
-            {/* Flare tower */}
-            <mesh geometry={flare_geo} material={derrick_mat}
-                position={[flare_x, platform_top + flare_h / 2, flare_z]}
-                rotation={[0, 0, -0.2]}
-            />
+            {/* Stage 3: Flare tower */}
+            {stage >= 3 && (
+                <mesh geometry={flare_geo} material={derrick_mat}
+                    position={[flare_x, platform_top + flare_h / 2, flare_z]}
+                    rotation={[0, 0, -0.2]}
+                />
+            )}
 
-            {/* Animated gas flame */}
-            <mesh ref={flame_ref} geometry={flame_geo} material={flame_mat}
-                position={[flare_x, flare_top_y + flame_h / 2 - 0.5, flare_z - 0.6]}
-                rotation={[Math.PI - 0.2, 0, 0]}
-            />
+            {/* Stage 3: Animated gas flame */}
+            {stage >= 3 && (
+                <mesh ref={flame_ref} geometry={flame_geo} material={flame_mat}
+                    position={[flare_x, flare_top_y + flame_h / 2 - 0.5, flare_z - 0.6]}
+                    rotation={[Math.PI - 0.2, 0, 0]}
+                />
+            )}
 
-            {/* Animated smoke puffs */}
-            {smoke_phases.map((_, i) => (
+            {/* Stage 3: Animated smoke puffs */}
+            {stage >= 3 && smoke_phases.map((_, i) => (
                 <mesh
                     key={i}
                     ref={el => { smoke_ref.current[i] = el }}
@@ -190,10 +211,12 @@ function SingleOilRig({ x, y, cell_size, state }: SingleOilRigProps)
                 />
             ))}
 
-            {/* Riser pipe running from rig base down to reservoir depth */}
-            <mesh geometry={riser_geo} material={riser_mat}
-                position={[0, -riser_depth / 2, -s * 0.13]}
-            />
+            {/* Stage 3: Riser pipe running from rig base down to reservoir depth */}
+            {stage >= 3 && (
+                <mesh geometry={riser_geo} material={riser_mat}
+                    position={[0, -riser_depth / 2, -s * 0.13]}
+                />
+            )}
         </group>
     )
 }
@@ -212,9 +235,14 @@ export function OilRigTiles({ tiles, cell_size }: OilRigTilesProps)
     return <>
         {tiles.map(({ x, y, has_oil_rig }) => {
             const state = has_oil_rig?.state ?? "dormant"
+            const built_progress = has_oil_rig?.built_progress ?? 0
 
             return <group key={`${x}-${y}`}>
-                <SingleOilRig x={x} y={y} cell_size={cell_size} state={state} />
+                <SingleOilRig
+                    x={x} y={y} cell_size={cell_size}
+                    state={state}
+                    built_progress={built_progress}
+                />
             </group>
         })}
     </>
