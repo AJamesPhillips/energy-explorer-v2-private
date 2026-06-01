@@ -2,8 +2,8 @@ import { Text } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
 import { useEffect, useRef, useState } from "react"
 
-import pub_sub from "../state/pub_sub"
-import { CellData } from "./interface"
+import pub_sub from "../../state/pub_sub"
+import { CellData } from "../interface"
 
 
 interface Popup

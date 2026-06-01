@@ -8,7 +8,7 @@ import { InvalidPlacementAnimations } from "./InvalidPlacementAnimation"
 import { IsoMetricGridContentTiles } from "./IsoMetricGridContentTiles"
 import { bevel_colours, box_geometry_for_cell_size } from "./IsoMetricTileConstants"
 import { tile_colour } from "./tile"
-import { TilePowerChangeAnimations } from "./TilePowerChangeAnimation"
+import { TilePowerChangeAnimations } from "./tile_power/TilePowerChangeAnimation"
 
 
 interface IsoMetricGridProps
