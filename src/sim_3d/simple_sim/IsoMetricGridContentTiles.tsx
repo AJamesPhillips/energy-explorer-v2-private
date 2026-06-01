@@ -50,15 +50,16 @@ export function IsoMetricGridContentTiles(props: IsoMetricGridContentTilesProps)
     )
 
     const oil_and_gas_pocket_tiles = useMemo(
-        () => tiles.filter(cell => cell.has_oil_rig || cell.has_oil_pocket)
+        () => tiles.filter(cell => cell.has_oil_pocket)
             .map(cell => ({
                 x: cell.x,
                 y: cell.y,
                 depth: 2.0,
-                ratio_remaining: !cell.has_oil_rig ? 1 : cell.has_oil_rig.state === "extracting" ? 0.5 : 0,
+                ratio_remaining: cell.has_oil_pocket!.ratio_remaining,
             })),
         [tiles],
     )
+    debugger
 
     return <>
         <Woodland tiles={woodland_tiles} cell_size={cell_size} />

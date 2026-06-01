@@ -154,9 +154,13 @@ function SimpleSim3d(props: SimpleSim3dProps)
 
             const new_candidate_tile = modify_cell_with_action(cell, current_action)
             const cell_valid = is_cell_valid(new_candidate_tile)
-            if (!cell_valid)
+            if (cell_valid !== true)
             {
-                pub_sub.pub("invalid_placement", { tile: cell, item_type: current_action.type })
+                pub_sub.pub("invalid_placement", {
+                    tile: cell,
+                    item_type: current_action.type,
+                    invalid_because: cell_valid.invalid_because,
+                })
                 return prev
             }
 
@@ -230,6 +234,10 @@ function modify_cell_with_action(cell: CellData, action: ActiveBuildingAction): 
     {
         return { ...cell, has_solar_farm: true }
     }
+    else if (action.type === "oil_and_gas_rig")
+    {
+        return { ...cell, has_oil_rig: { state: "building", built_progress: 0 } }
+    }
     // else if (action.type === "gas")
     // {
     //     return { ...cell, has_gas_power_plant: true }
@@ -252,27 +260,32 @@ function modify_cell_with_action(cell: CellData, action: ActiveBuildingAction): 
 }
 
 
-function is_cell_valid(cell: CellData): boolean
+function is_cell_valid(cell: CellData): true | { invalid_because: "water" | "no_oilgas" }
 {
     if (cell.has_wind_turbine)
     {
         if (cell.type === "sea")
         {
-            if (cell.subtype === "deep") return false
+            if (cell.subtype === "deep") return { invalid_because: "water" }
         }
         else
         {
-            if (cell.subtype === "wetland" || cell.subtype === "inland_water") return false
+            if (cell.subtype === "wetland" || cell.subtype === "inland_water") return { invalid_because: "water" }
         }
     }
 
     if (cell.has_solar_farm)
     {
-        if (cell.type === "sea") return false
+        if (cell.type === "sea") return { invalid_because: "water" }
         else
         {
-            if (cell.subtype === "wetland" || cell.subtype === "inland_water") return false
+            if (cell.subtype === "wetland" || cell.subtype === "inland_water") return { invalid_because: "water" }
         }
+    }
+
+    if (cell.has_oil_rig)
+    {
+        if (cell.type !== "sea" || !cell.has_oil_pocket) return { invalid_because: "no_oilgas" }
     }
 
     return true

@@ -35,5 +35,9 @@ export interface PublishableEvents
     on_highlight_oil_reserves: { x: number, y: number } | null
     will_update_tile: CellData | null
     tile_power_changed: { tile: CellData; change_gw: number }
-    invalid_placement: { tile: CellData; item_type: BuildingActionTypeString }
+    invalid_placement: {
+        tile: CellData
+        item_type: BuildingActionTypeString
+        invalid_because: "water" | "no_oilgas"
+    }
 }

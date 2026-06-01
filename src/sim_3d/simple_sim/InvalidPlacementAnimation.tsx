@@ -25,10 +25,10 @@ export function InvalidPlacementAnimations({ cell_size }: { cell_size: number })
 {
     const [entries, set_entries] = useState<SinkingEntry[]>([])
 
-    useEffect(() => pub_sub.sub("invalid_placement", ({ tile, item_type }) =>
+    useEffect(() => pub_sub.sub("invalid_placement", ({ tile, item_type, invalid_because }) =>
     {
         set_entries(prev => [...prev, { id: next_id++, tile, item_type }])
-        play_bubbling_sound()
+        if (invalid_because === "water") play_bubbling_sound()
     }), [])
 
     // Preload the audio buffer on mount for Web Audio API

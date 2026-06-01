@@ -1,4 +1,4 @@
-import { CellData, CellsData, OilRigConfig, OilRigState } from "./interface"
+import { CellData, CellsData, OilGasPocket, OilRigConfig, OilRigState } from "./interface"
 import { get_land_or_sea_for_letter, LetterType } from "./map_data_compact"
 
 
@@ -55,7 +55,7 @@ ____________________
 _o___z______x_______
 `.trim()
 
-type InfraColumn = Record<number, { has_oil_rig: OilRigConfig, has_oil_pocket?: boolean } | { has_oil_rig?: OilRigConfig, has_oil_pocket: boolean }>
+type InfraColumn = Record<number, { has_oil_rig: OilRigConfig, has_oil_pocket: OilGasPocket }>
 const xy_to_infra: Record<number, InfraColumn> = {}
 infrastructure_map_data.split("\n")
     .forEach((line, y) =>
@@ -68,12 +68,12 @@ infrastructure_map_data.split("\n")
             if (has_oil_rig)
             {
                 const state: OilRigState = cell === "x" ? "extracting" : "dormant"
-                const config: OilRigConfig = { state }
-                xy_to_infra[x][y] = { has_oil_rig: config }
+                const config: OilRigConfig = { state, built_progress: 1 }
+                xy_to_infra[x][y] = { has_oil_rig: config, has_oil_pocket: { ratio_remaining: cell === "x" ? 0.5 : 0 } }
             }
             else if (cell === "o")
             {
-                xy_to_infra[x][y] = { has_oil_pocket: true }
+                xy_to_infra[x][y] = { has_oil_rig: undefined, has_oil_pocket: { ratio_remaining: 1 } }
             }
         })
     })
