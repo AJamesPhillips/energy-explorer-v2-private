@@ -14,6 +14,9 @@ export type LetterType = (
     | "o"  // shallow open sea
     | "d"  // deep open sea
     // | "m"  // farm
+
+    | "-"  // non territory land
+    | "_"  // non territory sea
 )
 
 const map_type_to_letter: {
@@ -29,10 +32,12 @@ const map_type_to_letter: {
         "inland_water": "a",
         "urban": "u",
         "suburban": "s",
+        "non_territory_land": "-",
     },
     "sea": {
         "shallow": "o",
         "deep": "d",
+        "non_territory_sea": "_",
         // "farm": "m",
     }
 }

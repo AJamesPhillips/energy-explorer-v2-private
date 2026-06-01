@@ -59,7 +59,6 @@ export function IsoMetricGridContentTiles(props: IsoMetricGridContentTilesProps)
             })),
         [tiles],
     )
-    debugger
 
     return <>
         <Woodland tiles={woodland_tiles} cell_size={cell_size} />

@@ -4,27 +4,95 @@ import { get_land_or_sea_for_letter, LetterType } from "./map_data_compact"
 
 // Note this comes from running `generate_map_data_string({ x: 20, y: 40 })` and
 // then dropping the last 20 rows of deep offshore sea
+// const map_data = `
+// rrwwwwwwwwggggggwwww
+// wwwwwwwwwwwwfsffffff
+// fffsusffffffffffffff
+// ffffffffffggggggusgg
+// gggggggggggggggggggg
+// ggssggggffffgggggggg
+// ggwwwwwggggggsuasggg
+// ggsggggggggggggagggg
+// ggggouggeeeeeegaggss
+// ugggossggeeegggogoog
+// ooorooooooooooooooog
+// oooooooooooooooooooo
+// oooooooooooooooooooo
+// oooooooooddooooooooo
+// oooooooodddooooooooo
+// ooooooodddddddoooooo
+// dddddddddddddooooodd
+// ddddoddddddddddddddd
+// dddoodddddddddoodddd
+// dddddddddddddddddddd
+// `.trim()
+
+// const infrastructure_map_data = `
+// ____________________
+// ____________________
+// ____________________
+// ____________________
+// ____________________
+// ____________________
+// ____________________
+// ____________________
+// ____________________
+// ____________________
+// ____________________
+// ____________________
+// ____________________
+// ____________________
+// ____________________
+// ____________________
+// ____________________
+// _________________z__
+// ____________________
+// _o___z______x_______
+// `.trim()
+
 const map_data = `
-rrwwwwwwwwggggggwwww
-wwwwwwwwwwwwfsffffff
-fffsusffffffffffffff
-ffffffffffggggggusgg
-gggggggggggggggggggg
-ggssggggffffgggggggg
-ggwwwwwggggggsuasggg
-ggsggggggggggggagggg
-ggggouggeeeeeegaggss
-ugggossggeeegggogoog
-ooorooooooooooooooog
-oooooooooooooooooooo
-oooooooooooooooooooo
-oooooooooddooooooooo
-oooooooodddooooooooo
-ooooooodddddddoooooo
-dddddddddddddooooodd
-ddddoddddddddddddddd
-dddoodddddddddoodddd
-dddddddddddddddddddd
+______________dddddd_____
+_____________dddddddd____
+____________dddddddddd___
+___________ddddddddddd___
+__________ddddddggdddd___
+__________ddddddgddddd___
+dddddddddddddddddddddd___
+dddddddddddddddddddddd___
+dddddddddddddddddddddd___
+dddddddddddddgdddddddd___
+dddddddddddddddddddddd___
+dddddddddgggggdddddddd___
+ddddddgddegggooddddddd___
+dddddgrddgggooodddddddd__
+ddddddddgggoggggddddddd__
+ddddddgdgggggggddddddddd_
+ddddddddegwggggddddddddd_
+dddddddggwwwgggdddddddddd
+dddddddrdwwgggddddddddddd
+__ddddddgggggdddddddddddd
+_____ddggdggwwsdddddddddd
+______ddddggswwgddddddddd
+_____-ddddgwwfggddddddddd
+___--gggogggwwgggdddddddd
+___-gwagoooogfggeoodddddd
+___-wggggogoggffggooooddd
+-------googoogwwgggoodddd
+-------__oooogsufggoodddd
+-------__oooouegfggoodddd
+_------__ogrgggwwsggooodd
+_------__ogggggffggogeood
+-------__oogggggwwgfffgoo
+-------_oooegggwwfffsgooo
+-----___ogggwwwusgfffgooo
+---_____ogggwswwgggsgoooo
+_______ooooooaggggusaoooo
+_______ooooggfgffggsgeo__
+______doooggffffuggfgo___
+_____ddooggfgooogoooo____
+____ddooweosooooooo______
+___dddoooooooo___________
+__dddoooooo______________
 `.trim()
 
 
@@ -33,26 +101,51 @@ dddddddddddddddddddd
  *   z = oil rig dormant
  */
 const infrastructure_map_data = `
-____________________
-____________________
-____________________
-____________________
-____________________
-____________________
-____________________
-____________________
-____________________
-____________________
-____________________
-____________________
-____________________
-____________________
-____________________
-____________________
-____________________
-_________________z__
-____________________
-_o___z______x_______
+_________________________
+_________________________
+_________________________
+_________________________
+_________________________
+_________________________
+_________________________
+_________o____x__________
+_________________________
+_______o_________________
+_________________________
+_________________________
+____________________z____
+_________________________
+_________________________
+_________________________
+_________________________
+_______________________z_
+_________________________
+________________________o
+_________________________
+_________________________
+________________________z
+____________________z____
+_________________________
+_________________________
+_________________________
+_________________________
+_______________________x_
+_________________________
+_________________________
+_________________________
+_________________________
+_________________________
+_________________________
+_________________________
+_________________________
+_________________________
+_________________________
+_________________________
+_________________________
+_________________________
+_________________________
+_________________________
+_________________________
 `.trim()
 
 type InfraColumn = Record<number, { has_oil_rig: OilRigConfig, has_oil_pocket: OilGasPocket }>

@@ -158,9 +158,11 @@ export type SimplifiedLandAreaType = (
     | "inland_water"
     | "urban"
     | "suburban"
+
+    | "non_territory_land"
 )
 
-export type OffshoreAreaType = "shallow" | "deep"
+export type OffshoreAreaType = "shallow" | "deep" | "non_territory_sea"
 
 const map_simplified_area_type: Record<LandAreaType, SimplifiedLandAreaType> = {
     "Broadleaved woodland": "woodland",
@@ -210,9 +212,11 @@ export const land_or_sea_types: Record<LandOrSeaType, LandOrSea & { human_readab
     rock:         { type: "land", subtype: "rock",         human_readable: "Rock" },
     wetland:      { type: "land", subtype: "wetland",      human_readable: "Wetland" },
     inland_water: { type: "land", subtype: "inland_water", human_readable: "Inland Water" },
+    non_territory_land: { type: "land", subtype: "non_territory_land", human_readable: "Non-territory Land" },
 
     shallow: { type: "sea", subtype: "shallow", human_readable: "Shallow Sea" },
     deep:    { type: "sea", subtype: "deep",    human_readable: "Deep Sea" },
+    non_territory_sea: { type: "sea", subtype: "non_territory_sea", human_readable: "Non-territory Sea" },
 }
 
 

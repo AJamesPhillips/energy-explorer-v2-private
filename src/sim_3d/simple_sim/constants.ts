@@ -2,7 +2,7 @@ import * as THREE from "three"
 
 
 export const CONSTANTS = {
-    GRID_SIZE: { x: 20, y: 20 },
+    GRID_SIZE: { x: 30, y: 42 },
     CELL_SIZE: 12,
 
     BUILDINGS_PER_SUBURBAN_TILE: 3,
