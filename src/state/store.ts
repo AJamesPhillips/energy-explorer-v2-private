@@ -6,6 +6,7 @@ import { deep_freeze } from "core/utils/deep_freeze"
 
 import * as building_action from "./building_action"
 import { AppState } from "./interface"
+import * as power_demand from "./power_demand"
 
 
 export type AppStore = ReturnType<typeof get_new_app_store>
@@ -21,6 +22,7 @@ export const get_new_app_store = () =>
     {
         return {
             building_action: building_action.initial_state(set_state),
+            power_demand: power_demand.initial_state(set_state),
         }
     }))
 
