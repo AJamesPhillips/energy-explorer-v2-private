@@ -3,9 +3,7 @@ import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 
 import { OilRigState } from "../simple_sim/interface"
-
-
-const NUM_SMOKE = 5
+import { SmokePuffs } from "./SmokePuffs"
 
 
 interface SingleOilRigProps
@@ -66,7 +64,6 @@ export function SingleOilRig({ x, y, cell_size, state, built_progress }: SingleO
     const derrick_geo  = useMemo(() => new THREE.ConeGeometry(derrick_r, derrick_h, 4), [derrick_r, derrick_h])
     const flare_geo    = useMemo(() => new THREE.CylinderGeometry(flare_r, flare_r, flare_h, 6), [flare_r, flare_h])
     const flame_geo    = useMemo(() => new THREE.ConeGeometry(flame_r, flame_h, 8), [flame_r, flame_h])
-    const smoke_geo    = useMemo(() => new THREE.SphereGeometry(s * 0.08, 6, 6), [s])
     const riser_geo    = useMemo(() => new THREE.CylinderGeometry(s * 0.02, s * 0.02, riser_depth, 6), [s, riser_depth])
 
     // ── Materials ──────────────────────────────────────────────────────────
@@ -81,35 +78,23 @@ export function SingleOilRig({ x, y, cell_size, state, built_progress }: SingleO
         transparent:      true,
         opacity:          0.92,
     }), [])
-    // One material per smoke puff so opacity can be set independently
-    const smoke_mats = useMemo(() =>
-        Array.from({ length: NUM_SMOKE }, () => new THREE.MeshStandardMaterial({
-            color:      0x555555,
-            transparent: true,
-            opacity:    0,
-            depthWrite: false,
-        })),
-    [])
-
     const riser_mat = useMemo(() => new THREE.MeshStandardMaterial({ color: 0x5a6e7a }), [])
 
     useEffect(() => () =>
     {
-        for (const g of [leg_geo, deck_geo, mod_geo, mod2_geo, helipad_geo, derrick_geo, flare_geo, flame_geo, smoke_geo,
+        for (const g of [leg_geo, deck_geo, mod_geo, mod2_geo, helipad_geo, derrick_geo, flare_geo, flame_geo,
                          riser_geo])
             g.dispose()
-        for (const m of [struct_mat, module_mat, derrick_mat, helipad_mat, flame_mat, ...smoke_mats,
+        for (const m of [struct_mat, module_mat, derrick_mat, helipad_mat, flame_mat,
                          riser_mat])
             m.dispose()
-    }, [leg_geo, deck_geo, mod_geo, mod2_geo, helipad_geo, derrick_geo, flare_geo, flame_geo, smoke_geo,
+    }, [leg_geo, deck_geo, mod_geo, mod2_geo, helipad_geo, derrick_geo, flare_geo, flame_geo,
         riser_geo,
-        struct_mat, module_mat, derrick_mat, helipad_mat, flame_mat, smoke_mats,
+        struct_mat, module_mat, derrick_mat, helipad_mat, flame_mat,
         riser_mat])
 
     // ── Animation refs ─────────────────────────────────────────────────────
     const flame_ref = useRef<THREE.Mesh>(null)
-    const smoke_ref = useRef<(THREE.Mesh | null)[]>([])
-    const smoke_phases = useMemo(() => Array.from({ length: NUM_SMOKE }, (_, i) => i / NUM_SMOKE), [])
 
     useFrame(state =>
     {
@@ -127,16 +112,6 @@ export function SingleOilRig({ x, y, cell_size, state, built_progress }: SingleO
             ;(flame_ref.current.material as THREE.MeshStandardMaterial).color.setRGB(1, 0.28 + yellow * 0.42, 0)
         }
 
-        // Smoke puffs drift upward and fade
-        smoke_ref.current.forEach((mesh, i) =>
-        {
-            if (!mesh) return
-            const phase = (t * 0.32 + smoke_phases[i]!) % 1
-            mesh.position.y = flare_top_y + flame_h * 0.4 + phase * s * 0.6
-            mesh.position.x = flare_x + Math.sin(t * 1.1 + i) * s * 0.015
-            mesh.scale.setScalar((0.35 + phase * 1.3) * o)
-            smoke_mats[i]!.opacity = 0.78 * (1 - phase)
-        })
     })
 
     // ── Leg corner positions ───────────────────────────────────────────────
@@ -201,15 +176,15 @@ export function SingleOilRig({ x, y, cell_size, state, built_progress }: SingleO
             )}
 
             {/* Stage 3: Animated smoke puffs */}
-            {stage >= 3 && smoke_phases.map((_, i) => (
-                <mesh
-                    key={i}
-                    ref={el => { smoke_ref.current[i] = el }}
-                    geometry={smoke_geo}
-                    material={smoke_mats[i]}
-                    position={[flare_x, flare_top_y - 0.5, flare_z - 0.6]}
+            {stage >= 3 && (
+                <SmokePuffs
+                    position={[flare_x, flare_top_y + flame_h * 0.4, flare_z - 0.6]}
+                    color={0x555555}
+                    puff_radius={s * 0.08}
+                    rise_height={s * 0.6}
+                    active={rig_active}
                 />
-            ))}
+            )}
 
             {/* Stage 3: Riser pipe running from rig base down to reservoir depth */}
             {stage >= 3 && (
