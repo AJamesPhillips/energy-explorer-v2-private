@@ -89,10 +89,10 @@ _------__ogggggffggogeood
 _______ooooooaggggusaoooo
 _______ooooggfgffggsgeo__
 ______doooggffffuggfgo___
-_____ddooggfgooogoooo____
-____ddooweosooooooo______
-___dddoooooooo___________
-__dddoooooo______________
+_____ddooggfgooogoooo__--
+____ddooweosooooooo___---
+___dddoooooooo_______----
+__dddoooooo________------
 `.trim()
 
 

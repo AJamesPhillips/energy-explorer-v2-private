@@ -42,8 +42,8 @@ function App ()
 {
     const initial_view = (
         new URLSearchParams(document.location.search).get("view")
-        || "dev_logo"
-        // || "simulation"
+        // || "dev_logo"
+        || "simulation"
         // || "balance_sheet"
         // || "digital_twin"
     ) as ViewType
