@@ -1,6 +1,6 @@
 import { asset_url } from "../utils/asset_url"
 
-export type ViewType = "balance_sheet" | "knowledge_graph" | "simulation" | "digital_twin"
+export type ViewType = "balance_sheet" | "knowledge_graph" | "simulation" | "digital_twin" | "dev_logo"
 interface Option
 {
     id: ViewType
