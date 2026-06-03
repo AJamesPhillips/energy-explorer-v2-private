@@ -3,9 +3,9 @@ import { LandOrSeaType } from "../data/land_coverage/uk/data"
 
 const subtype_to_colour: Record<LandOrSeaType, string> = {
     woodland:     "#228B22",
-    arable:       "#7CFC00", //"#DEB887",
+    arable:       "#DEB887",
     grassland:    "#7CFC00",
-    wetland:      "#7CFC00", // "#698b2e",
+    wetland:      "#698b2e",
     rock:         "#A9A9A9",
     inland_water: "#399cff",
     urban:        "#696969",

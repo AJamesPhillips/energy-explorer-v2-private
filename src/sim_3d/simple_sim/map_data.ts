@@ -1,5 +1,5 @@
 import { CellData, CellsData, OilGasPocket, OilRigConfig, OilRigState } from "./interface"
-import { get_land_or_sea_for_letter, LetterType } from "./map_data_compact"
+import { get_land_or_sea_for_letter, LetterType, map_type_to_letter } from "./map_data_compact"
 
 
 // Note this comes from running `generate_map_data_string({ x: 20, y: 40 })` and
@@ -180,6 +180,11 @@ export const map_data_cells: CellsData = map_data
             const cells = line.trim().split("")
             cells.forEach((cell, x) =>
             {
+                // For now map wetland and arable to grassland to make the map
+                // prettier to look at.  But removing wetland in particular will
+                // change the available plans
+                if (cell === map_type_to_letter.land.arable || cell === map_type_to_letter.land.wetland) cell = "g"
+
                 if (!acc[x]) acc[x] = {}
                 const cell_data: CellData = {
                     ...get_land_or_sea_for_letter(cell as LetterType),

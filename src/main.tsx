@@ -32,7 +32,7 @@ import { OilGasByYear, process_uk_oil_gas_data_component } from "./sim_3d/data/f
 import { PopulationByYear, process_uk_population_data_component } from "./sim_3d/data/population/process_data_component"
 import { process_solar_farms_data_component, SolarFarmsByYear } from "./sim_3d/data/solar_pv/process_data_component"
 import { process_wind_farms_data_component, WindFarmsByYear } from "./sim_3d/data/wind/process_data_component"
-import { DevView } from "./sim_3d/dev/logo/DevView"
+import { DevView } from "./sim_3d/dev/DevView"
 import { Sim3d } from "./sim_3d/Sim3d"
 import { DataPortal } from "./sim_3d/simple_sim/ui/DataPortal"
 import { Info } from "./sim_3d/simple_sim/ui/Info"
@@ -42,8 +42,8 @@ function App ()
 {
     const initial_view = (
         new URLSearchParams(document.location.search).get("view")
-        || "dev_logo"
-        // || "simulation"
+        // || "dev_logo"
+        || "simulation"
         // || "balance_sheet"
         // || "digital_twin"
     ) as ViewType

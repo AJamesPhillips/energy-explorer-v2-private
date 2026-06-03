@@ -19,7 +19,7 @@ export type LetterType = (
     | "_"  // non territory sea
 )
 
-const map_type_to_letter: {
+export const map_type_to_letter: {
     land: {[k in SimplifiedLandAreaType]: LetterType}
     sea: {[k in OffshoreAreaType]: LetterType}
 } = {
