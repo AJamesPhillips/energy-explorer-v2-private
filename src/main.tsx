@@ -7,6 +7,8 @@ import * as z from "zod"
 
 import "./monkey_patch"
 
+import "./anchor_checker"
+
 import { flatten_new_or_data_component_to_json, hydrate_data_component_from_json } from "core/data/convert_between_json"
 import { data_components_by_ido, data_components_by_idv } from "core/data/utils/data_components_by_id"
 import { make_graph } from "core/data/utils/graph"

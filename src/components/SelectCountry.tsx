@@ -5,6 +5,7 @@ import { BlueSkyLogo, GitHubLogo, MailIcon } from "../components/svgs"
 import { CountryData, extended_countries_data, get_country_by_code } from "../data/countries"
 import { CountryISO2Code } from "../data/countries_data"
 import pub_sub from "../sim_3d/state/pub_sub"
+import { Link } from "./Link"
 import "./SelectCountry.css"
 
 
@@ -92,7 +93,7 @@ export function SelectCountry(props: SelectCountryProps)
 
                         <p>
                             I hope you enjoyed and learnt something from this simulation.
-                            It took a lot of work to make this so please consider <a href="https://www.patreon.com/WikiSim">donating ❤️</a>
+                            It took a lot of work to make this so please consider <Link url="https://www.patreon.com/WikiSim">donating ❤️</Link>
                         </p>
                     </>
                 }
@@ -181,10 +182,10 @@ function SubscribeOrFollow(props: SubscribeOrFollowProps)
     const has_voted = JSON.stringify(props.user_votes_by_country_code2) !== JSON.stringify(props.initial_user_votes_by_country_code2)
 
     return <p id="subscribe_or_follow" className={has_voted ? "visible" : "hidden"}>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdKpO2KkvlXnhEoo9VejTID8tfGbHA_BEbZuFrsAku_TahH8w/viewform?entry.1843888779=">Subscribe <MailIcon style={{ height: 18 }} /> </a>
+        <Link url="https://docs.google.com/forms/d/e/1FAIpQLSdKpO2KkvlXnhEoo9VejTID8tfGbHA_BEbZuFrsAku_TahH8w/viewform?entry.1843888779=">Subscribe <MailIcon style={{ height: 18 }} /> </Link>
         to be notified when this country is added... or
-        lend us a hand on <a href="https://github.com/AJamesPhillips/energy-explorer-v2/issues/new?title=[REQUEST]%20I%27d%20like%20to%20be%20able%20to%20play%20country%20...">GitHub <GitHubLogo height={18} /> </a>
-        or <a href="https://bsky.app/profile/ajamesphillips.com">BlueSky <BlueSkyLogo height={18} /></a>
+        lend us a hand on <Link url="https://github.com/AJamesPhillips/energy-explorer-v2/issues/new?title=[REQUEST]%20I%27d%20like%20to%20be%20able%20to%20play%20country%20...">GitHub <GitHubLogo height={18} /> </Link>
+        or <Link url="https://bsky.app/profile/ajamesphillips.com">BlueSky <BlueSkyLogo height={18} /></Link>
     </p>
 }
 

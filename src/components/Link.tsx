@@ -11,6 +11,9 @@ export function Link(props: { url: string, noWrap?: boolean, children: React.Rea
         href={url}
         target={target}
         rel="noopener noreferrer"
+        // Used to indicate that this anchor will correctly open when hosted
+        // inside an iframe on WikiSim.  Otherwise anchor_checker will error
+        className="wikisim_link"
         style={{ whiteSpace: props.noWrap ? "nowrap" : undefined, ...props.style }}
         onClick={e => {
             e.preventDefault()
