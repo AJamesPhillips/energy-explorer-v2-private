@@ -10,7 +10,7 @@ import { OilBarrel } from "../3d_models/OilBarrel"
 import { PowerLine, PowerPylon, PowerPylonProps } from "../3d_models/PowerPylon"
 
 
-export function DevView ({ view }: { view: "dev_logo" })
+export function DevView ({ }: { view: "dev_logo" })
 {
     return <Canvas id="scene-3d">
         <Dev3dModels />

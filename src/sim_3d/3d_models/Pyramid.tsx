@@ -1,8 +1,5 @@
 import { useEffect, useMemo } from "react"
 import * as THREE from "three"
-import { LineMaterial } from "three/examples/jsm/lines/LineMaterial"
-import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2"
-import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry"
 
 
 export interface PyramidProps
@@ -76,7 +73,7 @@ export function Pyramid(props: PyramidProps)
         return vertices
     }, [])
 
-    return <WireFrame2
+    return <WireFrame
         cell_size={props.cell_size}
         vertices={vertices}
         position={props.position}
@@ -117,48 +114,18 @@ export function LinesWireFrame(props: LinesWireFrameProps)
         return line_vertices
     }, [props.vertices, close_loop])
 
-    return <WireFrame2 {...props} vertices={vertices} />
+    return <WireFrame {...props} vertices={vertices} />
 }
 
 
 interface WireFrameProps
-{
-    vertices: number[]
-    position?: THREE.Vector3
-    color?: number
-}
-function WireFrame({ vertices, position, color = 0x444444 }: WireFrameProps)
-{
-    const wire_mat = useMemo(() => {
-        const m = new LineMaterial({
-            color,
-            linewidth: 2, // in pixels when resolution is set
-        })
-        m.resolution.set(window.innerWidth, window.innerHeight)
-        return m
-    }, [color])
-
-    const wireframe = useMemo(() => new LineSegments2(new LineSegmentsGeometry().setPositions(vertices), wire_mat), [vertices, wire_mat])
-
-    useEffect(() => () =>
-    {
-        wire_mat.dispose()
-        wireframe.geometry.dispose()
-        wireframe.material.dispose()
-    }, [wire_mat, wireframe])
-
-    return <primitive object={wireframe} position={position} />
-}
-
-
-interface WireFrame2Props
 {
     cell_size: number
     vertices: number[]
     position?: THREE.Vector3
     color?: number
 }
-function WireFrame2({ cell_size, vertices, position, color = 0x444444 }: WireFrame2Props)
+function WireFrame({ cell_size, vertices, position, color = 0x444444 }: WireFrameProps)
 {
     const mat = useMemo(() => new THREE.MeshBasicMaterial({ color }), [color])
 
