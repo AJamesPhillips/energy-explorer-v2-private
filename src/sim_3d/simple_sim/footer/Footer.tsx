@@ -45,6 +45,7 @@ export function Footer()
                     </Link>{" "}
                     check the <a href="" style={{ whiteSpace: "nowrap" }} onClick={e =>
                     {
+                        set_show_contact_info(false)
                         e.preventDefault()
                         pub_sub.pub("show_info_and_data_sources", true)
                     }}>data <MagnifyingGlassIcon height={14} /></a>{" "}
