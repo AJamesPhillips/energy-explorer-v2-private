@@ -64,12 +64,12 @@ export function Footer()
                     <p>
                         I hope you enjoyed and learnt something from this simulation.
                         It took a lot of work to make this so please
-                        consider <a
-                            href="https://www.patreon.com/WikiSim"
+                        consider <Link
+                            url="https://www.patreon.com/WikiSim"
                             style={{ whiteSpace: "nowrap" }}
                         >
                             donating ❤️
-                        </a>
+                        </Link>
                     </p>
                 </div>
             }
