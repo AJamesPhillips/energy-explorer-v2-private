@@ -73,19 +73,20 @@ export function Info()
                     <LogoImg src={ukceh_url} alt="UKCEH logo" url="https://www.ceh.ac.uk" />
 
                     <p>
-                        And the sea areas are the:
-                        <ul>
-                            <li>
-                                <Link url="https://wikisim.org/wiki/1267">UK's exclusive economic zone (EEZ)</Link> from
-                                Sea Around Us - a research initiative at the University of British Columbia and the University of Western Australia.
-                            </li>
-                            <li>
-                                <Link url="https://wikisim.org/wiki/1268">UK's offshore shallow area</Link> from
-                                the University of Southampton's IROE (Intelligent and Resilient Ocean Engineering) group
-                                referencing data from British Geological Survey
-                            </li>
-                        </ul>
+                        And the sea areas are:
                     </p>
+                    <ul>
+                        <li>
+                            the <Link url="https://wikisim.org/wiki/1267">UK's exclusive economic zone (EEZ)</Link> from
+                            Sea Around Us - a research initiative at the University of British Columbia and the University of Western Australia.
+                        </li>
+                        <li>
+                            the <Link url="https://wikisim.org/wiki/1268">UK's offshore shallow area</Link> from
+                            the University of Southampton's IROE (Intelligent and Resilient Ocean Engineering) group
+                            referencing data from British Geological Survey
+                        </li>
+                    </ul>
+
                     <LogoImg src={bgs_url} alt="BGS logo" url="https://www.bgs.ac.uk"/>
 
 
@@ -134,23 +135,23 @@ export function Info()
                     </p>
                     <p>
                         For example:
-                        <ul>
-                            <li>
-                                The <Link url="https://wikisim.org/wiki/1276">offshore wind power density of 3 W/m²</Link>
-                            </li>
-                            <li>
-                                The <Link url="https://wikisim.org/wiki/1275">onshore wind power density of 2 W/m²</Link>
-                            </li>
-                            <li>
-                                The <Link url="https://wikisim.org/wiki/1204">solar PV farm power density of 5 W/m²</Link>
-                            </li>
-                            <li>
-                                The <Link url="https://wikisim.org/wiki/1201">residential PV power density of 22 W/m²</Link> which is
-                                used in conjunction with the <Link url="https://wikisim.org/wiki/1273">Ratio of south facing roofs in UK to area of built up land</Link> to get the
-                                <Link url="https://wikisim.org/wiki/1274">Potential solar PV power for built areas in UK</Link> of 0.63 W/m²
-                            </li>
-                        </ul>
                     </p>
+                    <ul>
+                        <li>
+                            The <Link url="https://wikisim.org/wiki/1276">offshore wind power density of 3 W/m²</Link>
+                        </li>
+                        <li>
+                            The <Link url="https://wikisim.org/wiki/1275">onshore wind power density of 2 W/m²</Link>
+                        </li>
+                        <li>
+                            The <Link url="https://wikisim.org/wiki/1204">solar PV farm power density of 5 W/m²</Link>
+                        </li>
+                        <li>
+                            The <Link url="https://wikisim.org/wiki/1201">residential PV power density of 22 W/m²</Link> which is
+                            used in conjunction with the <Link url="https://wikisim.org/wiki/1273">Ratio of south facing roofs in UK to area of built up land</Link> to get the
+                            <Link url="https://wikisim.org/wiki/1274">Potential solar PV power for built areas in UK</Link> of 0.63 W/m²
+                        </li>
+                    </ul>
 
 
                     <Section id="oil_and_gas_data" title="Oil and Gas Data" />
