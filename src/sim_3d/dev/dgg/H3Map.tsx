@@ -7,7 +7,6 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
 import { UK_EEZ_COORDS } from "../../data/eez/data"
 import { WorldAtlas } from "../interface"
 import { UK_ID } from "../map_data"
-import { MapUK } from "../MapUK"
 
 
 const resolution = 4
@@ -52,10 +51,7 @@ export function H3Map(props: {
 
 
     return <>
-        <MapUK />
-        <group position={[0, -150, 0]}>
 
-        </group>
     </>
 }
 

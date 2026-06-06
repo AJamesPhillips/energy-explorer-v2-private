@@ -6,6 +6,7 @@ import { CONSTANTS, DEFAULTS } from "../simple_sim/constants"
 import { IsoCamera } from "../simple_sim/IsoCamera"
 import { Dev3dModels } from "./Dev3dModels"
 import { H3Map } from "./dgg/H3Map"
+import { GeoDataStack } from "./GeoDataStack"
 
 
 const { GRID_SIZE } = CONSTANTS
@@ -16,6 +17,8 @@ export function DevView ()
 {
     const sun_ambient_ref = useRef<THREE.AmbientLight>(null)
     const sun_directional_ref = useRef<THREE.DirectionalLight>(null)
+
+    return <GeoDataStack />
 
     return <Canvas id="scene_3d">
         <IsoCamera grid_size={GRID_SIZE} cell_size={20} />

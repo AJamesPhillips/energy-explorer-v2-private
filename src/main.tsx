@@ -182,7 +182,10 @@ function App ()
 
 
     const sim_or_dt = (view === "simulation" || view === "digital_twin")
-    if (show_dev_view) return <DevView />
+    if (show_dev_view) return <>
+        <Evaluator />
+        <DevView />
+    </>
 
 
     return <>

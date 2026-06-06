@@ -1,12 +1,20 @@
-import * as h3 from "h3-js"
-import { useEffect, useState } from "react"
-
 import { Canvas } from "@react-three/fiber"
-import { Map } from "./Map"
+import * as h3 from "h3-js"
+import { useEffect, useRef, useState } from "react"
+import * as THREE from "three"
+
+import { CONSTANTS, DEFAULTS } from "../simple_sim/constants"
+import { IsoCamera } from "../simple_sim/IsoCamera"
+import "./GeoDataStack.css"
 import { WorldAtlas } from "./interface"
+import { NEARBY_COUNTRY_IDS, UK_ID } from "./map_data"
+import { MapCountry } from "./MapCountry"
+
+const { GRID_SIZE } = CONSTANTS
+const { sun_args } = DEFAULTS
 
 
-export function UKGeoDataStack()
+export function GeoDataStack()
 {
     const [resolution, set_resolution] = useState(3)
     const [cell_count, set_cell_count] = useState(0)
@@ -25,15 +33,23 @@ export function UKGeoDataStack()
             .catch((e) => set_load_error(e.message))
     }, [])
 
+    const sun_ambient_ref = useRef<THREE.AmbientLight>(null)
+    const sun_directional_ref = useRef<THREE.DirectionalLight>(null)
+
+
     return (
         <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#080f1c]">
             <Header load_error={load_error} topo_data={topo_data} />
             <Canvas id="scene_3d">
-                <Map
-                    set_cell_count={set_cell_count}
-                    resolution={resolution}
+                <IsoCamera grid_size={GRID_SIZE} cell_size={20} />
+
+                <ambientLight ref={sun_ambient_ref} />
+                <directionalLight ref={sun_directional_ref} position={sun_args.direct_position} />
+
+                <MapCountry
                     topo_data={topo_data}
-                    set_is_computing={set_is_computing}
+                    country_id={UK_ID}
+                    other_country_ids={NEARBY_COUNTRY_IDS}
                 />
             </Canvas>
             <Controls
@@ -81,49 +97,41 @@ function Controls(props: ControlsProps)
 {
     const { cell_count, resolution, is_computing, set_resolution } = props
 
-    return <div className="shrink-0 border-t border-[#1e3d5a] bg-[#090f1d] px-6 py-5">
-        <div className="max-w-2xl mx-auto space-y-4">
-            {/* Resolution slider */}
-            <div>
-                <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-medium text-[#c8e6f8]">
-                        Resolution
-                        <span className="ml-2 font-mono text-[#4a9eda]"> {resolution}</span>
-                        <span className="ml-2 text-[#4a7fa8] font-normal text-xs"> — {resolution_label(resolution)} </span>
-                    </label>
-                    <span className="text-xs text-[#4a7fa8]">
-                        {is_computing ? "computing…" : `${cell_count.toLocaleString()} cells`}
-                    </span>
-                </div>
-                <input
-                    type="range"
-                    min={0}
-                    max={6}
-                    step={1}
-                    value={resolution}
-                    onChange={(e) => set_resolution(Number(e.target.value))}
-                    className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                    style={{
-                        background: `linear-gradient(to right, #4a9eda ${(resolution / 6) * 100}%, #1e3d5a ${(resolution / 6) * 100}%)`,
-                    }}
-                />
-                <div className="flex justify-between mt-1.5">
-                    {[0,1,2,3,4,5,6].map((r) => (
-                        <button
-                            key={r}
-                            onClick={() => set_resolution(r)}
-                            className={`text-[10px] font-mono transition-colors ${
-                                r === resolution ? "text-[#4a9eda]" : "text-[#2a5070] hover:text-[#4a7fa8]"
-                            }`}
-                        >
-                            {r}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            <StatsRow resolution={resolution} cell_count={cell_count} />
+    return <div className="controls_above_canvas">
+        {/* Resolution slider */}
+        <div>
+            <label>
+                Resolution
+                <span> {resolution}</span>
+                <span> — {resolution_label(resolution)} </span>
+            </label>
+            <span >
+                {is_computing ? "computing…" : `${cell_count.toLocaleString()} cells`}
+            </span>
         </div>
+        <input
+            type="range"
+            min={0}
+            max={6}
+            step={1}
+            value={resolution}
+            onChange={(e) => set_resolution(Number(e.target.value))}
+            style={{
+                background: `linear-gradient(to right, #4a9eda ${(resolution / 6) * 100}%, #1e3d5a ${(resolution / 6) * 100}%)`,
+            }}
+        />
+        <div>
+            {[0,1,2,3,4,5,6].map((r) => (
+                <button
+                    key={r}
+                    onClick={() => set_resolution(r)}
+                >
+                    {r}
+                </button>
+            ))}
+        </div>
+
+        <StatsRow resolution={resolution} cell_count={cell_count} />
     </div>
 }
 

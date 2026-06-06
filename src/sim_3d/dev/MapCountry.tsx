@@ -1,50 +1,43 @@
 import { geoMercator, GeoProjection } from "d3-geo"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 import * as THREE from "three"
 
 import { Arc } from "topojson-specification"
 import { UK_EEZ_COORDS } from "../data/eez/data"
 import { WorldAtlas } from "./interface"
-import { UK_ID } from "./map_data"
 
 
-export function MapUK(props: {
-    // EEZ_coords: [number, number][],
-    // set_cell_count: (n: number) => void,
-    // resolution: number,
-    // topo_data: WorldAtlas | null,
-    // set_is_computing: (b: boolean) => void,
+export function MapCountry(props: {
+    topo_data: WorldAtlas | null,
+    country_id: string,
+    other_country_ids?: Set<string>,
 })
 {
-    const [topo_data, set_topo_data] = useState<WorldAtlas | null>(null)
-    const [load_error, set_load_error] = useState<string | null>(null)
+    const {
+        topo_data,
+        other_country_ids = new Set(),
+    } = props
 
-    // Fetch world atlas once
-    useEffect(() => {
-        // fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
-        fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json")
-            .then((r) => {
-                if (!r.ok) throw new Error(`HTTP ${r.status}`)
-                return r.json() as Promise<WorldAtlas>
-            })
-            .then(set_topo_data)
-            .catch((e) => set_load_error(e.message))
-    }, [])
-
-
-    // Build projected extruded geometries for UK country outline and EEZ
+    // Build projected extruded geometries for outline of country of interest and its EEZ
     const geometries = useMemo(() => {
-        if (!topo_data) return { uk_land: [], uk_eez: [] }
+        if (!topo_data) return null
 
-        const uk = topo_data.objects.countries.geometries.find((c) => c.id === UK_ID)
-        // There are 23 arcs in the UK geometry
-        const uk_arc_ids = (uk as any).arcs.flat().flat() as number[]
-        const uk_arcs = uk_arc_ids.map((id: number) => topo_data.arcs[id]).filter((a: Arc | undefined) => a !== undefined) as Arc[]
+        // Country of Interest (CoI)
+        const country_of_interest = topo_data.objects.countries.geometries.find((c) => c.id === props.country_id)
+        // There maybe many arcs in a country, e.g. the UK geometry has 23 -
+        // check if all are nearby or if some are other territories (e.g. overseas territories) that we want to exclude
+        const CoI_arc_ids = (country_of_interest as any).arcs.flat().flat() as number[]
+        const CoI_arcs = CoI_arc_ids.map((id: number) => topo_data.arcs[id]).filter((a: Arc | undefined) => a !== undefined) as Arc[]
+
+        const other_countries = topo_data.objects.countries.geometries.filter(c => typeof(c.id) === "string" && other_country_ids.has(c.id))
+        const other_arc_ids = other_countries.flatMap((c) => (c as any).arcs.flat().flat() as number[])
+        const other_country_arcs = other_arc_ids.map((id: number) => topo_data.arcs[id]).filter((a: Arc | undefined) => a !== undefined) as Arc[]
 
         // Values are a pair of starting x,y in (with an arbitrary datum that is
         // corrected through topo_data.transform) and then deltas so we need to apply
         // the deltas to get actual coordinates.
-        const uk_outline = uk_arcs.map(arc => convert_arcs_to_lonlat(arc, topo_data.transform!))
+        const CoI_outline = CoI_arcs.map(arc => convert_arcs_to_lonlat(arc, topo_data.transform!))
+        const other_outlines = other_country_arcs.map(arc => convert_arcs_to_lonlat(arc, topo_data.transform!))
 
         // Projection similar to H3Map for consistent sizing/position
         // const W = window.innerWidth
@@ -56,28 +49,40 @@ export function MapUK(props: {
             .scale(scale)
             // .translate([W / 2, H / 2])
 
-        const uk_geometries = build_geoms(projection, uk_outline)
+        const CoI_geometries = build_geoms(projection, CoI_outline)
         const eez_geometries = [build_geom(projection, UK_EEZ_COORDS)].filter(g => !!g)
-        debugger
+        const other_geometries = build_geoms(projection, other_outlines)
 
-        return { uk_land: uk_geometries, uk_eez: eez_geometries }
+        return {
+            CoI_land: CoI_geometries,
+            CoI_EEZ: eez_geometries,
+            other_country_land: other_geometries,
+        }
     }, [topo_data])
 
 
+    if (!geometries) return null
+
     return <>
         <group>
-            {geometries.uk_land.map(({ fill }, index) => (
-                <mesh key={index} geometry={fill}>
+            {geometries.CoI_land.map(({ fill }, index) => (
+                <mesh key={"land" + index} geometry={fill}>
                     <meshStandardMaterial color={0x999999} metalness={0.1} roughness={0.8} side={THREE.DoubleSide} />
                 </mesh>
             ))}
-            {geometries.uk_eez.map(({ fill }, index) => (
+            {geometries.CoI_EEZ.map(({ fill }, index) => (
                 <mesh
-                    key={index} geometry={fill}
+                    key={"eez" + index} geometry={fill}
                     // Offset the EEZ down slightly to prevent z-fighting with the land
                     position={[0, -0.1, 0]}
                 >
                     <meshStandardMaterial color={0x40beea} transparent opacity={0.18} side={THREE.DoubleSide} />
+                </mesh>
+            ))}
+
+            {geometries.other_country_land.map(({ fill }, index) => (
+                <mesh key={"land" + index} geometry={fill}>
+                    <meshStandardMaterial color={0x999999} transparent opacity={0.3} side={THREE.DoubleSide} />
                 </mesh>
             ))}
         </group>
