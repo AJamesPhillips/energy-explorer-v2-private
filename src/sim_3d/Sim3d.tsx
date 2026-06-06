@@ -1,7 +1,6 @@
 import { PerspectiveKnowledgeGraph } from "../data/interface"
 import { DigitalTwin } from "./digital_twin/DigitalTwin"
 import { LimitedViewType } from "./interface"
-import "./Sim3d.css"
 import { SimpleSim } from "./simple_sim/SimpleSim"
 
 

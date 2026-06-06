@@ -34,7 +34,7 @@ import { OilGasByYear, process_uk_oil_gas_data_component } from "./sim_3d/data/f
 import { PopulationByYear, process_uk_population_data_component } from "./sim_3d/data/population/process_data_component"
 import { process_solar_farms_data_component, SolarFarmsByYear } from "./sim_3d/data/solar_pv/process_data_component"
 import { process_wind_farms_data_component, WindFarmsByYear } from "./sim_3d/data/wind/process_data_component"
-import { DevView } from "./sim_3d/dev/DevView"
+import { DevView, show_dev_view } from "./sim_3d/dev/DevView"
 import { Sim3d } from "./sim_3d/Sim3d"
 import { DataPortal } from "./sim_3d/simple_sim/ui/DataPortal"
 import { Info } from "./sim_3d/simple_sim/ui/Info"
@@ -44,7 +44,6 @@ function App ()
 {
     const initial_view = (
         new URLSearchParams(document.location.search).get("view")
-        // || "dev_logo"
         || "simulation"
         // || "balance_sheet"
         // || "digital_twin"
@@ -183,7 +182,7 @@ function App ()
 
 
     const sim_or_dt = (view === "simulation" || view === "digital_twin")
-    const dev_view = (view === "dev_logo")
+    if (show_dev_view) return <DevView />
 
 
     return <>
@@ -219,7 +218,7 @@ function App ()
                                 />
                             </div>
                         </>}
-                        {!sim_or_dt && !dev_view && <SelectPerspective
+                        {!sim_or_dt && <SelectPerspective
                             force_single={sim_or_dt}
                             selected_perspectives={selected_perspectives}
                             on_change={set_selected_perspectives}
@@ -235,8 +234,6 @@ function App ()
                     />}
                     {view === "knowledge_graph" && <GraphViewer persectives={persectives} />}
                 </div>
-
-                {dev_view && <DevView view={view} />}
             </div>
 
         </div>

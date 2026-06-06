@@ -48,7 +48,7 @@ export const DigitalTwin = () =>
     }, [datetime])
 
     return <>
-        <Canvas id="scene-3d">
+        <Canvas id="scene_3d">
             <UpdateDatetimeOnFrame set_datetime={set_datetime} />
             <DigitalTwinInner />
         </Canvas>

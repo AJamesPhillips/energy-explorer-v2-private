@@ -84,6 +84,11 @@ export function IsoCamera({ grid_size, cell_size }: IsoCameraProps)
 
 
     return <>
+        {/* Add debug sphere at origin
+        <mesh position={[0, 0, 0]}>
+            <sphereGeometry args={[5, 16, 16]} />
+            <meshBasicMaterial color="red" />
+        </mesh> */}
         <OrthographicCamera
             ref={cam_ref}
             makeDefault
