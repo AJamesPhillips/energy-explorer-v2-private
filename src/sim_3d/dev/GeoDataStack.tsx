@@ -3,8 +3,10 @@ import * as h3 from "h3-js"
 import { useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 
+import { UK_EEZ_COORDS } from "../data/eez/data"
 import { CONSTANTS, DEFAULTS } from "../simple_sim/constants"
 import { IsoCamera } from "../simple_sim/IsoCamera"
+import { H3Grid } from "./dgg/H3Grid"
 import "./GeoDataStack.css"
 import { WorldAtlas } from "./interface"
 import { NEARBY_COUNTRY_IDS, UK_ID } from "./map_data"
@@ -40,6 +42,7 @@ export function GeoDataStack()
     return (
         <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#080f1c]">
             <Header load_error={load_error} topo_data={topo_data} />
+            <h1>{resolution}</h1>
             <Canvas id="scene_3d">
                 <IsoCamera grid_size={GRID_SIZE} cell_size={20} />
 
@@ -50,6 +53,12 @@ export function GeoDataStack()
                     topo_data={topo_data}
                     country_id={UK_ID}
                     other_country_ids={NEARBY_COUNTRY_IDS}
+                />
+
+                <H3Grid
+                    EEZ_coords_lonlat={UK_EEZ_COORDS}
+                    resolution={resolution}
+                    set_cell_count={set_cell_count}
                 />
             </Canvas>
             <Controls
@@ -71,7 +80,7 @@ function Header(props: { load_error: string | null, topo_data: WorldAtlas | null
                 UK H3 Discrete Global Grid
             </h1>
             <p className="text-xs text-[#4a7fa8] mt-0.5">
-                Uber H3 hexagonal grid over the UK Exclusive Economic Zone
+                H3 hexagonal grid over the UK Exclusive Economic Zone
             </p>
         </div>
         {props.load_error && (
