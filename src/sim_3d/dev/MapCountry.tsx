@@ -4,7 +4,6 @@ import { Arc } from "topojson-specification"
 
 import { UK_EEZ_COORDS } from "../data/eez/data"
 import { WorldAtlas } from "./interface"
-import { UK_SCREEN_POINT_FUDGE } from "./map_data"
 import { build_geom, build_geoms, get_projection } from "./projection"
 
 
@@ -43,9 +42,9 @@ export function MapCountry(props: {
         const other_outlines = other_country_arcs.map(arc => convert_arcs_to_lonlat(arc, topo_data.transform!))
 
         const projection = get_projection()
-        const CoI_geometries = build_geoms(projection, CoI_outline, UK_SCREEN_POINT_FUDGE, EXTRUDE_DEPTH)
-        const eez_geometries = [build_geom(projection, UK_EEZ_COORDS, UK_SCREEN_POINT_FUDGE, EXTRUDE_DEPTH)].filter(g => !!g)
-        const other_geometries = build_geoms(projection, other_outlines, UK_SCREEN_POINT_FUDGE, EXTRUDE_DEPTH)
+        const CoI_geometries = build_geoms(projection, CoI_outline, EXTRUDE_DEPTH)
+        const eez_geometries = [build_geom(projection, UK_EEZ_COORDS, EXTRUDE_DEPTH)].filter(g => !!g)
+        const other_geometries = build_geoms(projection, other_outlines, EXTRUDE_DEPTH)
 
         return {
             CoI_land: CoI_geometries,

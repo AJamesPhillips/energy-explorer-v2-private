@@ -21,15 +21,3 @@ export const NEARBY_COUNTRY_IDS = new Set([
     // DENMARK_ID,
     // NORWAY_ID,
 ])
-
-
-export interface ScreenPointFudge
-{
-    x: number
-    y: number
-}
-export const UK_SCREEN_POINT_FUDGE: ScreenPointFudge =
-{
-    x: 200,
-    y: -1210,
-}

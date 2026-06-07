@@ -3,7 +3,6 @@ import { useMemo } from "react"
 import * as THREE from "three"
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
 
-import { UK_SCREEN_POINT_FUDGE } from "../map_data"
 import { build_geom, flip_lonlat, get_projection } from "../projection"
 
 
@@ -40,7 +39,7 @@ export function H3Grid(props: {
             // h3 gives lat,lon but we need lon,lat for projection
             const lonlat_boundary = flip_lonlat(latlon_boundary)
 
-            const cell_geometries = build_geom(projection, lonlat_boundary, UK_SCREEN_POINT_FUDGE, extrude_depth)
+            const cell_geometries = build_geom(projection, lonlat_boundary, extrude_depth)
             if (!cell_geometries) return
             fill_geoms.push(cell_geometries.fill)
             line_geoms.push(cell_geometries.outline)

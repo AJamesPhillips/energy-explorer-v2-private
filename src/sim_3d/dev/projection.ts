@@ -1,6 +1,5 @@
-import { geoMercator, GeoProjection } from "d3-geo"
+import { geoMercator } from "d3-geo"
 import * as THREE from "three"
-import { ScreenPointFudge } from "./map_data"
 
 
 export function flip_lonlat(coords: [number, number][])
@@ -9,29 +8,54 @@ export function flip_lonlat(coords: [number, number][])
 }
 
 
+const UK_SCREEN_POINT_FUDGE =
+{
+    x: 200,
+    y: -1210,
+}
 // Projection similar to H3Map for consistent sizing/position
 // const W = window.innerWidth
 // const H = window.innerHeight
 // const LON_SPAN_DEG = 22
 const scale = 1000 // (W * 40) / (LON_SPAN_DEG * Math.PI)
-let projection: GeoProjection | undefined = undefined
-export function get_projection()
+// let projection: BasicProjection | undefined = undefined
+type BasicProjection = (lat_lon: [number, number]) => ([number, number] | null)
+let projection: BasicProjection | undefined = undefined
+export function get_projection(): BasicProjection
 {
-    projection = projection || geoMercator()
+    if (projection) return projection
+    const core_projection = geoMercator()
         // .center([-2, 56.5])
         .scale(scale)
-        // .translate([W / 2, H / 2])
+        // Default for translate is 480, 250.  We change this based on numbers from
+        // UK_SCREEN_POINT_FUDGE which are based on running the compute_bounds
+        // function inside build_geoms and then adjusting until the EEZ looked
+        // like it was in the right place.
+        .translate([480 - UK_SCREEN_POINT_FUDGE.x, 250 - UK_SCREEN_POINT_FUDGE.y])
+        // Does not yet perform the inversion of Y from screen to Cartesian coordinates
+        // .reflectY(true)
+
+    projection = (lon_lat: [number, number]) =>
+    {
+        const xy = core_projection(lon_lat)
+        if (!xy) return null
+        return [
+            xy[0],
+            // Invert Y to convert from screen to Cartesian coordinates
+            xy[1] * -1
+        ]
+    }
 
     return projection
 }
 
 
-export function build_geoms(projection: GeoProjection, lonlat_polygons: [number, number][][], fudge: ScreenPointFudge, extrude_depth: number)
+export function build_geoms(projection: BasicProjection, lonlat_polygons: [number, number][][], extrude_depth: number)
 {
     const points_list = lonlat_polygons.map(coords => points_from_lonlats(coords, projection))
 
     // This `compute_bounds` was manually run once and the values used to populate
-    // the BOUNDS constant... and then fudged a bit to get a better fit for the EEZ
+    // the UK_SCREEN_POINT_FUDGE constant... and then fudged a bit to get a better fit for the EEZ
     // function compute_bounds(points: THREE.Vector2[])
     // {
     //     const xs = points.map(p => p.x)
@@ -41,23 +65,21 @@ export function build_geoms(projection: GeoProjection, lonlat_polygons: [number,
 
     //     return { x: min_x, y: min_y }
     // }
-    // const bounds = compute_bounds(points_list.flat())
-    const normalised_points_list = points_list.map(points => normalise_points(points, fudge))
-    return normalised_points_list.map(points => points_to_geometries(points, extrude_depth))
+    // UK_SCREEN_POINT_FUDGE = compute_bounds(points_list.flat())
+    return points_list.map(points => points_to_geometries(points, extrude_depth))
 }
 
 
-export function build_geom (projection: GeoProjection, lonlat_polygon: [number, number][], fudge: ScreenPointFudge, extrude_depth: number)
+export function build_geom (projection: BasicProjection, lonlat_polygon: [number, number][], extrude_depth: number)
 {
     let points: THREE.Vector2[] = points_from_lonlats(lonlat_polygon, projection)
     if (points.length < 3) return null
 
-    points = normalise_points(points, fudge)
     return points_to_geometries(points, extrude_depth)
 }
 
 
-function points_from_lonlats(lon_lats: [number, number][], projection: GeoProjection)
+function points_from_lonlats(lon_lats: [number, number][], projection: BasicProjection)
 {
     const points: THREE.Vector2[] = []
     lon_lats.forEach(lon_lat =>
@@ -67,18 +89,6 @@ function points_from_lonlats(lon_lats: [number, number][], projection: GeoProjec
         points.push(new THREE.Vector2(point[0], point[1]))
     })
     return points
-}
-
-
-export function normalise_points(points: THREE.Vector2[], fudge: ScreenPointFudge)
-{
-    fudge = fudge //|| compute_bounds(points)
-    const { x, y } = fudge
-
-    return points.map(p => new THREE.Vector2(
-        p.x - x,
-        (p.y - y) * -1, // Invert Y to convert from screen to Cartesian coordinates
-    ))
 }
 
 
