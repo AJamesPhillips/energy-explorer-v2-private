@@ -2,6 +2,8 @@ import { useMemo } from "react"
 import * as THREE from "three"
 import { Arc } from "topojson-specification"
 
+import { ILatLon } from "core/data/values/LatLon"
+
 import { UK_EEZ_COORDS } from "../data/eez/data"
 import { WorldAtlas } from "./interface"
 import { build_geom, build_geoms, get_projection } from "./projection"
@@ -57,28 +59,26 @@ export function MapCountry(props: {
     if (!geometries) return null
 
     return <>
-        <group>
-            {geometries.CoI_land.map(({ fill }, index) => (
-                <mesh key={"land" + index} geometry={fill}>
-                    <meshStandardMaterial color={0x999999} metalness={0.1} roughness={0.8} side={THREE.DoubleSide} />
-                </mesh>
-            ))}
-            {geometries.CoI_EEZ.map(({ fill }, index) => (
-                <mesh
-                    key={"eez" + index} geometry={fill}
-                    // Offset the EEZ down slightly to prevent z-fighting with the land
-                    position={[0, -0.1, 0]}
-                >
-                    <meshStandardMaterial color={0x40beea} transparent opacity={0.18} side={THREE.DoubleSide} />
-                </mesh>
-            ))}
+        {geometries.CoI_land.map(({ fill }, index) => (
+            <mesh key={"land" + index} geometry={fill}>
+                <meshStandardMaterial color={0x999999} metalness={0.1} roughness={0.8} side={THREE.DoubleSide} />
+            </mesh>
+        ))}
+        {geometries.CoI_EEZ.map(({ fill }, index) => (
+            <mesh
+                key={"eez" + index} geometry={fill}
+                // Offset the EEZ down slightly to prevent z-fighting with the land
+                position={[0, -0.1, 0]}
+            >
+                <meshStandardMaterial color={0x40beea} transparent opacity={0.18} side={THREE.DoubleSide} />
+            </mesh>
+        ))}
 
-            {geometries.other_country_land.map(({ fill }, index) => (
-                <mesh key={"land" + index} geometry={fill}>
-                    <meshStandardMaterial color={0x999999} transparent opacity={0.3} side={THREE.DoubleSide} />
-                </mesh>
-            ))}
-        </group>
+        {geometries.other_country_land.map(({ fill }, index) => (
+            <mesh key={"land" + index} geometry={fill}>
+                <meshStandardMaterial color={0x999999} transparent opacity={0.3} side={THREE.DoubleSide} />
+            </mesh>
+        ))}
     </>
 }
 
@@ -107,10 +107,10 @@ function convert_arcs_to_lonlat(arc: Arc, transform: { scale: [number, number], 
     }
 
     // Convert arc into lon/lat pairs
-    const coords = raw_coords.map(([x, y]) => {
+    const coords: ILatLon[] = raw_coords.map(([x, y]) => {
         const lon = x * transform.scale[0] + transform.translate[0]
         const lat = y * transform.scale[1] + transform.translate[1]
-        return [lon, lat] as [number, number]
+        return { lat, lon }
     })
 
     return coords

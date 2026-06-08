@@ -1,6 +1,7 @@
 import { Box } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
 
+import { WindTurbineFarms } from "../../3d_models/WindTurbine"
 import { CONSTANTS, DEFAULTS } from "../constants"
 import { CellData } from "../interface"
 import { IsoCamera } from "../IsoCamera"
@@ -10,7 +11,6 @@ import { OilRigTiles } from "../tiles/OilRig"
 import { SolarFarms } from "../tiles/SolarFarm"
 import { SuburbanTiles } from "../tiles/Suburban"
 import { UrbanTiles } from "../tiles/Urban"
-import { WindTurbineFarms } from "../tiles/WindTurbine"
 import { Woodland } from "../tiles/Woodland"
 import "./TileInfo.css"
 

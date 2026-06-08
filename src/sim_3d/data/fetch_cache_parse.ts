@@ -1,13 +1,13 @@
+import { IDatetimeRange } from "core/data/interface"
 import { DataSeries } from "core/data/values/DataSeries"
 import {
     DatetimeRangeLatLonKey,
     DatetimeRangeLatLonMultipleKeys,
     factory_IndexManager_for_datetime_range_lat_lon,
 } from "core/data/values/datetime_lat_lon"
+import { DatetimeRange } from "core/data/values/DatetimeRange"
 import { LatLon, LatLonDataSeries } from "core/data/values/LatLon"
 
-import { IDatetimeRange } from "../../../lib/core/src/data/interface"
-import { DatetimeRange } from "../../../lib/core/src/data/values/DatetimeRange"
 import { log_time } from "../utils/log_time"
 
 

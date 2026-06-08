@@ -5,7 +5,9 @@ import * as THREE from "three"
 
 import { UK_EEZ_COORDS } from "../data/eez/data"
 import { CONSTANTS, DEFAULTS } from "../simple_sim/constants"
+import { InitialiseGeometriesEtc } from "../simple_sim/InitialiseGeometriesEtc"
 import { IsoCamera } from "../simple_sim/IsoCamera"
+import { CurrentPowerPlants } from "./CurrentPowerPlants"
 import { H3Grid } from "./dgg/H3Grid"
 import "./GeoDataStack.css"
 import { WorldAtlas } from "./interface"
@@ -44,6 +46,8 @@ export function GeoDataStack()
             <Header load_error={load_error} topo_data={topo_data} />
             <h1>{resolution}</h1>
             <Canvas id="scene_3d">
+                <InitialiseGeometriesEtc />
+
                 <IsoCamera grid_size={GRID_SIZE} cell_size={20} />
 
                 <ambientLight ref={sun_ambient_ref} />
@@ -60,6 +64,8 @@ export function GeoDataStack()
                     resolution={resolution}
                     set_cell_count={set_cell_count}
                 />
+
+                <CurrentPowerPlants />
             </Canvas>
             <Controls
                 cell_count={cell_count}

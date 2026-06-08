@@ -8,11 +8,9 @@ import * as THREE from "three"
 import { ActiveBuildingAction } from "../../state/building_action/interface"
 import { get_app_state } from "../../state/store"
 import { uk_coverage } from "../data/coverage/uk/data"
-import { H3Grid } from "../dev/dgg/H3Grid"
 import { PowerStats } from "../model/interface"
 import pub_sub from "../state/pub_sub"
 import { CONSTANTS, DEFAULTS } from "./constants"
-import { InitialiseGeometriesEtc } from "./InitialiseGeometriesEtc"
 import { CellData, CellsData } from "./interface"
 import { IsoCamera } from "./IsoCamera"
 import { IsoMetricGrid } from "./IsoMetricGrid"
@@ -157,9 +155,7 @@ export function SimpleSim3d(props: SimpleSim3dProps)
             on_hover_tile={on_hover_tile}
         />}
 
-        {map_grid === "h3" && <H3Grid />}
-
-        <InitialiseGeometriesEtc cell_size={CELL_SIZE} />
+        {/* {map_grid === "h3" && <H3Grid />} */}
     </>
 }
 

@@ -3,11 +3,13 @@ import { useMemo } from "react"
 import * as THREE from "three"
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
 
-import { build_geom, flip_lonlat, get_projection } from "../projection"
+import { ILatLon } from "core/data/values/LatLon"
+
+import { build_geom, get_projection, latlon_obj_to_latlon_tuple, latlon_tuple_to_obj } from "../projection"
 
 
 export function H3Grid(props: {
-    EEZ_coords_lonlat: [number, number][],
+    EEZ_coords_lonlat: ILatLon[],
     set_cell_count: (n: number) => void,
     resolution: number,
     // set_is_computing: (b: boolean) => void,
@@ -20,7 +22,7 @@ export function H3Grid(props: {
 
     const coords = useMemo(() => {
         // set_is_computing(true)
-        const EEZ_coords_latlon = flip_lonlat(EEZ_coords_lonlat)
+        const EEZ_coords_latlon = latlon_obj_to_latlon_tuple(EEZ_coords_lonlat)
         const cells = h3.polygonToCells(EEZ_coords_latlon, resolution)
         props.set_cell_count(cells.length)
 
@@ -35,11 +37,11 @@ export function H3Grid(props: {
         const extrude_depth = 0.1 // thin thickness in scene units
 
         cells.forEach(cell => {
-            const latlon_boundary = h3.cellToBoundary(cell)
-            // h3 gives lat,lon but we need lon,lat for projection
-            const lonlat_boundary = flip_lonlat(latlon_boundary)
+            const latlon_tuple_boundary = h3.cellToBoundary(cell)
+            // h3 gives lat,lon tuple
+            const latlon_boundary = latlon_tuple_to_obj(latlon_tuple_boundary)
 
-            const cell_geometries = build_geom(projection, lonlat_boundary, extrude_depth)
+            const cell_geometries = build_geom(projection, latlon_boundary, extrude_depth)
             if (!cell_geometries) return
             fill_geoms.push(cell_geometries.fill)
             line_geoms.push(cell_geometries.outline)

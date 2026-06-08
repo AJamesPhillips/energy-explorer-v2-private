@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 import { PerspectiveKnowledgeGraph } from "../../data/interface"
 import { PowerStats } from "../model/interface"
 import { Footer } from "./footer/Footer"
+import { InitialiseGeometriesEtc } from "./InitialiseGeometriesEtc"
 import { CellsData } from "./interface"
 import { map_data_cells } from "./map_data"
 import { PowerStatus } from "./PowerStatus"
@@ -55,6 +56,7 @@ export function SimpleSim(props: { persective: PerspectiveKnowledgeGraph | undef
 
     return <>
         <Canvas id="scene_3d">
+            <InitialiseGeometriesEtc />
             <SimpleSim3d
                 data={data}
                 set_data={set_data}

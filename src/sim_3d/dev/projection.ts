@@ -1,10 +1,19 @@
 import { geoMercator } from "d3-geo"
 import * as THREE from "three"
 
+import { ILatLon } from "core/data/values/LatLon"
 
-export function flip_lonlat(coords: [number, number][])
+
+export interface XY { x: number, y: number }
+
+export function latlon_obj_to_latlon_tuple(latlon: ILatLon[])
 {
-    return coords.map(([lon, lat]) => [lat, lon] as [number, number])
+    return latlon.map(({ lat, lon }) => [lat, lon] as [number, number])
+}
+
+export function latlon_tuple_to_obj(latlon: [number, number][]): ILatLon[]
+{
+    return latlon.map(([ lat, lon ]) => ({ lat, lon }))
 }
 
 
@@ -19,7 +28,7 @@ const UK_SCREEN_POINT_FUDGE =
 // const LON_SPAN_DEG = 22
 const scale = 1000 // (W * 40) / (LON_SPAN_DEG * Math.PI)
 // let projection: BasicProjection | undefined = undefined
-type BasicProjection = (lat_lon: [number, number]) => ([number, number] | null)
+type BasicProjection = (lat_lon: ILatLon) => (XY | null)
 let projection: BasicProjection | undefined = undefined
 export function get_projection(): BasicProjection
 {
@@ -35,22 +44,18 @@ export function get_projection(): BasicProjection
         // Does not yet perform the inversion of Y from screen to Cartesian coordinates
         // .reflectY(true)
 
-    projection = (lon_lat: [number, number]) =>
+    projection = ({ lon, lat }: ILatLon) =>
     {
-        const xy = core_projection(lon_lat)
+        const xy = core_projection([lon, lat])
         if (!xy) return null
-        return [
-            xy[0],
-            // Invert Y to convert from screen to Cartesian coordinates
-            xy[1] * -1
-        ]
+        return { x: xy[0], y: xy[1] }
     }
 
     return projection
 }
 
 
-export function build_geoms(projection: BasicProjection, lonlat_polygons: [number, number][][], extrude_depth: number)
+export function build_geoms(projection: BasicProjection, lonlat_polygons: ILatLon[][], extrude_depth: number)
 {
     const points_list = lonlat_polygons.map(coords => points_from_lonlats(coords, projection))
 
@@ -65,12 +70,13 @@ export function build_geoms(projection: BasicProjection, lonlat_polygons: [numbe
 
     //     return { x: min_x, y: min_y }
     // }
-    // UK_SCREEN_POINT_FUDGE = compute_bounds(points_list.flat())
+    // const bounds = compute_bounds(points_list.flat())
+
     return points_list.map(points => points_to_geometries(points, extrude_depth))
 }
 
 
-export function build_geom (projection: BasicProjection, lonlat_polygon: [number, number][], extrude_depth: number)
+export function build_geom (projection: BasicProjection, lonlat_polygon: ILatLon[], extrude_depth: number)
 {
     let points: THREE.Vector2[] = points_from_lonlats(lonlat_polygon, projection)
     if (points.length < 3) return null
@@ -79,14 +85,14 @@ export function build_geom (projection: BasicProjection, lonlat_polygon: [number
 }
 
 
-function points_from_lonlats(lon_lats: [number, number][], projection: BasicProjection)
+function points_from_lonlats(lon_lats: ILatLon[], projection: BasicProjection)
 {
     const points: THREE.Vector2[] = []
     lon_lats.forEach(lon_lat =>
     {
         const point = projection(lon_lat)
         if (!point) return
-        points.push(new THREE.Vector2(point[0], point[1]))
+        points.push(new THREE.Vector2(point.x, point.y))
     })
     return points
 }
@@ -98,13 +104,13 @@ export function points_to_geometries(points: THREE.Vector2[], extrude_depth: num
     const extrude_settings = { depth: extrude_depth, bevelEnabled: false }
     const fill = new THREE.ExtrudeGeometry(shape, extrude_settings)
     // orient flat on XZ plane
-    fill.rotateX(-Math.PI / 2)
+    fill.rotateX(Math.PI / 2)
 
     const outline_points = points.flatMap((point, index) => {
         const next_point = points[(index + 1) % points.length] ?? point
         return [
-            new THREE.Vector3(point.x, extrude_depth + 0.01, -point.y),
-            new THREE.Vector3(next_point.x, extrude_depth + 0.01, -next_point.y),
+            new THREE.Vector3(point.x, extrude_depth + 0.01, point.y),
+            new THREE.Vector3(next_point.x, extrude_depth + 0.01, next_point.y),
         ]
     })
     const outline = new THREE.BufferGeometry().setFromPoints(outline_points)

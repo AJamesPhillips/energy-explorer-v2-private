@@ -52,11 +52,14 @@ export function SolarFarmsInit({ cell_size }: { cell_size: number })
 interface SolarFarmProps
 {
     tiles: Array<{ x: number, y: number }>
-    cell_size: number
+    cell_size?: number
+    size?: number
 }
-export function SolarFarms({ tiles, cell_size }: SolarFarmProps)
+export function SolarFarms(props: SolarFarmProps)
 {
+    const { tiles, cell_size = 1 } = props
     if (tiles.length === 0) return null
+    const { size = cell_size } = props
 
     const tile_top_y = cell_size * 0.06
     return tiles.map(({ x, y }) => (
@@ -64,7 +67,7 @@ export function SolarFarms({ tiles, cell_size }: SolarFarmProps)
             key={`${x}-${y}`}
             position={[x * cell_size, tile_top_y, y * cell_size]}
         >
-            <SolarFarmPanels cell_size={cell_size} />
+            <SolarFarmPanels size={size} />
         </group>
     ))
 }
@@ -76,19 +79,19 @@ export function SolarFarms({ tiles, cell_size }: SolarFarmProps)
  * Used by both normal and sinking solar farm components.
  *
  * Props:
- *   cell_size: number (required)
+ *   size: number (required)
  */
-export function SolarFarmPanels({ cell_size, transparent }: { cell_size: number, transparent?: boolean })
+export function SolarFarmPanels({ size, transparent }: { size: number, transparent?: boolean })
 {
     const tilt = Math.PI / 6
-    const panel_h = cell_size * 0.28
-    const leg_h = cell_size * 0.08
+    const panel_h = size * 0.28
+    const leg_h = size * 0.08
 
     const offsets: Array<[number, number]> = [
-        [-cell_size * 0.22, -cell_size * 0.18],
-        [ cell_size * 0.22, -cell_size * 0.18],
-        [-cell_size * 0.22,  cell_size * 0.18],
-        [ cell_size * 0.22,  cell_size * 0.18],
+        [-size * 0.22, -size * 0.18],
+        [ size * 0.22, -size * 0.18],
+        [-size * 0.22,  size * 0.18],
+        [ size * 0.22,  size * 0.18],
     ]
 
     return <>

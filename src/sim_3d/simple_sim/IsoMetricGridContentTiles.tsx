@@ -1,11 +1,12 @@
 import { useMemo } from "react"
+
+import { WindTurbineFarms } from "../3d_models/WindTurbine"
 import { CellData } from "./interface"
 import { OilAndGasPocketTiles } from "./tiles/OilAndGasPocket"
 import { OilRigTiles } from "./tiles/OilRig"
 import { SolarFarms } from "./tiles/SolarFarm"
 import { SuburbanTiles } from "./tiles/Suburban"
 import { UrbanTiles } from "./tiles/Urban"
-import { WindTurbineFarms } from "./tiles/WindTurbine"
 import { Woodland } from "./tiles/Woodland"
 
 

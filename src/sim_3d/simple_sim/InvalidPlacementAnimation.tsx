@@ -4,10 +4,11 @@ import * as THREE from "three"
 
 import { BuildingActionTypeString } from "../../state/building_action/interface"
 import { asset_url } from "../../utils/asset_url"
+import { WindTurbine } from "../3d_models/WindTurbine"
 import pub_sub from "../state/pub_sub"
 import { CellData } from "./interface"
 import { SolarFarmPanels } from "./tiles/SolarFarm"
-import { WindTurbine } from "./tiles/WindTurbine"
+
 const bubbles_audio_url = asset_url("/audio/bubbles.mp3")
 
 
@@ -87,7 +88,7 @@ function SinkingItem({ entry, cell_size, on_done }: {
     return (
         <group ref={group_ref} position={[base_x, base_y, base_z]}>
             {entry.item_type === "wind"
-                ? <WindTurbine cell_size={cell_size} transparent />
+                ? <WindTurbine size={cell_size} transparent />
             : entry.item_type === "solar"
                 ? <SolarFarmPanels cell_size={cell_size} transparent />
                 : null
