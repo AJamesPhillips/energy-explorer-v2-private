@@ -1,5 +1,9 @@
-import { OffshoreAreaTypeAndTotal, SimplifiedLandAreaTypeAndTotal, uk_land_coverage_simplified } from "../../land_coverage/uk/data"
-import { uk_eez_area, uk_offshore_shallow_area } from "../../offshore_coverage/uk/data"
+import {
+    OffshoreAreaTypeAndTotal,
+    SimplifiedLandAreaTypeAndTotal,
+    uk_land_coverage_simplified,
+} from "../../coverage_land/uk/data"
+import { uk_eez_area, uk_offshore_shallow_area } from "../../coverage_offshore/uk/data"
 
 
 interface AreaInfo

@@ -1,4 +1,4 @@
-import { LandOrSeaType } from "../data/land_coverage/uk/data"
+import { LandOrSeaType } from "../data/coverage_land/uk/data"
 
 
 const subtype_to_colour: Record<LandOrSeaType, string> = {

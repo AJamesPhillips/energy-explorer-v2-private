@@ -1,4 +1,4 @@
-import { LandOrSea } from "../data/land_coverage/uk/data"
+import { LandOrSea } from "../data/coverage_land/uk/data"
 
 
 export type CellData = LandOrSea &

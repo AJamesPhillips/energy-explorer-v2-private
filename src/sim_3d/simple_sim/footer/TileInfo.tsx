@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 
 import { CloseIcon } from "../../../components/svgs"
 import { is_touch_screen } from "../../../utils/screen_type"
-import { land_or_sea_types } from "../../data/land_coverage/uk/data"
+import { land_or_sea_types } from "../../data/coverage_land/uk/data"
 import pub_sub from "../../state/pub_sub"
 import { CellData, CellsData } from "../interface"
 import { RenderSingleTile } from "./RenderSingleTile"

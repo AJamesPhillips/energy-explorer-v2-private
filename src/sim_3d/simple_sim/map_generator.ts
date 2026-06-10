@@ -1,5 +1,5 @@
 import { uk_coverage } from "../data/coverage/uk/data"
-import { LandOrSea } from "../data/land_coverage/uk/data"
+import { LandOrSea } from "../data/coverage_land/uk/data"
 import { CellData, CellsData } from "./interface"
 import { get_letter_for_land_or_sea } from "./map_data_compact"
 

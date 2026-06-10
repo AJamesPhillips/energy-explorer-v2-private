@@ -1,4 +1,4 @@
-import { LandOrSea, OffshoreAreaType, SimplifiedLandAreaType } from "../data/land_coverage/uk/data"
+import { LandOrSea, OffshoreAreaType, SimplifiedLandAreaType } from "../data/coverage_land/uk/data"
 
 
 export type LetterType = (
