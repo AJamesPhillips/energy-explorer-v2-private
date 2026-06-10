@@ -8,11 +8,11 @@ import { H3_RESOLUTION } from "../data/power_plants"
 import { CONSTANTS, DEFAULTS } from "../simple_sim/constants"
 import { InitialiseGeometriesEtc } from "../simple_sim/InitialiseGeometriesEtc"
 import { IsoCamera } from "../simple_sim/IsoCamera"
+import { CountryMap } from "./CountryMap"
 import { H3Grid } from "./dgg/H3Grid"
 import "./GeoDataStack.css"
 import { WorldAtlas } from "./interface"
 import { NEARBY_COUNTRY_IDS, UK_ID } from "./map_data"
-import { MapCountry } from "./MapCountry"
 import { PowerPlantsCurrent } from "./PowerPlantsCurrent"
 
 const { GRID_SIZE } = CONSTANTS
@@ -54,10 +54,13 @@ export function GeoDataStack()
                 <ambientLight ref={sun_ambient_ref} />
                 <directionalLight ref={sun_directional_ref} position={sun_args.direct_position} />
 
-                <MapCountry
+                <CountryMap
                     topo_data={topo_data}
                     country_id={UK_ID}
                     other_country_ids={NEARBY_COUNTRY_IDS}
+                    // show_eez_boundary={true}
+                    // resolution_h3={resolution}
+                    // resolution_h3={resolution + 1}
                 />
 
                 <H3Grid

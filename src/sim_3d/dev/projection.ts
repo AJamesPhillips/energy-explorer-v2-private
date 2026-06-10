@@ -6,12 +6,12 @@ import { ILatLon } from "core/data/values/LatLon"
 
 export interface XY { x: number, y: number }
 
-export function latlon_obj_to_latlon_tuple(latlon: ILatLon[])
+export function latlon_objs_to_latlon_tuples(latlon: ILatLon[])
 {
     return latlon.map(({ lat, lon }) => [lat, lon] as [number, number])
 }
 
-export function latlon_tuple_to_obj(latlon: [number, number][]): ILatLon[]
+export function latlon_tuples_to_objs(latlon: [number, number][]): ILatLon[]
 {
     return latlon.map(([ lat, lon ]) => ({ lat, lon }))
 }

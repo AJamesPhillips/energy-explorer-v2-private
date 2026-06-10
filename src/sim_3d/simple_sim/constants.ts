@@ -1,6 +1,13 @@
 import * as THREE from "three"
 
 
+const Z_MAP_OFFSET = 0
+const Z_MAP_THICKNESS = 0.1
+const Z_EEZ_OFFSET = Z_MAP_OFFSET + Z_MAP_THICKNESS
+const Z_EEZ_THICKNESS = 0.1
+const Z_DGG_OFFSET = Z_EEZ_OFFSET + Z_EEZ_THICKNESS
+const Z_DGG_THICKNESS = 0.1
+
 export const CONSTANTS = {
     GRID_SIZE: { x: 30, y: 42 },
     CELL_SIZE: 12,
@@ -8,6 +15,13 @@ export const CONSTANTS = {
     BUILDINGS_PER_SUBURBAN_TILE: 3,
     BUILDINGS_PER_URBAN_TILE: 3,
     TREES_PER_TILE: 3,
+
+    Z_MAP_OFFSET,
+    Z_MAP_THICKNESS,
+    Z_EEZ_OFFSET,
+    Z_EEZ_THICKNESS,
+    Z_DGG_OFFSET,
+    Z_DGG_THICKNESS,
 }
 
 export const DEFAULTS = {

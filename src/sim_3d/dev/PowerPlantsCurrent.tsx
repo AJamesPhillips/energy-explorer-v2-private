@@ -8,7 +8,6 @@ import { get_projection, XY } from "./projection"
 
 
 
-
 export function PowerPlantsCurrent({ show_aggregated }: { show_aggregated: boolean })
 {
     if (show_aggregated) return <PowerPlantsCurrentAggregated />
