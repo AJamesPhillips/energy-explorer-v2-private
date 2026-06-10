@@ -24,6 +24,7 @@ export function H3Grid(props: {
         // set_is_computing(true)
         const EEZ_coords_latlon = latlon_obj_to_latlon_tuple(EEZ_coords_lonlat)
         const cells = h3.polygonToCells(EEZ_coords_latlon, resolution)
+        // console.log(cells.join("\n"))
         props.set_cell_count(cells.length)
 
         const projection = get_projection()

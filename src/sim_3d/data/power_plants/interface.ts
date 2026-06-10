@@ -33,3 +33,18 @@ export interface NuclearPlant extends PowerPlantBase
 }
 
 export type PowerPlant = WindFarm | SolarFarm | GasPlant | NuclearPlant
+
+
+interface AggregatePowerPlantData
+{
+    count: number
+    capacity_mw: number
+    area_km2?: number
+}
+export interface AggregatedPowerPlantData
+{
+    wind_farm: AggregatePowerPlantData
+    solar_farm: AggregatePowerPlantData
+    gas_plant: AggregatePowerPlantData
+    nuclear_plant: AggregatePowerPlantData
+}

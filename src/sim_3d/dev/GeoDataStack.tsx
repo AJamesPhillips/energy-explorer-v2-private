@@ -4,15 +4,16 @@ import { useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 
 import { UK_EEZ_COORDS } from "../data/eez/data"
+import { H3_RESOLUTION } from "../data/power_plants"
 import { CONSTANTS, DEFAULTS } from "../simple_sim/constants"
 import { InitialiseGeometriesEtc } from "../simple_sim/InitialiseGeometriesEtc"
 import { IsoCamera } from "../simple_sim/IsoCamera"
-import { CurrentPowerPlants } from "./CurrentPowerPlants"
 import { H3Grid } from "./dgg/H3Grid"
 import "./GeoDataStack.css"
 import { WorldAtlas } from "./interface"
 import { NEARBY_COUNTRY_IDS, UK_ID } from "./map_data"
 import { MapCountry } from "./MapCountry"
+import { PowerPlantsCurrent } from "./PowerPlantsCurrent"
 
 const { GRID_SIZE } = CONSTANTS
 const { sun_args } = DEFAULTS
@@ -20,7 +21,7 @@ const { sun_args } = DEFAULTS
 
 export function GeoDataStack()
 {
-    const [resolution, set_resolution] = useState(3)
+    const [resolution, set_resolution] = useState(H3_RESOLUTION)
     const [cell_count, set_cell_count] = useState(0)
     const [is_computing, set_is_computing] = useState(false)
     const [topo_data, set_topo_data] = useState<WorldAtlas | null>(null)
@@ -65,7 +66,9 @@ export function GeoDataStack()
                     set_cell_count={set_cell_count}
                 />
 
-                <CurrentPowerPlants />
+                <PowerPlantsCurrent
+                    show_aggregated={true}
+                />
             </Canvas>
             <Controls
                 cell_count={cell_count}

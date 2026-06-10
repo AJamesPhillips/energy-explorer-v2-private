@@ -6,7 +6,7 @@ export function parse_wind_farm_data([_id, installed_mw, operational_year, _turb
     return {
         type: "wind_farm",
         operational_year,
-        area_km2: 0,
+        area_km2: installed_mw / 4.2, // 4.2 MW per km² is a rough estimate from https://wikisim.org/wiki/1154
         number_of_turbines: no_turbines,
         nameplate_capacity_mw: installed_mw,
         lon,

@@ -1,22 +1,18 @@
 import { useMemo } from "react"
 
 import { WindTurbineFarms } from "../3d_models/WindTurbine"
-import { PowerPlant } from "../data/power_plants/interface"
-import { parse_solar_farm_data, parse_wind_farm_data } from "../data/power_plants/parse_data"
-import { solar_farms } from "../data/power_plants/solar_farm_data"
-import { offshore_wind_farms, onshore_wind_farms } from "../data/power_plants/wind_farm_data"
+import { aggregated_power_plants_by_h3_cell, power_plants_data } from "../data/power_plants"
 import { SolarFarms } from "../simple_sim/tiles/SolarFarm"
+import { AggregatedPowerPlantLayer } from "./AggregatedPowerPlantLayer"
 import { get_projection, XY } from "./projection"
 
 
-const data: PowerPlant[] = [
-    ...offshore_wind_farms.map(parse_wind_farm_data),
-    ...onshore_wind_farms.map(parse_wind_farm_data),
-    ...solar_farms.map(parse_solar_farm_data),
-]
 
-export function CurrentPowerPlants()
+
+export function PowerPlantsCurrent({ show_aggregated }: { show_aggregated: boolean })
 {
+    if (show_aggregated) return <PowerPlantsCurrentAggregated />
+
     const projection = get_projection()
 
     const {
@@ -31,7 +27,7 @@ export function CurrentPowerPlants()
         const gas_plant_tiles: XY[] = []
         const nuclear_plant_tiles: XY[] = []
 
-        data.forEach(p =>
+        power_plants_data.forEach(p =>
         {
             const xy = projection(p)
             if (!xy) return
@@ -41,12 +37,38 @@ export function CurrentPowerPlants()
             else if (p.type === "nuclear") nuclear_plant_tiles.push(xy)
         })
 
-
         return { wind_farm_tiles, solar_farm_tiles, gas_plant_tiles, nuclear_plant_tiles }
     }, [])
 
     return <>
         <WindTurbineFarms tiles={wind_farm_tiles} size={12} />
         <SolarFarms tiles={solar_farm_tiles} size={2} />
+    </>
+}
+
+
+export function PowerPlantsCurrentAggregated()
+{
+    return <>
+        <AggregatedPowerPlantLayer
+            aggregated_data={aggregated_power_plants_by_h3_cell}
+            plant_key="wind_farm"
+            plant_size={12}
+            fill_color={0x1f6dff}
+            outline_color={0x0f3fb2}
+            opacity={0.45}
+            min_area_ratio={0.04}
+            RenderPlants={WindTurbineFarms}
+        />
+        <AggregatedPowerPlantLayer
+            aggregated_data={aggregated_power_plants_by_h3_cell}
+            plant_key="solar_farm"
+            plant_size={2}
+            fill_color={0xf2b705}
+            outline_color={0xc78b00}
+            opacity={0.4}
+            min_area_ratio={0.003}
+            RenderPlants={SolarFarms}
+        />
     </>
 }
