@@ -6,6 +6,10 @@ WikiSim.org
 
 [Participatory processes for strategic energy planning: A toolkit for national energy planners](https://www.irena.org/Publications/2025/Sep/Participatory-processes-for-strategic-energy-planning-A-toolkit-for-national-energy-planners)
 
+### Using serious games
+
+* https://shortfall.netlify.app/
+* https://interactive.li/pages/wp-content/media/doc/ai-simulation-gamification-stakeholder-engagement-energy-transition.pdf
 
 
 ## Electricity Price Set by Gas & not yet Renewables
