@@ -1,7 +1,7 @@
 
 import { useState } from "react"
-import { SolarFarmsByYear, SolarFields } from "../../data/solar_pv/process_data_component"
-import { WindFarmsByYear, WindFields } from "../../data/wind/process_data_component"
+import { SolarFarmsByYear, SolarFields } from "../../data/solar_pv_farms/process_data_component"
+import { WindFarmsByYear, WindFields } from "../../data/wind_farms/process_data_component"
 import { Graph, GraphProps } from "./Graph"
 import "./Graph.css"
 
