@@ -40,6 +40,7 @@ https://www.sciencemuseumgroup.org.uk/our-work/sustainability-approach/climate-t
 > Seagreen, Scotland's largest wind farm, was paid £65 million last year to restrict its output 71% of the time
 https://www.bbc.co.uk/news/articles/cdedjnw8e85o
 
+Paying for curtailment
 > How the Current GB Wholesale Market Design Fails to Make Best Use of Flexible Assets: the Curious Case of Batteries Flip-Flopping in the BM
 https://www.fticonsulting.com/insights/reports/how-current-gb-wholesale-market-design-fails-make-best-use-flexible-assets-curious-case
 

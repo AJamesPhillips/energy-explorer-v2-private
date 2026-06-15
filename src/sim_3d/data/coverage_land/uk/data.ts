@@ -164,6 +164,10 @@ export type SimplifiedLandAreaType = (
 
 export type OffshoreAreaType = "shallow" | "deep" | "non_territory_sea"
 
+// Copied between:
+// https://wikisim.org/wiki/1261v5 (in the code)
+// https://github.com/AJamesPhillips/energy-explorer-v2/blob/c7f2921/src/sim_3d/data/coverage_land/uk/data.ts#L167-L189
+// and https://github.com/theWorldSim/world-sim-data/tree/master/data/land_coverage/uk/process.py
 const map_simplified_area_type: Record<LandAreaType, SimplifiedLandAreaType> = {
     "Broadleaved woodland": "woodland",
     "Coniferous Woodland": "woodland",
