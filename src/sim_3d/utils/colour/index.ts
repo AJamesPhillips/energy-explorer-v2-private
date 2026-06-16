@@ -3,6 +3,19 @@ import { Color, Material, MeshBasicMaterial } from "three"
 
 
 
+// internal static Color bakers_blue8(float capacity_factor, float min = 0.25f, float max = 0.65f)
+// {
+//     var scaled_capacity_factor = (capacity_factor - min) / (max - min);
+
+//     var number_of_buckets = 6f;
+//     var capacity_factor_bucketed = (float)Math.Round(scaled_capacity_factor * number_of_buckets) / number_of_buckets;
+//     var capacity_factor_bucketed_h2 = Mathf.Clamp((capacity_factor_bucketed * 1.3f) - 0.3f, 0, 1);
+
+//     var r = 0.15f + capacity_factor_bucketed * 0.68f;
+//     var g = 0.25f + capacity_factor_bucketed * 0.68f;
+//     var b = 1f;
+//     return new Color(r, g, b, capacity_factor_bucketed_h2);
+// }
 const BAKERS_BLUE: [Color, number][] = [
     [new Color(0.263, 0.363, 1).convertSRGBToLinear(), 0],
     [new Color(0.150, 0.250, 1).convertSRGBToLinear(), 0.15],
@@ -22,6 +35,19 @@ export function bakers_blue(capacity_factor: number): [Color, number]
 }
 
 
+// internal static Color solar(float capacity_factor, float min = 0.1f, float max = 0.4f)
+// {
+//     var scaled_capacity_factor = (capacity_factor - min) / (max - min);
+
+//     var number_of_buckets = 6f;
+//     var capacity_factor_bucketed = (float)Math.Round(scaled_capacity_factor * number_of_buckets) / number_of_buckets;
+//     var capacity_factor_bucketed_h2 = Mathf.Clamp((capacity_factor_bucketed * 1.3f) - 0.3f, 0, 1);
+
+//     var r = 0.75f + capacity_factor_bucketed * 0.25f;
+//     var g = 0.75f + capacity_factor_bucketed * 0.25f;
+//     var b = 0.15f + capacity_factor_bucketed * 0.68f;
+//     return new Color(r, g, b, capacity_factor_bucketed_h2);
+// }
 const SOLAR_YELLOW: [Color, number][] = [
     [new Color(0.229, 0.293, 0.000).convertSRGBToLinear(), 0],
     [new Color(0.358, 0.410, 0.063).convertSRGBToLinear(), 0.15],

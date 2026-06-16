@@ -1,0 +1,126 @@
+
+export interface CapacityFactorData
+{
+    date_time_to_index: Map<string, number>
+    h3_cell_id_to_index: Map<string, number>
+    // The data is stored in a 1D array, where the index is calculated as:
+    // index = date_time_index * number_of_h3_cell_ids + h3_cell_id_index
+    get_capacity_factor(date_time_or_index: string | number, h3_cell_id: string): number
+    /**
+     * Data is a value from 0 to 0.99 of the capacity of the wind / solar PV
+     * farm at each date time for each h3 cell id.
+     */
+    data: Float32Array
+}
+
+export async function load_capacity_factor_data(data_path: string): Promise<CapacityFactorData>
+{
+    return fetch(data_path)
+    .then(response => response.text())
+    .then(csv_text =>
+    {
+        // We drop the last line because it is empty
+        const lines = csv_text.split("\n").slice(0, -1)
+
+        let line = lines.shift()
+        while (line!.startsWith("#"))
+        {
+            line = lines.shift()
+        }
+        // Process line as header
+        const h3_cell_ids = line!.split(",").slice(1)
+        // Check they are ordered
+        const sorted_h3_cell_ids = [...h3_cell_ids].sort()
+        if (JSON.stringify(h3_cell_ids) !== JSON.stringify(sorted_h3_cell_ids))
+        {
+            throw new Error("H3 cell ids are not ordered")
+        }
+
+        const h3_cell_id_to_index: Map<string, number> = h3_cell_ids
+            .reduce((map, h3_cell_id, index) =>
+            {
+                map.set(h3_cell_id, index)
+                return map
+            }, new Map<string, number>())
+
+        const date_time_to_index: Map<string, number> = new Map()
+        const number_of_h3_cell_ids = h3_cell_id_to_index.size
+        const data = new Float32Array(lines.length * number_of_h3_cell_ids)
+
+        const {
+            inner_calculate_data_index,
+            get_capacity_factor,
+        } = factory({
+            number_of_h3_cell_ids,
+            date_time_to_index,
+            h3_cell_id_to_index,
+            data,
+        })
+
+        lines.forEach((line, date_time_index) =>
+        {
+            const cols = line.split(",")
+            const date_time = cols[0]!
+            date_time_to_index.set(date_time, date_time_index)
+
+            cols.slice(1).forEach((capacity_factor_percentage, h3_cell_id_index) =>
+            {
+                const data_index = inner_calculate_data_index(date_time_index, h3_cell_id_index)
+                data[data_index] = parseInt(capacity_factor_percentage) / 100
+            })
+        })
+
+        return {
+            date_time_to_index,
+            h3_cell_id_to_index,
+            get_capacity_factor,
+            data,
+        }
+    })
+}
+
+
+interface FactoryArgs
+{
+    number_of_h3_cell_ids: number
+    date_time_to_index: Map<string, number>
+    h3_cell_id_to_index: Map<string, number>
+    data: Float32Array
+}
+function factory(args: FactoryArgs)
+{
+    function inner_calculate_data_index(date_time_index: number, h3_cell_id_index: number): number
+    {
+        return date_time_index * args.number_of_h3_cell_ids + h3_cell_id_index
+    }
+
+    function get_capacity_factor(date_time_or_index: string | number, h3_cell_id: string): number
+    {
+        const date_time_index = typeof date_time_or_index === "number"
+            ? date_time_or_index : args.date_time_to_index.get(date_time_or_index)
+        if (date_time_index === undefined)
+        {
+            throw new Error(`Unknown date time: ${date_time_or_index}`)
+        }
+
+        const h3_cell_id_index = args.h3_cell_id_to_index.get(h3_cell_id)
+        if (h3_cell_id_index === undefined)
+        {
+            return 0
+            // throw new Error(`Unknown h3 cell id: ${h3_cell_id}`)
+        }
+
+        const index = inner_calculate_data_index(date_time_index, h3_cell_id_index)
+        const value = args.data[index]
+        if (value === undefined)
+        {
+            throw new Error(`No data for date time: ${date_time_or_index} and h3 cell id: ${h3_cell_id}`)
+        }
+        return value
+    }
+
+    return {
+        inner_calculate_data_index,
+        get_capacity_factor,
+    }
+}

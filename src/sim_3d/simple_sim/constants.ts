@@ -50,6 +50,7 @@ export const GRAPH_CONSTANTS = {
 
 
 export const COLOURS = {
+    dgg_grid: "#60b0b0",
     coal: "#333",
     oil: "#e07020",
     gas: "#2a7ae4",

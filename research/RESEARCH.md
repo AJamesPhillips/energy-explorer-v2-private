@@ -12,6 +12,15 @@ WikiSim.org
 * https://interactive.li/pages/wp-content/media/doc/ai-simulation-gamification-stakeholder-engagement-energy-transition.pdf
 
 
+
+# TODO
+
+* Long Duration Electricity Storage (LDES) Cap and floor pricing - https://www.gov.uk/government/publications/long-duration-electricity-storage-technical-details-of-the-scheme-and-its-operation
+* Capacity market
+
+
+# Research
+
 ## Electricity Price Set by Gas & not yet Renewables
 
 > Q&A: Why does gas set the price of electricity – and is there an alternative?

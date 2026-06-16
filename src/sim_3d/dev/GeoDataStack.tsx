@@ -5,9 +5,11 @@ import * as THREE from "three"
 
 import { UK_EEZ_COORDS } from "../data/eez/data"
 import { H3_RESOLUTION } from "../data/power_plants"
+import { load_solar_pv_capacity_data, load_wind_turbine_capacity_data } from "../data/wind_and_solar_capacity/load_data"
 import { CONSTANTS, DEFAULTS } from "../simple_sim/constants"
 import { InitialiseGeometriesEtc } from "../simple_sim/InitialiseGeometriesEtc"
 import { IsoCamera } from "../simple_sim/IsoCamera"
+import { CapacityFactorData } from "../utils/capacity_factor_data"
 import { CountryMap } from "./CountryMap"
 import { H3Grid } from "./dgg/H3Grid"
 import "./GeoDataStack.css"
@@ -23,9 +25,11 @@ export function GeoDataStack()
 {
     const [resolution, set_resolution] = useState(H3_RESOLUTION)
     const [cell_count, set_cell_count] = useState(0)
-    const [is_computing, set_is_computing] = useState(false)
+    const [is_computing, _set_is_computing] = useState(false)
     const [topo_data, set_topo_data] = useState<WorldAtlas | null>(null)
     const [load_error, set_load_error] = useState<string | null>(null)
+    const [wind_turbine_capacity_data, set_wind_turbine_capacity_data] = useState<CapacityFactorData | null>(null)
+    const [solar_pv_capacity_data, set_solar_pv_capacity_data] = useState<CapacityFactorData | null>(null)
 
     // Fetch world atlas once
     useEffect(() => {
@@ -36,6 +40,13 @@ export function GeoDataStack()
             })
             .then(set_topo_data)
             .catch((e) => set_load_error(e.message))
+    }, [])
+
+
+    useEffect(() =>
+    {
+        load_wind_turbine_capacity_data().then(set_wind_turbine_capacity_data)
+        load_solar_pv_capacity_data().then(set_solar_pv_capacity_data)
     }, [])
 
     const sun_ambient_ref = useRef<THREE.AmbientLight>(null)
@@ -67,6 +78,8 @@ export function GeoDataStack()
                     EEZ_coords_lonlat={UK_EEZ_COORDS}
                     resolution={resolution}
                     set_cell_count={set_cell_count}
+                    // capacity_data={{ data: wind_turbine_capacity_data, type: "wind" }}
+                    capacity_data={{ data: solar_pv_capacity_data, type: "solar" }}
                 />
 
                 <PowerPlantsCurrent

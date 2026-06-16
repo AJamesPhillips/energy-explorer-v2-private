@@ -1,9 +1,12 @@
 import * as h3 from "h3-js"
-import { useMemo } from "react"
+import { useMemo, useRef } from "react"
 import * as THREE from "three"
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
 
-import { CONSTANTS } from "../../simple_sim/constants"
+import { useFrame } from "@react-three/fiber"
+import { COLOURS, CONSTANTS } from "../../simple_sim/constants"
+import { CapacityFactorData } from "../../utils/capacity_factor_data"
+import { bakers_blue_material, solar_yellow_material } from "../../utils/colour"
 import { build_geom, get_projection, latlon_tuples_to_objs } from "../projection"
 
 
@@ -14,46 +17,93 @@ export function H3Cells(props: {
     h3_cell_ids: string[],
     extrude_depth?: number,
     y_offset?: number,
+    capacity_data?: {
+        data: CapacityFactorData | null,
+        type: "wind" | "solar",
+    },
 })
 {
     const { h3_cell_ids, y_offset=0 } = props
     let { extrude_depth=Z_DGG } = props
     extrude_depth *= 0.9
 
+    const fill_mesh_refs = useRef<(THREE.Mesh | null)[]>([])
+
     const coords = useMemo(() => {
         const projection = get_projection()
 
         // Build three.js geometries: extruded fills and outlines, then merge
         const fill_geoms: THREE.BufferGeometry[] = []
-        const line_geoms: THREE.BufferGeometry[] = []
+        const outline_geoms: THREE.BufferGeometry[] = []
 
-        h3_cell_ids.forEach(cell => {
-            const latlon_tuple_boundary = h3.cellToBoundary(cell)
+        h3_cell_ids.forEach(h3_cell_id => {
+            const latlon_tuple_boundary = h3.cellToBoundary(h3_cell_id)
             // h3 gives lat,lon tuple
             const latlon_boundary = latlon_tuples_to_objs(latlon_tuple_boundary)
 
             const cell_geometries = build_geom(projection, latlon_boundary, extrude_depth)
             if (!cell_geometries) return
             fill_geoms.push(cell_geometries.fill)
-            line_geoms.push(cell_geometries.outline)
+            outline_geoms.push(cell_geometries.outline)
+
+            cell_geometries.fill.name = h3_cell_id
         })
 
-        const merged_fill = fill_geoms.length ? mergeGeometries(fill_geoms, true) : null
-        const merged_outline = line_geoms.length ? mergeGeometries(line_geoms, false) : null
+        // const merged_fill = fill_geoms.length ? mergeGeometries(fill_geoms, true) : null
+        const merged_outline = outline_geoms.length ? mergeGeometries(outline_geoms, false) : null
 
-        return { merged_fill, merged_outline }
+        return { fill_geoms, merged_outline }
     }, [h3_cell_ids])
+
+
+    const MAX_DATETIME_STEPS = 24 * 365
+    const animation_state_ref = useRef({
+        datetime_index: 0,
+        last_animated_at_seconds: -Infinity,
+        animate_fps: 10,
+    })
+
+
+    useFrame(({ clock }) =>
+    {
+        if (!props.capacity_data || !props.capacity_data.data) return
+
+        const elapsed_seconds = clock.getElapsedTime()
+        const state = animation_state_ref.current
+        if (!state.animate_fps) return
+        if ((elapsed_seconds - state.last_animated_at_seconds) < (1 / state.animate_fps)) return
+        state.last_animated_at_seconds = elapsed_seconds
+        state.datetime_index = (state.datetime_index + 1) % MAX_DATETIME_STEPS
+
+        const { data: capacity_data, type } = props.capacity_data
+        fill_mesh_refs.current.forEach(mesh =>
+        {
+            if (!mesh) return
+            const h3_cell_id = mesh.geometry.name
+            const capacity_factor = capacity_data.get_capacity_factor(state.datetime_index, h3_cell_id)
+            const material_colour = type === "wind"
+                ? bakers_blue_material(capacity_factor)
+                : solar_yellow_material(capacity_factor)
+            mesh.material = material_colour
+            mesh.material.needsUpdate = true
+        })
+    })
+
 
     return <>
         <group position={[0, y_offset, 0]}>
-            {coords.merged_fill && (
-                <mesh geometry={coords.merged_fill}>
+            {coords.fill_geoms.map((fill_geom, i) =>
+                <mesh
+                    geometry={fill_geom}
+                    key={fill_geom.uuid}
+                    ref={el => { fill_mesh_refs.current[i] = el }}
+                >
                     <meshStandardMaterial color="skyblue" transparent opacity={0.18} side={THREE.DoubleSide} />
                 </mesh>
             )}
             {coords.merged_outline && (
                 <lineSegments geometry={coords.merged_outline}>
-                    <lineBasicMaterial color={0x40ae00} linewidth={2} />
+                    <lineBasicMaterial color={COLOURS.dgg_grid} linewidth={2} />
                 </lineSegments>
             )}
         </group>
