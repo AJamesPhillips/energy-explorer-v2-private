@@ -9,7 +9,7 @@ import { load_solar_pv_capacity_data, load_wind_turbine_capacity_data } from "..
 import { CONSTANTS, DEFAULTS } from "../simple_sim/constants"
 import { InitialiseGeometriesEtc } from "../simple_sim/InitialiseGeometriesEtc"
 import { IsoCamera } from "../simple_sim/IsoCamera"
-import { aggregate_to_annual_average, CapacityFactorData, get_ombre_of_capacity_factors } from "../utils/capacity_factor_data"
+import { aggregate_to_annual_average, CapacityFactorData } from "../utils/capacity_factor_data"
 import { CountryMap } from "./CountryMap"
 import { H3Grid } from "./dgg/H3Grid"
 import "./GeoDataStack.css"
@@ -50,8 +50,8 @@ export function GeoDataStack()
         load_wind_turbine_capacity_data().then(wind_turbine_capacity_data =>
         {
             set_wind_turbine_capacity_data(wind_turbine_capacity_data)
-            // const annual = aggregate_to_annual_average(wind_turbine_capacity_data)
-            const annual = get_ombre_of_capacity_factors(wind_turbine_capacity_data)
+            const annual = aggregate_to_annual_average(wind_turbine_capacity_data)
+            // const annual = get_ombre_of_capacity_factors(wind_turbine_capacity_data)
             set_annual_wind_turbine_capacity_data(annual)
         })
         load_solar_pv_capacity_data().then(solar_pv_capacity_data =>
@@ -82,20 +82,21 @@ export function GeoDataStack()
                     topo_data={topo_data}
                     country_id={UK_ID}
                     other_country_ids={NEARBY_COUNTRY_IDS}
+                    outline_only={true}
                     // show_eez_boundary={true}
                     // resolution_h3={resolution}
                     // resolution_h3={resolution + 1}
                 />
 
-                <H3Grid
+                {true && <H3Grid
                     EEZ_coords_lonlat={UK_EEZ_COORDS}
                     resolution={resolution}
                     set_cell_count={set_cell_count}
-                    // capacity_data={{ data: wind_turbine_capacity_data, type: "wind" }}
-                    capacity_data={{ data: annual_wind_turbine_capacity_data, type: "solar" }}
+                    capacity_data={{ data: wind_turbine_capacity_data, type: "wind" }}
+                    // capacity_data={{ data: annual_wind_turbine_capacity_data, type: "wind" }}
                     // capacity_data={{ data: solar_pv_capacity_data, type: "solar" }}
                     // capacity_data={{ data: annual_solar_pv_capacity_data, type: "solar" }}
-                />
+                />}
 
                 <PowerPlantsCurrent
                     show_aggregated={true}

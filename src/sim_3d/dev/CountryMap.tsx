@@ -23,6 +23,7 @@ export function CountryMap(props: {
     topo_data: WorldAtlas | null,
     country_id: string,
     other_country_ids?: Set<string>,
+    outline_only?: boolean,
     show_eez_boundary?: boolean,
     resolution_h3?: number,
 })
@@ -30,6 +31,7 @@ export function CountryMap(props: {
     const {
         topo_data,
         other_country_ids = new Set(),
+        outline_only = false,
         resolution_h3,
     } = props
 
@@ -76,6 +78,7 @@ export function CountryMap(props: {
                 : []
             }
             other_outlines={lat_lon_country_outlines.other_country_land}
+            outline_only={outline_only}
         />
     </>
 }
@@ -118,10 +121,11 @@ interface RenderCountryOutlinesProps
 {
     country_of_interest_land: ILatLon[][]
     other_outlines: ILatLon[][]
+    outline_only?: boolean
 }
 function RenderCountryOutlines(props: RenderCountryOutlinesProps)
 {
-    const { country_of_interest_land, other_outlines } = props
+    const { country_of_interest_land, other_outlines, outline_only } = props
 
     // Build projected extruded geometries for outline of country of interest and its EEZ
     const projection = get_projection()
@@ -129,17 +133,25 @@ function RenderCountryOutlines(props: RenderCountryOutlinesProps)
     const other_country_land_geometries = build_geoms(projection, other_outlines, Z_MAP_THICKNESS)
 
     return <>
-        {CoI_land_geometries.map(({ fill }, index) => (
-            <mesh key={"land" + index} geometry={fill}>
+        {CoI_land_geometries.map(({ fill, outline }, index) => {
+            if (outline_only) return <lineSegments key={"outline" + index} geometry={outline}>
+                <lineBasicMaterial color={0x40beea} linewidth={2} />
+            </lineSegments>
+
+            return <mesh key={"land" + index} geometry={fill}>
                 <meshStandardMaterial color={0x999999} metalness={0.1} roughness={0.8} side={THREE.DoubleSide} />
             </mesh>
-        ))}
+        })}
 
-        {other_country_land_geometries.map(({ fill }, index) => (
-            <mesh key={"land" + index} geometry={fill}>
+        {other_country_land_geometries.map(({ fill, outline }, index) => {
+            if (outline_only) return <lineSegments key={"outline" + index} geometry={outline}>
+                <lineBasicMaterial color={0x40beea} linewidth={2} />
+            </lineSegments>
+
+            return <mesh key={"land" + index} geometry={fill}>
                 <meshStandardMaterial color={0x999999} transparent opacity={0.3} side={THREE.DoubleSide} />
             </mesh>
-        ))}
+        })}
     </>
 }
 
