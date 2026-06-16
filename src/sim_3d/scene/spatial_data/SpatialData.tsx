@@ -5,7 +5,7 @@ import * as THREE from "three"
 import { ILatLon, ILatLonWithIsOnshore } from "core/data/values/LatLon"
 
 import { ModelData } from "../../model/interface"
-import { bakers_blue_material, solar_yellow_material } from "../../utils/colour"
+import { solar_yellow_material, wind_blue_material } from "../../utils/colour"
 import {
     convert_lat_lon_to_sphere as convert_lat_lon_to_sphere_orig
 } from "../../utils/geo/convert_lat_lon_to_sphere"
@@ -165,7 +165,7 @@ function update_cell_colours(
             const wind = lat_lon.is_onshore
                 ? wind_onshore.get({ datetime_ms, lat_lon })!
                 : wind_offshore.get({ datetime_ms, lat_lon })!
-            material = bakers_blue_material(wind * WIND_SCALE)
+            material = wind_blue_material(wind * WIND_SCALE)
         }
         else if (lat_lon.is_onshore)
         {

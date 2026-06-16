@@ -6,7 +6,7 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
 import { useFrame } from "@react-three/fiber"
 import { COLOURS, CONSTANTS } from "../../simple_sim/constants"
 import { CapacityFactorData } from "../../utils/capacity_factor_data"
-import { bakers_blue_material, solar_yellow_material } from "../../utils/colour"
+import { solar_yellow_material, wind_blue_material } from "../../utils/colour"
 import { build_geom, get_projection, latlon_tuples_to_objs } from "../projection"
 
 
@@ -56,7 +56,6 @@ export function H3Cells(props: {
     }, [h3_cell_ids])
 
 
-    const MAX_DATETIME_STEPS = 24 * 365
     const animation_state_ref = useRef({
         datetime_index: 0,
         last_animated_at_seconds: -Infinity,
@@ -73,16 +72,17 @@ export function H3Cells(props: {
         if (!state.animate_fps) return
         if ((elapsed_seconds - state.last_animated_at_seconds) < (1 / state.animate_fps)) return
         state.last_animated_at_seconds = elapsed_seconds
-        state.datetime_index = (state.datetime_index + 1) % MAX_DATETIME_STEPS
 
         const { data: capacity_data, type } = props.capacity_data
+        state.datetime_index = (state.datetime_index + 1) % capacity_data.date_time_to_index.size
+
         fill_mesh_refs.current.forEach(mesh =>
         {
             if (!mesh) return
             const h3_cell_id = mesh.geometry.name
             const capacity_factor = capacity_data.get_capacity_factor(state.datetime_index, h3_cell_id)
             const material_colour = type === "wind"
-                ? bakers_blue_material(capacity_factor)
+                ? wind_blue_material(capacity_factor)
                 : solar_yellow_material(capacity_factor)
             mesh.material = material_colour
             mesh.material.needsUpdate = true
