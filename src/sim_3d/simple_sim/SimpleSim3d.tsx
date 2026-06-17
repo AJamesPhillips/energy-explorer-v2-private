@@ -11,6 +11,7 @@ import { CountryMap } from "../dev/CountryMap"
 import { H3LandCells } from "../dev/dgg/H3LandCells"
 import { WorldAtlas } from "../dev/interface"
 import { NEARBY_COUNTRY_IDS, UK_ID } from "../dev/map_data"
+import { PowerPlantsCurrent } from "../dev/PowerPlantsCurrent"
 import { PowerStats } from "../model/interface"
 import pub_sub from "../state/pub_sub"
 import { sim_clock } from "../state/sim_clock"
@@ -181,9 +182,9 @@ export function SimpleSim3d(props: SimpleSim3dProps)
             h3_cells={h3_land_cells}
         />}
 
-        {/* <PowerPlantsCurrent
+        <PowerPlantsCurrent
             show_aggregated={true}
-        /> */}
+        />
     </>
 }
 

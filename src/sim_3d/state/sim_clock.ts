@@ -3,8 +3,8 @@ import { GameSpeed } from "../../state/game_datetime/interface"
 import pub_sub from "../state/pub_sub"
 
 
-const NORMAL_SPEED = 3600 / 10
-const FAST_SPEED = 3600 * 2
+const NORMAL_SPEED = 3600 / 5
+const FAST_SPEED = 3600 * 10
 
 let sim_seconds_per_real_second: number
 let last_real = 0

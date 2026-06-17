@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react"
+import { useEffect } from "react"
 import * as THREE from "three"
 
 
@@ -9,43 +9,33 @@ let frame_geo: THREE.BoxGeometry
 let frame_mat: THREE.MeshStandardMaterial
 let frame_mat_transparent: THREE.MeshStandardMaterial
 
-export function SolarFarmsInit({ cell_size }: { cell_size: number })
+function solar_farms_init(size: number)
 {
-    const result = useMemo(() => {
-        const pw = cell_size * 0.38
-        const ph = cell_size * 0.28
+    useEffect(() =>
+    {
+        const pw = size * 0.38
+        const ph = size * 0.28
 
         const panel_mat_args = { color: 0x1a2e6e, side: THREE.FrontSide }
         const frame_mat_args = { color: 0x888888 }
 
-        return {
-            panel_geo: new THREE.PlaneGeometry(pw, ph),
-            panel_mat: new THREE.MeshStandardMaterial(panel_mat_args),
-            panel_mat_transparent: new THREE.MeshStandardMaterial({ ...panel_mat_args, transparent: true }),
-            frame_geo: new THREE.BoxGeometry(pw + cell_size * 0.03, cell_size * 0.015, cell_size * 0.015),
-            frame_mat: new THREE.MeshStandardMaterial(frame_mat_args),
-            frame_mat_transparent: new THREE.MeshStandardMaterial({ ...frame_mat_args, transparent: true }),
+        panel_geo = new THREE.PlaneGeometry(pw, ph)
+        panel_mat = new THREE.MeshStandardMaterial(panel_mat_args)
+        panel_mat_transparent = new THREE.MeshStandardMaterial({ ...panel_mat_args, transparent: true })
+        frame_geo = new THREE.BoxGeometry(pw + size * 0.03, size * 0.015, size * 0.015)
+        frame_mat = new THREE.MeshStandardMaterial(frame_mat_args)
+        frame_mat_transparent = new THREE.MeshStandardMaterial({ ...frame_mat_args, transparent: true })
+
+        // Dispose geometry/materials on unmount
+        return () => {
+            panel_geo.dispose()
+            panel_mat.dispose()
+            panel_mat_transparent.dispose()
+            frame_geo.dispose()
+            frame_mat.dispose()
+            frame_mat_transparent.dispose()
         }
-    }, [cell_size])
-
-    panel_geo = result.panel_geo
-    panel_mat = result.panel_mat
-    panel_mat_transparent = result.panel_mat_transparent
-    frame_geo = result.frame_geo
-    frame_mat = result.frame_mat
-    frame_mat_transparent = result.frame_mat_transparent
-
-    // Dispose geometry/materials on unmount
-    useEffect(() => () => {
-        panel_geo.dispose()
-        panel_mat.dispose()
-        panel_mat_transparent.dispose()
-        frame_geo.dispose()
-        frame_mat.dispose()
-        frame_mat_transparent.dispose()
-    }, [panel_geo, panel_mat, panel_mat_transparent, frame_geo, frame_mat, frame_mat_transparent])
-
-    return null
+    }, [size])
 }
 
 
@@ -59,7 +49,6 @@ export function SolarFarms(props: SolarFarmProps)
 {
     const { tiles, cell_size = 1 } = props
     if (tiles.length === 0) return null
-    const { size = cell_size } = props
 
     const tile_top_y = cell_size * 0.06
     return tiles.map(({ x, y }) => (
@@ -67,7 +56,7 @@ export function SolarFarms(props: SolarFarmProps)
             key={`${x}-${y}`}
             position={[x * cell_size, tile_top_y, y * cell_size]}
         >
-            <SolarFarmPanels size={size} />
+            <SolarFarmPanels />
         </group>
     ))
 }
@@ -81,8 +70,9 @@ export function SolarFarms(props: SolarFarmProps)
  * Props:
  *   size: number (required)
  */
-export function SolarFarmPanels({ size, transparent }: { size: number, transparent?: boolean })
+export function SolarFarmPanels({ size = 7, transparent }: { size?: number, transparent?: boolean })
 {
+    solar_farms_init(size)
     const tilt = Math.PI / 6
     const panel_h = size * 0.28
     const leg_h = size * 0.08

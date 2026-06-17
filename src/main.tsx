@@ -38,6 +38,7 @@ import { SimpleSim } from "./sim_3d/simple_sim/SimpleSim"
 import { DataPortal } from "./sim_3d/simple_sim/ui/DataPortal"
 import { GameDatetimeUI } from "./sim_3d/simple_sim/ui/GameDatetimeUI"
 import { Info } from "./sim_3d/simple_sim/ui/Info"
+import { LilGui } from "./utils/LilGui"
 
 
 function App ()
@@ -185,11 +186,13 @@ function App ()
     if (show_dev_view) return <>
         <Evaluator />
         <DevView />
+        <LilGui />
     </>
 
 
     return <>
         <Evaluator />
+        <LilGui />
 
         <div id="app_html">
 
