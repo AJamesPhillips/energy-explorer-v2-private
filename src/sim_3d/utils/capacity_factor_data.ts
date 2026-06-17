@@ -6,7 +6,7 @@ export interface CapacityFactorData
     h3_cell_id_to_index: Map<string, number>
     // The data is stored in a 1D array, where the index is calculated as:
     // index = date_time_index * number_of_h3_cell_ids + h3_cell_id_index
-    get_capacity_factor(date_time_or_index: string | number, h3_cell_id_or_index: string | number): number
+    get_capacity_factor(date_time_or_index: string | number, h3_cell_id_or_index: string | number): number | undefined
     /**
      * Data is a value from 0 to 0.99 of the capacity of the wind / solar PV
      * farm at each date time for each h3 cell id.
@@ -95,7 +95,7 @@ export function aggregate_to_annual_average(capacity_factor_data: CapacityFactor
     {
         for (let date_time_index = 0; date_time_index < date_time_to_index.size; ++date_time_index)
         {
-            annual_data[h3_cell_id_index]! += get_capacity_factor(date_time_index, h3_cell_id_index)
+            annual_data[h3_cell_id_index]! += get_capacity_factor(date_time_index, h3_cell_id_index) ?? 0
         }
         // Divide by the number of date times to get the average
         annual_data[h3_cell_id_index] = annual_data[h3_cell_id_index]! / date_time_to_index.size
@@ -110,7 +110,7 @@ export function aggregate_to_annual_average(capacity_factor_data: CapacityFactor
                 ? h3_cell_id_or_index : h3_cell_id_to_index.get(h3_cell_id_or_index)
             if (h3_cell_id_index === undefined)
             {
-                return 0
+                return undefined
                 // throw new Error(`Unknown h3 cell id: ${h3_cell_id_or_index}`)
             }
             const value = annual_data[h3_cell_id_index]
@@ -181,7 +181,7 @@ function factory(args: FactoryArgs)
         return date_time_index * args.number_of_h3_cell_ids + h3_cell_id_index
     }
 
-    function get_capacity_factor(date_time_or_index: string | number, h3_cell_id_or_index: string | number): number
+    function get_capacity_factor(date_time_or_index: string | number, h3_cell_id_or_index: string | number): number | undefined
     {
         const date_time_index = typeof date_time_or_index === "number"
             ? date_time_or_index : args.date_time_to_index.get(date_time_or_index)
@@ -194,7 +194,7 @@ function factory(args: FactoryArgs)
             ? h3_cell_id_or_index : args.h3_cell_id_to_index.get(h3_cell_id_or_index)
         if (h3_cell_id_index === undefined)
         {
-            return 0
+            return undefined
             // throw new Error(`Unknown h3 cell id: ${h3_cell_id}`)
         }
 
