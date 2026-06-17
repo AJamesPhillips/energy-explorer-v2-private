@@ -19,6 +19,13 @@ export interface PublishableEvents
         delta_seconds: number
         elapsed_seconds: number
     }
+    simulation_datetime: {
+        datetime: Date
+        datetime_ms: number
+        datetime_annual_hourly_index1: number
+        datetime_annual_hourly_index2: number
+        datetime_annual_hourly_index_mix: number
+    }
     show_message: {
         id?: string
         message: string

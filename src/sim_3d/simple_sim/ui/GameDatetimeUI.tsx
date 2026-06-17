@@ -1,13 +1,18 @@
-import { GameSpeed } from "../../../state/game_datetime/interface"
+import { useEffect, useState } from "react"
+
 import { get_app_state } from "../../../state/store"
+import pub_sub from "../../state/pub_sub"
 
 
 const month_formatter = new Intl.DateTimeFormat("default", { month: "long" })
 
 export function GameDatetimeUI()
 {
-    const game_datetime = get_app_state(state => state.game_datetime)
-    const dt = game_datetime.datetime
+    const [dt, set_dt] = useState(new Date())
+    useEffect(() => pub_sub.sub("simulation_datetime", ({ datetime }) =>
+    {
+        set_dt(datetime)
+    }), [])
 
     return <div style={{
         display: "flex",
@@ -23,19 +28,21 @@ export function GameDatetimeUI()
                 {dt.getUTCFullYear()} {month_formatter.format(dt)} {dt.getUTCDate()}
             </span>
             <br/>
-            <span style={{ fontSize: "var(--font-medium)", fontWeight: "bold" }}>14:00</span>
+            <span style={{ fontSize: "var(--font-medium)", fontWeight: "bold" }}>
+                {dt.getUTCHours().toString().padStart(2, "0")}:{(Math.floor(dt.getUTCMinutes() / 10) * 10).toString().padStart(2, "0")}
+            </span>
         </div>
 
-        <SpeedControl speed={game_datetime.speed} set_speed={game_datetime.set_speed} />
+        <SpeedControl />
     </div>
 }
 
 
 
 const speed_button_style = { padding: "2px 4px", minHeight: 0, height: 20 }
-function SpeedControl(props: { speed: GameSpeed, set_speed: (speed: GameSpeed) => void })
+function SpeedControl()
 {
-    const { speed, set_speed } = props
+    const { speed, set_speed } = get_app_state(state => state.game_datetime)
 
     return <div style={{ display: "flex", flexDirection: "row", gap: 4, marginLeft: 8 }}>
         <div

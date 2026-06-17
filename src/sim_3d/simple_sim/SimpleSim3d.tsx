@@ -13,6 +13,7 @@ import { WorldAtlas } from "../dev/interface"
 import { NEARBY_COUNTRY_IDS, UK_ID } from "../dev/map_data"
 import { PowerStats } from "../model/interface"
 import pub_sub from "../state/pub_sub"
+import { sim_clock } from "../state/sim_clock"
 import { CONSTANTS, DEFAULTS } from "./constants"
 import { CellData, CellsData } from "./interface"
 import { IsoCamera } from "./IsoCamera"
@@ -58,11 +59,20 @@ export function SimpleSim3d(props: SimpleSim3dProps)
         scene.background = new THREE.Color(0xeeeeff)
     })
 
+
+    useEffect(() =>
+    {
+        sim_clock.init({
+            start_timestamp: new Date("2026-06-01T00:00:00.000Z").getTime(),
+            end_timestamp: new Date("2026-06-15T00:00:00.000Z").getTime(),
+        })
+    }, [])
     useFrame((state, delta) =>
     {
+        const elapsed_seconds = state.clock.getElapsedTime()
         pub_sub.pub("animation_tick", {
             delta_seconds: delta,
-            elapsed_seconds: state.clock.getElapsedTime(),
+            elapsed_seconds,
         })
     })
 
