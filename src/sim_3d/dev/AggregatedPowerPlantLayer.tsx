@@ -4,6 +4,7 @@ import * as THREE from "three"
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
 
 import { AggregatedPowerPlantData } from "../data/power_plants/interface"
+import { clamp } from "../utils/clamp"
 import { get_projection, points_to_geometries, XY } from "./projection"
 
 
@@ -32,37 +33,37 @@ export function AggregatedPowerPlantLayer(props: AggregatedPowerPlantLayerProps)
         RenderPlants,
     } = props
 
-    const projection = get_projection()
-
     const {
         tiles,
         merged_fill,
         merged_outline,
     } = useMemo(() =>
     {
+        const projection = get_projection()
+
         const tiles: XY[] = []
         const fill_geometries: THREE.BufferGeometry[] = []
         const outline_geometries: THREE.BufferGeometry[] = []
 
-        for (const [h3_index, data] of Object.entries(aggregated_data))
+        for (const [h3_id, data] of Object.entries(aggregated_data))
         {
             const aggregate = data[plant_key]
             if (aggregate.count === 0) continue
 
-            const [lat, lon] = h3.cellToLatLng(h3_index)
+            const [lat, lon] = h3.cellToLatLng(h3_id)
             const center = projection({ lat, lon })
             if (!center) continue
 
-            const cell_area_km2 = h3.cellArea(h3_index, h3.UNITS.km2)
+            const cell_area_km2 = h3.cellArea(h3_id, h3.UNITS.km2)
             const plant_area_km2 = aggregate.area_km2 ?? 0
-            const area_ratio = Math.min(Math.max(plant_area_km2 / cell_area_km2, 0), 1)
+            const area_ratio = clamp(plant_area_km2 / cell_area_km2)
             if (area_ratio < min_area_ratio) continue
 
             tiles.push(center)
 
             if (area_ratio === 0) continue
 
-            const boundary = h3.cellToBoundary(h3_index, false)
+            const boundary = h3.cellToBoundary(h3_id, false)
             const boundary_points = boundary
                 .map(([boundary_lat, boundary_lon]) => projection({ lat: boundary_lat, lon: boundary_lon }))
                 .filter((point): point is XY => point !== null)
@@ -85,7 +86,7 @@ export function AggregatedPowerPlantLayer(props: AggregatedPowerPlantLayerProps)
             merged_fill: fill_geometries.length ? mergeGeometries(fill_geometries, true) : null,
             merged_outline: outline_geometries.length ? mergeGeometries(outline_geometries, false) : null,
         }
-    }, [aggregated_data, min_area_ratio, plant_key, projection])
+    }, [aggregated_data, min_area_ratio, plant_key])
 
     return <>
         <group position={[0, 1.02, 0]}>

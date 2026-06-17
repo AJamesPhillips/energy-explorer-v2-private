@@ -21,14 +21,14 @@ export function FooterBuildOptions(props: {
     remove_aria_label: string
 })
 {
-    const state = get_app_state()
-    const active = state.building_action.active
+    const building_action = get_app_state(state => state.building_action)
+    const active = building_action.active
     const selected_option = active ? active.type : false
     const show_options = props.options.some(option => option.type === selected_option)
 
     const handle_option_click = (action_type: BuildingActionTypeString | false) =>
     {
-        state.building_action.set_building_action(action_type ? { type: action_type } : false)
+        building_action.set_building_action(action_type ? { type: action_type } : false)
     }
 
     return <div className="footer_row">

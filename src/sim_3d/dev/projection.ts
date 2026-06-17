@@ -12,9 +12,13 @@ export function latlon_objs_to_latlon_tuples(latlon: ILatLon[])
     return latlon.map(({ lat, lon }) => [lat, lon] as [number, number])
 }
 
-export function latlon_tuples_to_objs(latlon: [number, number][]): ILatLon[]
+export function latlon_tuples_to_objs(latlons: [number, number][]): ILatLon[]
 {
-    return latlon.map(([ lat, lon ]) => ({ lat, lon }))
+    return latlons.map(latlon_tuple_to_obj)
+}
+export function latlon_tuple_to_obj([lat, lon]: [number, number]): ILatLon
+{
+    return { lat, lon }
 }
 
 

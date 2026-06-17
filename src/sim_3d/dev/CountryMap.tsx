@@ -171,7 +171,6 @@ function CountryH3Map(props: CountryH3MapProps)
     } = props
 
     const h3_cell_ids = useMemo(() => {
-        // set_is_computing(true)
         const country_of_interest_land_latlons = country_of_interest_land.map(latlon_objs_to_latlon_tuples)
         const cell_ids = country_of_interest_land_latlons
             .map(outline => h3.polygonToCells(outline, resolution))

@@ -1,7 +1,7 @@
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import { WindTurbineFarms } from "../3d_models/WindTurbine"
-import { aggregated_power_plants_by_h3_cell, power_plants_data } from "../data/power_plants"
+import { power_plants_data, promise_aggregated_power_plants_by_h3_cell } from "../data/power_plants"
 import { SolarFarms } from "../simple_sim/tiles/SolarFarm"
 import { AggregatedPowerPlantLayer } from "./AggregatedPowerPlantLayer"
 import { get_projection, XY } from "./projection"
@@ -12,8 +12,6 @@ export function PowerPlantsCurrent({ show_aggregated }: { show_aggregated: boole
 {
     if (show_aggregated) return <PowerPlantsCurrentAggregated />
 
-    const projection = get_projection()
-
     const {
         wind_farm_tiles,
         solar_farm_tiles,
@@ -21,6 +19,8 @@ export function PowerPlantsCurrent({ show_aggregated }: { show_aggregated: boole
         nuclear_plant_tiles,
     } = useMemo(() =>
     {
+        const projection = get_projection()
+
         const wind_farm_tiles: XY[] = []
         const solar_farm_tiles: XY[] = []
         const gas_plant_tiles: XY[] = []
@@ -48,6 +48,15 @@ export function PowerPlantsCurrent({ show_aggregated }: { show_aggregated: boole
 
 export function PowerPlantsCurrentAggregated()
 {
+    const [aggregated_power_plants_by_h3_cell, set_aggregated_power_plants_by_h3_cell] = useState<Record<string, any> | null>(null)
+
+    useEffect(() =>
+    {
+        promise_aggregated_power_plants_by_h3_cell.then(set_aggregated_power_plants_by_h3_cell)
+    })
+
+    if (!aggregated_power_plants_by_h3_cell) return null
+
     return <>
         <AggregatedPowerPlantLayer
             aggregated_data={aggregated_power_plants_by_h3_cell}

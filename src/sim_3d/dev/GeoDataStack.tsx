@@ -6,11 +6,9 @@ import * as THREE from "three"
 import { get_uk_land_coverage, LandH3Cell } from "../data/coverage_land/uk/data"
 import { UK_EEZ_COORDS } from "../data/eez/data"
 import { H3_RESOLUTION } from "../data/power_plants"
-import { load_solar_pv_capacity_data, load_wind_turbine_capacity_data } from "../data/wind_and_solar_capacity/load_data"
 import { CONSTANTS, DEFAULTS } from "../simple_sim/constants"
 import { InitialiseGeometriesEtc } from "../simple_sim/InitialiseGeometriesEtc"
 import { IsoCamera } from "../simple_sim/IsoCamera"
-import { aggregate_to_annual_average, CapacityFactorData } from "../utils/capacity_factor_data"
 import { CountryMap } from "./CountryMap"
 import { H3Grid } from "./dgg/H3Grid"
 import { H3LandCells } from "./dgg/H3LandCells"
@@ -27,13 +25,8 @@ export function GeoDataStack()
 {
     const [resolution, set_resolution] = useState(H3_RESOLUTION)
     const [cell_count, set_cell_count] = useState(0)
-    const [is_computing, _set_is_computing] = useState(false)
     const [topo_data, set_topo_data] = useState<WorldAtlas | null>(null)
     const [load_error, set_load_error] = useState<string | null>(null)
-    const [wind_turbine_capacity_data, set_wind_turbine_capacity_data] = useState<CapacityFactorData | null>(null)
-    const [annual_wind_turbine_capacity_data, set_annual_wind_turbine_capacity_data] = useState<CapacityFactorData | null>(null)
-    const [solar_pv_capacity_data, set_solar_pv_capacity_data] = useState<CapacityFactorData | null>(null)
-    const [annual_solar_pv_capacity_data, set_annual_solar_pv_capacity_data] = useState<CapacityFactorData | null>(null)
     const [h3_land_cells, set_h3_land_cells] = useState<LandH3Cell[]>([])
 
     // Fetch world atlas once
@@ -50,36 +43,7 @@ export function GeoDataStack()
 
     useEffect(() =>
     {
-        console.time("load data")
-        let counter = 3
-        function finished_loading()
-        {
-            counter -= 1
-            if (counter === 0) console.timeEnd("load data") // Takes ~1.5s to load all data on my machine
-        }
-
-        load_wind_turbine_capacity_data().then(wind_turbine_capacity_data =>
-        {
-            set_wind_turbine_capacity_data(wind_turbine_capacity_data)
-            const annual = aggregate_to_annual_average(wind_turbine_capacity_data)
-            // const annual = get_ombre_of_capacity_factors(wind_turbine_capacity_data)
-            set_annual_wind_turbine_capacity_data(annual)
-            finished_loading()
-        })
-
-        load_solar_pv_capacity_data().then(solar_pv_capacity_data =>
-        {
-            set_solar_pv_capacity_data(solar_pv_capacity_data)
-            const annual = aggregate_to_annual_average(solar_pv_capacity_data)
-            set_annual_solar_pv_capacity_data(annual)
-            finished_loading()
-        })
-
-        get_uk_land_coverage().then(h3_land_cells =>
-        {
-            set_h3_land_cells(h3_land_cells)
-            finished_loading()
-        })
+        get_uk_land_coverage().then(set_h3_land_cells)
     }, [])
 
     const sun_ambient_ref = useRef<THREE.AmbientLight>(null)
@@ -111,10 +75,6 @@ export function GeoDataStack()
                 EEZ_coords_lonlat={UK_EEZ_COORDS}
                 resolution={resolution}
                 set_cell_count={set_cell_count}
-                // capacity_data={{ data: wind_turbine_capacity_data, type: "wind" }}
-                // capacity_data={{ data: annual_wind_turbine_capacity_data, type: "wind", display_type: "continuous" }}
-                capacity_data={{ data: solar_pv_capacity_data, type: "solar" }}
-                // capacity_data={{ data: annual_solar_pv_capacity_data, type: "solar" }}
             />}
 
             {true && <H3LandCells
@@ -128,7 +88,6 @@ export function GeoDataStack()
         <Controls
             cell_count={cell_count}
             resolution={resolution}
-            is_computing={is_computing}
             set_resolution={set_resolution}
         />
     </>
@@ -162,12 +121,11 @@ interface ControlsProps
 {
     cell_count: number
     resolution: number
-    is_computing: boolean
     set_resolution: (r: number) => void
 }
 function Controls(props: ControlsProps)
 {
-    const { cell_count, resolution, is_computing, set_resolution } = props
+    const { cell_count, resolution, set_resolution } = props
 
     const [is_visible, set_is_visible] = useState(true)
 
@@ -183,9 +141,6 @@ function Controls(props: ControlsProps)
                 <span> {resolution}</span>
                 <span> — {resolution_label(resolution)} </span>
             </label>
-            <span >
-                {is_computing ? "computing…" : `${cell_count.toLocaleString()} cells`}
-            </span>
         </div>
         <input
             type="range"

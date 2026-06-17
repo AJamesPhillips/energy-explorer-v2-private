@@ -1,3 +1,6 @@
+import type { ILatLon } from "core/data/values/LatLon"
+
+import type { XY } from "../../dev/projection"
 
 
 export type RawWindFarmData = [number, number, number | undefined, number | undefined, number, undefined | number, number, number]
@@ -37,6 +40,10 @@ export type PowerPlant = WindFarm | SolarFarm | GasPlant | NuclearPlant
 
 interface AggregatePowerPlantData
 {
+    h3_id: string
+    h3_capacity_factor_index?: number
+    lat_lon: ILatLon
+    xy: XY
     count: number
     capacity_mw: number
     area_km2?: number

@@ -1,5 +1,12 @@
 import { cellToLatLng } from "h3-js"
 
+export interface CapacityData
+{
+    data: CapacityFactorData | null
+    type: "wind" | "solar"
+    display_type?: "discrete" | "continuous"
+}
+
 export interface CapacityFactorData
 {
     date_time_to_index: Map<string, number>
@@ -14,7 +21,20 @@ export interface CapacityFactorData
     data: Float32Array
 }
 
+const cache: Record<string, Promise<CapacityFactorData>> = {}
 export async function load_capacity_factor_data(data_path: string): Promise<CapacityFactorData>
+{
+    if (cache[data_path])
+    {
+        return cache[data_path]
+    }
+
+    const promise = load_capacity_factor_data_inner(data_path)
+    cache[data_path] = promise
+    return promise
+}
+
+async function load_capacity_factor_data_inner(data_path: string): Promise<CapacityFactorData>
 {
     return fetch(data_path)
     .then(response => response.text())

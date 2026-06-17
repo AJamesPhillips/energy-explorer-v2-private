@@ -1,26 +1,22 @@
 import { ThreeEvent } from "@react-three/fiber"
-import { useCallback, useEffect, useMemo, useRef } from "react"
+import { useCallback, useMemo, useRef } from "react"
 import * as THREE from "three"
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
 
 import { CONSTANTS } from "../../simple_sim/constants"
 import pub_sub from "../../state/pub_sub"
-import { CapacityFactorData } from "../../utils/capacity_factor_data"
 import { SOLAR_YELLOW_MATERIAL, WIND_BLUE_MATERIAL } from "../../utils/colour"
 import { cell_to_geometries } from "../projection"
 import { H3CellBoundaryAndHighlight } from "./H3CellBoundaryAndHighlight"
+import { RenderCapacityFactorData } from "./RenderCapacityFactorData"
+
 
 const { Z_DGG_THICKNESS, RENDER_ORDER } = CONSTANTS
 
 export function H3Cells(props: {
-    h3_cell_ids: string[],
-    extrude_depth?: number,
-    y_offset?: number,
-    capacity_data?: {
-        data: CapacityFactorData | null,
-        type: "wind" | "solar",
-        display_type?: "discrete" | "continuous",
-    },
+    h3_cell_ids: string[]
+    extrude_depth?: number
+    y_offset?: number
 })
 {
     const { h3_cell_ids, y_offset=0 } = props
@@ -157,70 +153,8 @@ export function H3Cells(props: {
         }
     }, [coords.merged_fill])
 
-    const animation_state_ref = useRef({
-        last_animated_at_ms: -Infinity,
-        animate_fps: 10,
-    })
-
     // Track current hover to avoid repeated publishes
     const { handle_pointer_move, handle_pointer_leave, handle_click } = make_pointer_move_and_click_handlers(coords)
-
-    useEffect(() => {
-        if (!props.capacity_data || !props.capacity_data.data || !coords.merged_fill) return
-
-        const capacity_data = props.capacity_data.data
-
-        // Build an index -> ms array for fast lookup (ordered by index)
-        const datetime_ms_by_index: number[] = new Array(capacity_data.date_time_to_index.size)
-        capacity_data.date_time_to_index.forEach((idx, date_time) => {
-            datetime_ms_by_index[idx] = Date.parse(date_time)
-        })
-
-        const state = animation_state_ref.current
-
-        const unsub = pub_sub.sub("simulation_datetime", (payload) => {
-            const now = performance.now()
-            if (!state.animate_fps) return
-            if ((now - state.last_animated_at_ms) < (1000 / state.animate_fps)) return
-            state.last_animated_at_ms = now
-
-            // const datetime_index = find_closest_index(datetime_ms_by_index,  payload.datetime_ms)
-            const datetime_index1 = payload.datetime_annual_hourly_index1 % capacity_data.date_time_to_index.size
-            const datetime_index2 = payload.datetime_annual_hourly_index2 % capacity_data.date_time_to_index.size
-            const datetime_index_mix = payload.datetime_annual_hourly_index_mix
-
-            const mesh = merged_mesh_ref.current
-            if (!mesh) return
-            const geom = mesh.geometry as THREE.BufferGeometry
-            if (!geom || !coords.cell_ids || !coords.cell_vertex_ranges) return
-
-            // Use the shader material and update its palette uniform for the current type
-            mesh.material = shader_material
-            const palette = props.capacity_data!.type === "wind" ? palettes.wind : palettes.solar
-            ;(shader_material.uniforms as any).palette.value = palette
-
-            const attr = geom.getAttribute("palette_index") as THREE.BufferAttribute
-            const arr = attr.array as Float32Array
-            const palette_count = palette.length
-
-            coords.cell_ids.forEach((cell_id, i) =>
-            {
-                const capacity_factor = get_capacity_factor_mix(capacity_data, datetime_index1, datetime_index2, datetime_index_mix, cell_id) ?? 0
-                const idxf = props.capacity_data!.display_type === "continuous"
-                    ? capacity_factor * (palette_count - 1)
-                    : Math.round(capacity_factor * (palette_count - 1))
-
-                const range = coords.cell_vertex_ranges[i]!
-                const start = range.start
-                const end = start + range.count
-                for (let v = start; v < end; v++) arr[v] = idxf
-            })
-
-            attr.needsUpdate = true
-        }, "H3Cells-sim")
-
-        return unsub
-    }, [props.capacity_data, coords.merged_fill, coords.cell_ids, coords.cell_vertex_ranges, palettes, shader_material])
 
     return <>
         <group
@@ -240,9 +174,15 @@ export function H3Cells(props: {
             )}
             {coords.merged_outline && <H3CellBoundaryAndHighlight merged_outline={coords.merged_outline} />}
         </group>
+
+        <RenderCapacityFactorData
+            coords={coords}
+            merged_mesh_ref={merged_mesh_ref}
+            shader_material={shader_material}
+            palettes={palettes}
+        />
     </>
 }
-
 
 
 function make_pointer_move_and_click_handlers(coords: { merged_fill: THREE.BufferGeometry<THREE.NormalBufferAttributes, THREE.BufferGeometryEventMap> | null; merged_outline: THREE.BufferGeometry<THREE.NormalBufferAttributes, THREE.BufferGeometryEventMap> | null; cell_ids: string[]; cell_vertex_ranges: { start: number; count: number }[] }) {
@@ -309,33 +249,3 @@ function make_pointer_move_and_click_handlers(coords: { merged_fill: THREE.Buffe
     }, [coords.cell_ids, find_cell_index_for_vertex])
     return { handle_pointer_move, handle_pointer_leave, handle_click }
 }
-
-function get_capacity_factor_mix(capacity_data: CapacityFactorData, idx1: number, idx2: number, mix: number, cell_id: string): number | undefined
-{
-    const cf1 = capacity_data.get_capacity_factor(idx1, cell_id)
-    const cf2 = capacity_data.get_capacity_factor(idx2, cell_id)
-    if (cf1 === undefined && cf2 === undefined) return undefined
-    if (cf1 === undefined) return cf2
-    if (cf2 === undefined) return cf1
-    return cf1 * (1 - mix) + cf2 * mix
-}
-
-
-// function find_closest_index(datetime_ms_by_index: number[], ms: number)
-// {
-//     let low = 0, high = datetime_ms_by_index.length - 1
-//     if (datetime_ms_by_index.length === 0) throw new Error("No datetime data available")
-
-//     if (ms <= datetime_ms_by_index[0]!) return 0
-//     if (ms >= datetime_ms_by_index[high]!) return high
-//     while (low <= high)
-//     {
-//         const mid = (low + high) >> 1
-//         const v = datetime_ms_by_index[mid]!
-//         if (v === ms) return mid
-//         if (v < ms) low = mid + 1
-//         else high = mid - 1
-//     }
-//     const a = datetime_ms_by_index[high]!, b = datetime_ms_by_index[low]!
-//     return (Math.abs(a - ms) <= Math.abs(b - ms) ? high : low)
-// }
