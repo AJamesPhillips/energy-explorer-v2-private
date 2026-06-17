@@ -28,6 +28,21 @@
     --colour-border-gray: rgb(204, 204, 204);
 }
 
+
+/* Overwrite user agent style from chrome which sets buttontext to white */
+/* Ensure button text appears in the intended color across browsers,
+   including Chrome's WebKit-based user agent styles. */
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+.btn,
+a.button {
+    color: black;
+    -webkit-text-fill-color: black;
+}
+
+
 html, body, #app, #app_html {
     margin: 0;
     min-width: 100%;
