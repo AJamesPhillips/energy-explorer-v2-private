@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import * as THREE from "three"
 
 
@@ -9,12 +9,13 @@ let frame_geo: THREE.BoxGeometry
 let frame_mat: THREE.MeshStandardMaterial
 let frame_mat_transparent: THREE.MeshStandardMaterial
 
-function solar_farms_init(size: number)
+const BASE_SIZE = 7
+export function SolarFarmsInit()
 {
     useEffect(() =>
     {
-        const pw = size * 0.38
-        const ph = size * 0.28
+        const pw = BASE_SIZE * 0.38
+        const ph = BASE_SIZE * 0.28
 
         const panel_mat_args = { color: 0x1a2e6e, side: THREE.FrontSide }
         const frame_mat_args = { color: 0x888888 }
@@ -22,7 +23,7 @@ function solar_farms_init(size: number)
         panel_geo = new THREE.PlaneGeometry(pw, ph)
         panel_mat = new THREE.MeshStandardMaterial(panel_mat_args)
         panel_mat_transparent = new THREE.MeshStandardMaterial({ ...panel_mat_args, transparent: true })
-        frame_geo = new THREE.BoxGeometry(pw + size * 0.03, size * 0.015, size * 0.015)
+        frame_geo = new THREE.BoxGeometry(pw + BASE_SIZE * 0.03, BASE_SIZE * 0.015, BASE_SIZE * 0.015)
         frame_mat = new THREE.MeshStandardMaterial(frame_mat_args)
         frame_mat_transparent = new THREE.MeshStandardMaterial({ ...frame_mat_args, transparent: true })
 
@@ -35,7 +36,9 @@ function solar_farms_init(size: number)
             frame_mat.dispose()
             frame_mat_transparent.dispose()
         }
-    }, [size])
+    }, [])
+
+    return null
 }
 
 
@@ -72,19 +75,23 @@ export function SolarFarms(props: SolarFarmProps)
  */
 export function SolarFarmPanels({ size = 7, transparent }: { size?: number, transparent?: boolean })
 {
-    solar_farms_init(size)
     const tilt = Math.PI / 6
-    const panel_h = size * 0.28
-    const leg_h = size * 0.08
+    const panel_h = BASE_SIZE * 0.28
+    const leg_h = BASE_SIZE * 0.08
 
     const offsets: Array<[number, number]> = [
-        [-size * 0.22, -size * 0.18],
-        [ size * 0.22, -size * 0.18],
-        [-size * 0.22,  size * 0.18],
-        [ size * 0.22,  size * 0.18],
+        [-BASE_SIZE * 0.22, -BASE_SIZE * 0.18],
+        [ BASE_SIZE * 0.22, -BASE_SIZE * 0.18],
+        [-BASE_SIZE * 0.22,  BASE_SIZE * 0.18],
+        [ BASE_SIZE * 0.22,  BASE_SIZE * 0.18],
     ]
 
-    return <>
+    const scale = useMemo(() =>
+    {
+        return new THREE.Vector3(size / BASE_SIZE, size / BASE_SIZE, size / BASE_SIZE)
+    }, [size])
+
+    return <group scale={scale}>
         {offsets.map(([ox, oz], i) => {
             const bottom_y = leg_h
             const panel_center_y = bottom_y + (panel_h / 2) * Math.cos(tilt)
@@ -107,5 +114,5 @@ export function SolarFarmPanels({ size = 7, transparent }: { size?: number, tran
                 </group>
             )
         })}
-    </>
+    </group>
 }
