@@ -19,7 +19,6 @@ import { DataComponentAsJSON } from "core/supabase"
 import { BalanceSheet } from "./balance_sheet/BalanceSheet"
 import { factors_up_to } from "./balance_sheet/EnergyBoxesHelper"
 import { Options, ViewType } from "./components/Options"
-import { SelectCountry } from "./components/SelectCountry"
 import {
     perspective_id_general,
     PerspectiveType,
@@ -202,7 +201,12 @@ function App ()
                     <div id="app_top_bar_side">
                         {sim_or_dt && <>
                             <div className="app_controls_row">
-                                <SelectCountry selected_country_ISO2="GB" />
+                                {/* <SelectCountry selected_country_ISO2="GB" /> */}
+                                <div>
+                                    <span style={{ fontSize: "var(--font-small)", fontWeight: "bold" }}>2026 JUNE 17</span>
+                                    <br/>
+                                    <span style={{ fontSize: "var(--font-medium)", fontWeight: "bold" }}>14:00</span>
+                                </div>
                             </div>
                             <div className="app_controls_row">
                                 <Info />

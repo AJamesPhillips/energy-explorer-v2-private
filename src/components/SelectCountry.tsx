@@ -21,19 +21,7 @@ interface SelectCountryProps
 export function SelectCountry(props: SelectCountryProps)
 {
     const [show_info_box, set_show_info_box] = useState(false)
-    const [filter_text, set_filter_text] = useState("")
-    const initial_user_votes_by_country_code2 = useMemo(() => get_local_user_votes_by_country_code2(), [])
-    const [user_votes_by_country_code2, set_user_votes_by_country_code2] = useState(initial_user_votes_by_country_code2)
-
     const country = get_country_by_code(props.selected_country_ISO2)
-
-    const filtered_countries = extended_countries_data
-        .filter(c => c.name.toLowerCase().includes(filter_text) || c.code2.toLowerCase().includes(filter_text)  || c.code3.toLowerCase().includes(filter_text))
-
-    const implemented_countries = filtered_countries.filter(c => c.implemented)
-    const unimplemented_countries = filtered_countries.filter(c => !c.implemented)
-        .sort((a, b) => b.votes - a.votes) // show the most voted for unimplemented countries at the top
-
 
     useEffect(() => pub_sub.sub("show_select_country", () =>
     {
@@ -48,63 +36,78 @@ export function SelectCountry(props: SelectCountryProps)
         >
             <span style={{ fontSize: "24px" }}>{country?.emoji}</span>
 
-            {show_info_box && <InfoBox
-                message={
-                    <>
-                        <h1>Vote for a Country</h1>
-                        <p>
-                            Press ⚡ to vote for a country to be added to this
-                            simulation.
-                        </p>
-                        {/* <p>
-                            I hope you enjoyed and learnt something, if so <a href="https://www.patreon.com/WikiSim">we'd be grateful for your support to let us do more ❤️</a>
-                        </p> */}
-
-                        <Filter set_filter_text={set_filter_text} />
-
-                        <div id="countries_list">
-                            {implemented_countries.length > 0 && <div className="countries_list_first_sub_heading">
-                                IMPLEMENTED ({implemented_countries.length}):
-                            </div>}
-
-                            {implemented_countries.map(c => <CountryRow
-                                key={c.code2}
-                                country={c}
-                                user_votes_by_country_code2={user_votes_by_country_code2}
-                                set_user_votes_by_country_code2={set_user_votes_by_country_code2}
-                            />)}
-
-                            <div className="countries_list_second_sub_heading">
-                                NOT IMPLEMENTED YET ({unimplemented_countries.length}):
-                            </div>
-
-                            {unimplemented_countries.map(c => <CountryRow
-                                key={c.code2}
-                                country={c}
-                                user_votes_by_country_code2={user_votes_by_country_code2}
-                                set_user_votes_by_country_code2={set_user_votes_by_country_code2}
-                            />)}
-                        </div>
-
-                        <SubscribeOrFollow
-                            user_votes_by_country_code2={user_votes_by_country_code2}
-                            initial_user_votes_by_country_code2={initial_user_votes_by_country_code2}
-                        />
-
-                        <p>
-                            I hope you enjoyed and learnt something from this simulation.
-                            It took a lot of work to make this so please consider <Link url="https://www.patreon.com/WikiSim">donating ❤️</Link>
-                        </p>
-                    </>
-                }
-                confirmation_button={({ close_info_box }) =>
-                {
-                    return <button onClick={close_info_box}>Close</button>
-                }}
-                on_close={() => set_show_info_box(false)}
-            />}
+            {show_info_box && InfoBoxSelectCountry({
+                on_close: () => set_show_info_box(false),
+            })}
         </div>
     )
+}
+
+
+export function InfoBoxSelectCountry(props: { on_close: () => void })
+{
+    const [filter_text, set_filter_text] = useState("")
+    const initial_user_votes_by_country_code2 = useMemo(() => get_local_user_votes_by_country_code2(), [])
+    const [user_votes_by_country_code2, set_user_votes_by_country_code2] = useState(initial_user_votes_by_country_code2)
+
+    const filtered_countries = extended_countries_data
+        .filter(c => c.name.toLowerCase().includes(filter_text) || c.code2.toLowerCase().includes(filter_text)  || c.code3.toLowerCase().includes(filter_text))
+
+    const implemented_countries = filtered_countries.filter(c => c.implemented)
+    const unimplemented_countries = filtered_countries.filter(c => !c.implemented)
+        .sort((a, b) => b.votes - a.votes) // show the most voted for unimplemented countries at the top
+
+    return <InfoBox
+        message={
+            <>
+                <h1>Vote for a Country</h1>
+                <p>
+                    Press ⚡ to vote for a country.
+                </p>
+
+                <Filter set_filter_text={set_filter_text} />
+
+                <div id="countries_list">
+                    {implemented_countries.length > 0 && <div className="countries_list_first_sub_heading">
+                        IMPLEMENTED ({implemented_countries.length}):
+                    </div>}
+
+                    {implemented_countries.map(c => <CountryRow
+                        key={c.code2}
+                        country={c}
+                        user_votes_by_country_code2={user_votes_by_country_code2}
+                        set_user_votes_by_country_code2={set_user_votes_by_country_code2}
+                    />)}
+
+                    <div className="countries_list_second_sub_heading">
+                        NOT IMPLEMENTED YET ({unimplemented_countries.length}):
+                    </div>
+
+                    {unimplemented_countries.map(c => <CountryRow
+                        key={c.code2}
+                        country={c}
+                        user_votes_by_country_code2={user_votes_by_country_code2}
+                        set_user_votes_by_country_code2={set_user_votes_by_country_code2}
+                    />)}
+                </div>
+
+                <SubscribeOrFollow
+                    user_votes_by_country_code2={user_votes_by_country_code2}
+                    initial_user_votes_by_country_code2={initial_user_votes_by_country_code2}
+                />
+
+                <p>
+                    I hope you enjoyed and learnt something from this simulation.
+                    It took a lot of work to make this so please consider <Link url="https://www.patreon.com/WikiSim">donating ❤️</Link>
+                </p>
+            </>
+        }
+        confirmation_button={({ close_info_box }) =>
+        {
+            return <button onClick={close_info_box}>Close</button>
+        }}
+        on_close={props.on_close}
+    />
 }
 
 

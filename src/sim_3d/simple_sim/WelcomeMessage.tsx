@@ -77,7 +77,7 @@ export function WelcomeMessage2()
                         noWrap={true}
                     >
                         Subscribe <MailIcon style={{ height: 14 }} />
-                    </Link> to hear about updates.
+                    </Link> to hear about updates and improvements
                 </p>
             </>
         }
