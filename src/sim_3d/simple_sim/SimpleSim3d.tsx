@@ -15,7 +15,7 @@ import { PowerStats } from "../model/interface"
 import pub_sub from "../state/pub_sub"
 import { sim_clock } from "../state/sim_clock"
 import { CONSTANTS, DEFAULTS } from "./constants"
-import { CellData, CellsData } from "./interface"
+import { CellDataV1, CellsData } from "./interface"
 import { IsoCamera } from "./IsoCamera"
 import { WindSolarH3Grid } from "./WindSolarH3Grid"
 
@@ -64,6 +64,7 @@ export function SimpleSim3d(props: SimpleSim3dProps)
     {
         sim_clock.init({
             start_timestamp: new Date("2026-06-01T00:00:00.000Z").getTime(),
+            current_timestamp: new Date("2026-06-01T09:00:00.000Z").getTime(),
             end_timestamp: new Date("2026-06-15T00:00:00.000Z").getTime(),
         })
     }, [])
@@ -264,7 +265,7 @@ function calculate_power_supply_from_data(data: CellsData): number
     {
         Object.values(column).forEach(cell_ =>
         {
-            const cell = cell_ as CellData
+            const cell = cell_ as CellDataV1
 
             if (cell.type === "sea" && cell.has_wind_turbine)
             {

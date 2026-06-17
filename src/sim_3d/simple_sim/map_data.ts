@@ -1,4 +1,4 @@
-import { CellData, CellsData, OilGasPocket, OilRigConfig, OilRigState } from "./interface"
+import { CellDataV1, CellsData, OilGasPocket, OilRigConfig, OilRigState } from "./interface"
 import { get_land_or_sea_for_letter, LetterType, map_type_to_letter } from "./map_data_compact"
 
 
@@ -186,7 +186,7 @@ export const map_data_cells: CellsData = map_data
                 if (cell === map_type_to_letter.land.arable || cell === map_type_to_letter.land.wetland) cell = "g"
 
                 if (!acc[x]) acc[x] = {}
-                const cell_data: CellData = {
+                const cell_data: CellDataV1 = {
                     ...get_land_or_sea_for_letter(cell as LetterType),
                     id: id++,
                     x,
@@ -200,4 +200,4 @@ export const map_data_cells: CellsData = map_data
             })
 
             return acc
-        }, {} as Record<number, Record<number, CellData>>)
+        }, {} as Record<number, Record<number, CellDataV1>>)

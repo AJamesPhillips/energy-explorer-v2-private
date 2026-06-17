@@ -5,6 +5,7 @@ const Z_MAP_OFFSET = 0.0
 const Z_EEZ_OUTLINE_OFFSET = 0.1
 const Z_DGG5_OFFSET = 0.2
 const Z_DGG4_OFFSET = 0.3
+const Z_DGG_CELL_HIGHLIGHT_OFFSET = 0.4
 
 const Z_THICKNESS = 0.1
 
@@ -23,6 +24,8 @@ export const CONSTANTS = {
     Z_DGG4_OFFSET,
     Z_DGG5_OFFSET,
     Z_DGG_THICKNESS: Z_THICKNESS,
+    Z_DGG_CELL_HIGHLIGHT_OFFSET,
+    Z_DGG_CELL_HIGHLIGHT_THICKNESS: Z_THICKNESS,
 
     RENDER_ORDER:
     {
@@ -61,6 +64,7 @@ export const COLOURS = {
     country_outline: "#404040",
     country_fill: "#999999",
     dgg_grid: "#60b0b0",
+    dgg_highlight: "#f0c000",
     coal: "#333",
     oil: "#e07020",
     gas: "#2a7ae4",

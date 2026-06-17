@@ -6,7 +6,7 @@ import { BuildingActionTypeString } from "../../state/building_action/interface"
 import { asset_url } from "../../utils/asset_url"
 import { WindTurbine } from "../3d_models/WindTurbine"
 import pub_sub from "../state/pub_sub"
-import { CellData } from "./interface"
+import { CellDataV1 } from "./interface"
 import { SolarFarmPanels } from "./tiles/SolarFarm"
 
 const bubbles_audio_url = asset_url("/audio/bubbles.mp3")
@@ -15,7 +15,7 @@ const bubbles_audio_url = asset_url("/audio/bubbles.mp3")
 interface SinkingEntry
 {
     id: number
-    tile: CellData
+    tile: CellDataV1
     item_type: BuildingActionTypeString
 }
 
@@ -28,7 +28,7 @@ export function InvalidPlacementAnimations({ cell_size }: { cell_size: number })
 
     useEffect(() => pub_sub.sub("invalid_placement", ({ tile, item_type, invalid_because }) =>
     {
-        set_entries(prev => [...prev, { id: next_id++, tile, item_type }])
+        // set_entries(prev => [...prev, { id: next_id++, tile, item_type }])
         if (invalid_because === "water") play_bubbling_sound()
     }), [])
 
@@ -90,7 +90,7 @@ function SinkingItem({ entry, cell_size, on_done }: {
             {entry.item_type === "wind"
                 ? <WindTurbine size={cell_size} transparent />
             : entry.item_type === "solar"
-                ? <SolarFarmPanels cell_size={cell_size} transparent />
+                ? <SolarFarmPanels size={cell_size} transparent />
                 : null
             }
         </group>

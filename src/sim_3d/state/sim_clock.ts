@@ -13,10 +13,10 @@ let current_timestamp: number
 let end_timestamp: number
 let year_start_timestamp: number
 
-export function init(opts: { start_timestamp: number, end_timestamp: number })
+export function init(opts: { start_timestamp: number, current_timestamp: number, end_timestamp: number })
 {
     start_timestamp = opts.start_timestamp
-    current_timestamp = opts.start_timestamp
+    current_timestamp = opts.current_timestamp
     end_timestamp = opts.end_timestamp
     year_start_timestamp = new Date(new Date(start_timestamp).getUTCFullYear(), 0, 1).getTime()
     loop()

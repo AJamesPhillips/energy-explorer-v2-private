@@ -1,13 +1,14 @@
-import * as h3 from "h3-js"
-import { useEffect, useMemo, useRef } from "react"
+import { ThreeEvent } from "@react-three/fiber"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
 
-import { COLOURS, CONSTANTS } from "../../simple_sim/constants"
+import { CONSTANTS } from "../../simple_sim/constants"
 import pub_sub from "../../state/pub_sub"
 import { CapacityFactorData } from "../../utils/capacity_factor_data"
 import { SOLAR_YELLOW_MATERIAL, WIND_BLUE_MATERIAL } from "../../utils/colour"
-import { build_geom, get_projection, latlon_tuples_to_objs } from "../projection"
+import { cell_to_geometries } from "../projection"
+import { H3CellBoundaryAndHighlight } from "./H3CellBoundaryAndHighlight"
 
 const { Z_DGG_THICKNESS, RENDER_ORDER } = CONSTANTS
 
@@ -30,36 +31,62 @@ export function H3Cells(props: {
 
     // Build merged geometry and record per-cell vertex ranges
     const coords = useMemo(() => {
-        const projection = get_projection()
+        if (h3_cell_ids.length === 0) return { merged_fill: null, merged_outline: null, cell_ids: [], cell_vertex_ranges: [] }
 
         const fill_geoms: THREE.BufferGeometry[] = []
         const outline_geoms: THREE.BufferGeometry[] = []
         const cell_ids: string[] = []
-        const cell_vertex_counts: number[] = []
+        const cell_fill_vertex_counts: number[] = []
+        const cell_outline_vertex_counts: number[] = []
 
         h3_cell_ids.forEach(h3_cell_id => {
-            const latlon_tuple_boundary = h3.cellToBoundary(h3_cell_id)
-            const latlon_boundary = latlon_tuples_to_objs(latlon_tuple_boundary)
-
-            const cell_geometries = build_geom(projection, latlon_boundary, extrude_depth)
+            const cell_geometries = cell_to_geometries(h3_cell_id, extrude_depth)
             if (!cell_geometries) return
             fill_geoms.push(cell_geometries.fill)
             outline_geoms.push(cell_geometries.outline)
             cell_ids.push(h3_cell_id)
-            cell_vertex_counts.push(cell_geometries.fill.attributes.position.count)
+            cell_fill_vertex_counts.push(cell_geometries.fill.attributes.position!.count)
+            cell_outline_vertex_counts.push(cell_geometries.outline.attributes.position!.count)
 
             cell_geometries.fill.name = h3_cell_id
         })
 
-        const merged_fill = fill_geoms.length ? mergeGeometries(fill_geoms, false) : null
-        const merged_outline = outline_geoms.length ? mergeGeometries(outline_geoms, false) : null
+        const merged_fill = mergeGeometries(fill_geoms, false)
+        const merged_outline = mergeGeometries(outline_geoms, false)
 
         const cell_vertex_ranges: { start: number, count: number }[] = []
         let offset = 0
-        for (const c of cell_vertex_counts) {
+        for (const c of cell_fill_vertex_counts)
+        {
             cell_vertex_ranges.push({ start: offset, count: c })
             offset += c
         }
+
+        const cell_outline_vertex_ranges: { start: number, count: number }[] = []
+        let outline_offset = 0
+        for (const c of cell_outline_vertex_counts)
+        {
+            cell_outline_vertex_ranges.push({ start: outline_offset, count: c })
+            outline_offset += c
+        }
+
+        // Attach an attribute that maps each vertex to its originating cell index.
+        const vertex_count1 = merged_fill.attributes.position!.count
+        const arr1 = new Float32Array(vertex_count1)
+        for (let i = 0; i < cell_vertex_ranges.length; i++) {
+            const r = cell_vertex_ranges[i]!
+            for (let j = 0; j < r.count; j++) arr1[r.start + j] = i
+        }
+        merged_fill.setAttribute("cell_index", new THREE.BufferAttribute(arr1, 1))
+
+
+        const vertex_count2 = merged_outline.attributes.position!.count
+        const arr2 = new Float32Array(vertex_count2)
+        for (let i = 0; i < cell_outline_vertex_ranges.length; i++) {
+            const r = cell_outline_vertex_ranges[i]!
+            for (let j = 0; j < r.count; j++) arr2[r.start + j] = i
+        }
+        merged_outline.setAttribute("cell_index", new THREE.BufferAttribute(arr2, 1))
 
         return { merged_fill, merged_outline, cell_ids, cell_vertex_ranges }
     }, [h3_cell_ids])
@@ -123,7 +150,7 @@ export function H3Cells(props: {
     useMemo(() => {
         if (!coords.merged_fill) return
         const geom = coords.merged_fill
-        const vertex_count = geom.attributes.position.count
+        const vertex_count = geom.attributes.position!.count
         if (!geom.getAttribute("palette_index")) {
             const arr = new Float32Array(vertex_count)
             geom.setAttribute("palette_index", new THREE.BufferAttribute(arr, 1))
@@ -134,6 +161,9 @@ export function H3Cells(props: {
         last_animated_at_ms: -Infinity,
         animate_fps: 10,
     })
+
+    // Track current hover to avoid repeated publishes
+    const { handle_pointer_move, handle_pointer_leave, handle_click } = make_pointer_move_and_click_handlers(coords)
 
     useEffect(() => {
         if (!props.capacity_data || !props.capacity_data.data || !coords.merged_fill) return
@@ -167,7 +197,7 @@ export function H3Cells(props: {
             // Use the shader material and update its palette uniform for the current type
             mesh.material = shader_material
             const palette = props.capacity_data!.type === "wind" ? palettes.wind : palettes.solar
-            shader_material.uniforms.palette.value = palette
+            ;(shader_material.uniforms as any).palette.value = palette
 
             const attr = geom.getAttribute("palette_index") as THREE.BufferAttribute
             const arr = attr.array as Float32Array
@@ -180,7 +210,7 @@ export function H3Cells(props: {
                     ? capacity_factor * (palette_count - 1)
                     : Math.round(capacity_factor * (palette_count - 1))
 
-                const range = coords.cell_vertex_ranges[i]
+                const range = coords.cell_vertex_ranges[i]!
                 const start = range.start
                 const end = start + range.count
                 for (let v = start; v < end; v++) arr[v] = idxf
@@ -202,18 +232,83 @@ export function H3Cells(props: {
                     geometry={coords.merged_fill}
                     ref={el => { merged_mesh_ref.current = el }}
                     material={shader_material}
+                    onPointerMove={handle_pointer_move}
+                    onPointerOut={handle_pointer_leave}
+                    onPointerLeave={handle_pointer_leave}
+                    onClick={handle_click}
                 />
             )}
-            {coords.merged_outline && (
-                <lineSegments geometry={coords.merged_outline}>
-                    <lineBasicMaterial color={COLOURS.dgg_grid} linewidth={2} />
-                </lineSegments>
-            )}
+            {coords.merged_outline && <H3CellBoundaryAndHighlight merged_outline={coords.merged_outline} />}
         </group>
     </>
 }
 
 
+
+function make_pointer_move_and_click_handlers(coords: { merged_fill: THREE.BufferGeometry<THREE.NormalBufferAttributes, THREE.BufferGeometryEventMap> | null; merged_outline: THREE.BufferGeometry<THREE.NormalBufferAttributes, THREE.BufferGeometryEventMap> | null; cell_ids: string[]; cell_vertex_ranges: { start: number; count: number }[] }) {
+    const hover_ref = useRef<string | null>(null)
+
+    const find_cell_index_for_vertex = useCallback((vertexIndex: number | undefined) => {
+        if (vertexIndex === undefined) return -1
+        const ranges = coords.cell_vertex_ranges
+        if (!ranges) return -1
+        for (let i = 0; i < ranges.length; i++) {
+            const r = ranges[i]!
+            if (vertexIndex >= r.start && vertexIndex < (r.start + r.count)) return i
+        }
+        return -1
+    }, [coords.cell_vertex_ranges])
+
+    const handle_pointer_move = useCallback((e: ThreeEvent<PointerEvent>) => {
+        e.stopPropagation()
+        // Try to get a vertex index from the intersection info
+        const face = (e as any).face
+        const faceIndex = (e as any).faceIndex
+        let vertexIndex: number | undefined
+        if (face && typeof face.a === "number") vertexIndex = face.a
+        else if (typeof faceIndex === "number") vertexIndex = faceIndex * 3
+        else if ((e as any).index !== undefined) vertexIndex = (e as any).index
+
+        const ci = find_cell_index_for_vertex(vertexIndex)
+        if (ci === -1) {
+            if (hover_ref.current !== null) {
+                hover_ref.current = null
+                pub_sub.pub("on_hover_tile", null)
+            }
+            return
+        }
+
+        const cell_id = coords.cell_ids[ci]!
+        if (hover_ref.current !== cell_id) {
+            hover_ref.current = cell_id
+            pub_sub.pub("on_hover_tile", { h3_id: cell_id })
+        }
+    }, [coords.cell_ids, find_cell_index_for_vertex])
+
+    const handle_pointer_leave = useCallback(() => {
+        if (hover_ref.current !== null) {
+            hover_ref.current = null
+            pub_sub.pub("on_hover_tile", null)
+        }
+    }, [])
+
+    const handle_click = useCallback((e: ThreeEvent<MouseEvent>) => {
+        e.stopPropagation()
+        const face = (e as any).face
+        const faceIndex = (e as any).faceIndex
+        let vertexIndex: number | undefined
+        if (face && typeof face.a === "number") vertexIndex = face.a
+        else if (typeof faceIndex === "number") vertexIndex = faceIndex * 3
+        else if ((e as any).index !== undefined) vertexIndex = (e as any).index
+
+        const ci = find_cell_index_for_vertex(vertexIndex)
+        if (ci === -1) return
+        const cell_id = coords.cell_ids[ci]!
+        const cell = { h3_id: cell_id }
+        pub_sub.pub("on_click_tile", cell)
+    }, [coords.cell_ids, find_cell_index_for_vertex])
+    return { handle_pointer_move, handle_pointer_leave, handle_click }
+}
 
 function get_capacity_factor_mix(capacity_data: CapacityFactorData, idx1: number, idx2: number, mix: number, cell_id: string): number | undefined
 {

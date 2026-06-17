@@ -1,6 +1,6 @@
 import { uk_coverage } from "../data/coverage/uk/data"
 import { LandOrSea } from "../data/coverage_land/uk/data"
-import { CellData, CellsData } from "./interface"
+import { CellDataV1, CellsData } from "./interface"
 import { get_letter_for_land_or_sea } from "./map_data_compact"
 
 
@@ -47,7 +47,7 @@ export function generate_map_data(size: { x: number, y: number }): CellsData
 
             if (!cells[x]) cells[x] = {}
             const { ratio: _, ...rest } = current_type
-            const cell: CellData = {
+            const cell: CellDataV1 = {
                 ...rest,
                 id: y * size.x + x,
                 x: 0,

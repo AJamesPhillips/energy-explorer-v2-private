@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 
 import { Instance, Instances } from "@react-three/drei"
-import { CellData, CellsData } from "./interface"
+import { CellDataV1, CellsData } from "./interface"
 import { InvalidPlacementAnimations } from "./InvalidPlacementAnimation"
 import { IsoMetricGridContentTiles } from "./IsoMetricGridContentTiles"
 import { bevel_colours, box_geometry_for_cell_size } from "./IsoMetricTileConstants"
@@ -16,9 +16,9 @@ interface IsoMetricGridProps
     size: { x: number, y: number }
     cell_size: number
     data: CellsData
-    on_click_tile?: (tile: CellData) => void
+    on_click_tile?: (tile: CellDataV1) => void
     /** Fired with null when the pointer leaves the grid entirely. */
-    on_hover_tile?: (tile: CellData | null) => void
+    on_hover_tile?: (tile: CellDataV1 | null) => void
 }
 export function IsoMetricGrid(props: IsoMetricGridProps)
 {
@@ -28,9 +28,9 @@ export function IsoMetricGrid(props: IsoMetricGridProps)
     const [hover_visible, set_hover_visible] = useState(false)
 
 
-    const tiles = useMemo<CellData[]>(() =>
+    const tiles = useMemo<CellDataV1[]>(() =>
     {
-        const result: CellData[] = []
+        const result: CellDataV1[] = []
         for (let y = 0; y < size.y; y++)
         {
             for (let x = 0; x < size.x; x++)

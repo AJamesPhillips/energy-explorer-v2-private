@@ -1,10 +1,10 @@
 import { SingleOilRig } from "../../3d_models/SingleOilRig"
-import { CellData } from "../interface"
+import { CellDataV1 } from "../interface"
 
 
 interface OilRigTilesProps
 {
-    tiles: Array<Pick<CellData, "x" | "y" | "has_oil_rig">>
+    tiles: Array<Pick<CellDataV1, "x" | "y" | "has_oil_rig">>
     cell_size: number
 }
 

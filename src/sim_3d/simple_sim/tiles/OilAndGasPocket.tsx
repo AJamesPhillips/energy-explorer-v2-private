@@ -71,14 +71,14 @@ function OilAndGasPocket({ x, y, depth, ratio_remaining, cell_size }: OilAndGasP
 
     const highlight_oil_reserves = useCallback((highlight: boolean) =>
     {
-        return pub_sub.pub("on_highlight_oil_reserves", highlight ? { x, y } : null)
+        // return pub_sub.pub("on_highlight_oil_reserves", highlight ? { x, y } : null)
     }, [x, y])
 
     useEffect(() =>
     {
         return pub_sub.sub("on_highlight_oil_reserves", highlighted =>
         {
-            set_highlighted_pocket(highlighted)
+            // set_highlighted_pocket(highlighted)
         })
     }, [])
 

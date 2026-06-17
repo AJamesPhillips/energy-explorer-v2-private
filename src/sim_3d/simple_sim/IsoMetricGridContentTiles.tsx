@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 
 import { WindTurbineFarms } from "../3d_models/WindTurbine"
-import { CellData } from "./interface"
+import { CellDataV1 } from "./interface"
 import { OilAndGasPocketTiles } from "./tiles/OilAndGasPocket"
 import { OilRigTiles } from "./tiles/OilRig"
 import { SolarFarms } from "./tiles/SolarFarm"
@@ -13,7 +13,7 @@ import { Woodland } from "./tiles/Woodland"
 interface IsoMetricGridContentTilesProps
 {
     cell_size: number
-    tiles: CellData[]
+    tiles: CellDataV1[]
 }
 
 export function IsoMetricGridContentTiles(props: IsoMetricGridContentTilesProps)

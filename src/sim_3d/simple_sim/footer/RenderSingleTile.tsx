@@ -3,7 +3,7 @@ import { Canvas } from "@react-three/fiber"
 
 import { WindTurbineFarms } from "../../3d_models/WindTurbine"
 import { CONSTANTS, DEFAULTS } from "../constants"
-import { CellData } from "../interface"
+import { CellDataV1 } from "../interface"
 import { IsoCamera } from "../IsoCamera"
 import { bevel_colours, box_geometry_for_cell_size } from "../IsoMetricTileConstants"
 import { tile_colour } from "../tile"
@@ -30,7 +30,7 @@ const { box_geo_s, box_geo_h } = box_geometry_for_cell_size(CELL_SIZE)
 
 interface RenderSingleTileProps
 {
-    tile_data: CellData | null
+    tile_data: CellDataV1 | null
     size?: number
     border?: string
 }

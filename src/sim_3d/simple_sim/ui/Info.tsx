@@ -10,7 +10,7 @@ import { OIL_GAS_RESERVES_CONFIDENCE, OIL_GAS_RESOURCES_CONFIDENCE } from "../..
 import pub_sub from "../../state/pub_sub"
 import { InfoSectionId } from "../../state/pub_sub/interface"
 import { RenderSingleTile } from "../footer/RenderSingleTile"
-import { CellData } from "../interface"
+import { CellDataV1 } from "../interface"
 import "./ui.css"
 const SEWTHA_url = asset_url("/imgs/SEWTHA_book_cover.png")
 const bgs_url = asset_url("/imgs/logos_BGS.png")
@@ -234,7 +234,7 @@ function ExampleTileTypes()
         </div>
     </div>
 
-    const urban: CellData = {
+    const urban: CellDataV1 = {
         id: 4, x: 1, y: 1,
         type: "land", subtype: "urban",
         has_wind_turbine: false,

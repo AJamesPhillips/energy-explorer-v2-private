@@ -1,4 +1,5 @@
 import { geoMercator } from "d3-geo"
+import { cellToBoundary } from "h3-js"
 import * as THREE from "three"
 
 import { ILatLon } from "core/data/values/LatLon"
@@ -115,4 +116,13 @@ export function points_to_geometries(points: THREE.Vector2[], extrude_depth: num
     })
     const outline = new THREE.BufferGeometry().setFromPoints(outline_points)
     return { fill, outline }
+}
+
+
+export function cell_to_geometries(cell: string, extrude_depth: number)
+{
+    const boundary = cellToBoundary(cell, false)
+    const latlon_boundary = latlon_tuples_to_objs(boundary)
+    const projection = get_projection()
+    return build_geom(projection, latlon_boundary, extrude_depth)
 }

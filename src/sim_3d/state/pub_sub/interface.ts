@@ -1,5 +1,5 @@
 import { BuildingActionTypeString } from "../../../state/building_action/interface"
-import { CellData } from "../../simple_sim/interface"
+import { CellDataV2 } from "../../simple_sim/interface"
 
 
 export type InfoSectionId =
@@ -38,12 +38,13 @@ export interface PublishableEvents
     show_info_and_data_sources: InfoSectionId | true
     show_select_country: undefined
 
-    on_hover_tile: CellData | null
-    on_highlight_oil_reserves: { x: number, y: number } | null
-    will_update_tile: CellData | null
-    tile_power_changed: { tile: CellData; change_gw: number }
+    on_hover_tile: CellDataV2 | null
+    on_click_tile: CellDataV2 | null
+    on_highlight_oil_reserves: CellDataV2 | null
+    will_update_tile: CellDataV2 | null
+    tile_changed: { tile: CellDataV2; change_gw: number }
     invalid_placement: {
-        tile: CellData
+        tile: CellDataV2
         item_type: BuildingActionTypeString
         invalid_because: "water" | "no_oilgas"
     }
