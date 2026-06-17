@@ -1,4 +1,4 @@
-import { LandOrSea, OffshoreAreaType, SimplifiedLandAreaType } from "../data/coverage_land/uk/data"
+import { LandOrSea, OffshoreAreaType, SimplifiedLandAreaType2 } from "../data/coverage_land/uk/data"
 
 
 export type LetterType = (
@@ -20,7 +20,7 @@ export type LetterType = (
 )
 
 export const map_type_to_letter: {
-    land: {[k in SimplifiedLandAreaType]: LetterType}
+    land: {[k in SimplifiedLandAreaType2]: LetterType}
     sea: {[k in OffshoreAreaType]: LetterType}
 } = {
     "land": {

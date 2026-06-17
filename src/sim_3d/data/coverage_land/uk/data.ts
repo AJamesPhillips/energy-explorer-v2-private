@@ -196,7 +196,18 @@ export type SimplifiedLandAreaType = (
     | "inland_water"
     | "urban"
     | "suburban"
-
+)
+export const SIMPLIFIED_LAND_AREA_TYPES: SimplifiedLandAreaType[] = [
+    "woodland",
+    "arable",
+    "grassland",
+    "wetland",
+    "rock",
+    "inland_water",
+    "urban",
+    "suburban"
+]
+export type SimplifiedLandAreaType2 = SimplifiedLandAreaType | (
     | "non_territory_land"
 )
 
@@ -230,19 +241,19 @@ const map_simplified_area_type: Record<LandAreaType, SimplifiedLandAreaType> = {
     "Suburban": "suburban"
 }
 
-export type SimplifiedLandAreaTypeAndTotal = SimplifiedLandAreaType | "total_land"
+export type SimplifiedLandAreaTypeAndTotal = SimplifiedLandAreaType2 | "total_land"
 export type OffshoreAreaTypeAndTotal = OffshoreAreaType | "total_offshore"
 
 export type LandOrSea = {
     type: "land"
-    subtype: SimplifiedLandAreaType
+    subtype: SimplifiedLandAreaType2
 } | {
     type: "sea"
     subtype: OffshoreAreaType
 }
 
 
-export type LandOrSeaType = SimplifiedLandAreaType | OffshoreAreaType
+export type LandOrSeaType = SimplifiedLandAreaType2 | OffshoreAreaType
 
 
 export const land_or_sea_types: Record<LandOrSeaType, LandOrSea & { human_readable: string }> = {

@@ -86,7 +86,7 @@ export function H3Cells(props: {
                 ? wind_blue_material(capacity_factor, display_type === "continuous")
                 : solar_yellow_material(capacity_factor, display_type === "continuous")
             mesh.material = material_colour
-            mesh.material.needsUpdate = true
+            // mesh.material.needsUpdate = true
         })
     })
 
@@ -104,7 +104,9 @@ export function H3Cells(props: {
                     key={fill_geom.uuid}
                     ref={el => { fill_mesh_refs.current[i] = el }}
                 >
-                    <meshStandardMaterial color="skyblue" transparent opacity={0.18} side={THREE.DoubleSide} />
+                    {/* We do not need to make one material for each mesh as in
+                        useFrame we reuse one of 8 materials for solar or wind
+                        <meshStandardMaterial color="skyblue" transparent opacity={0.18} side={THREE.DoubleSide} /> */}
                 </mesh>
             )}
             {coords.merged_outline && (

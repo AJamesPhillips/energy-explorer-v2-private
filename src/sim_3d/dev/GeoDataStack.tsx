@@ -19,7 +19,7 @@ import { WorldAtlas } from "./interface"
 import { NEARBY_COUNTRY_IDS, UK_ID } from "./map_data"
 import { PowerPlantsCurrent } from "./PowerPlantsCurrent"
 
-const { GRID_SIZE } = CONSTANTS
+const { GRID_SIZE, CELL_SIZE } = CONSTANTS
 const { sun_args } = DEFAULTS
 
 
@@ -50,12 +50,21 @@ export function GeoDataStack()
 
     useEffect(() =>
     {
+        console.time("load data")
+        let counter = 3
+        function finished_loading()
+        {
+            counter -= 1
+            if (counter === 0) console.timeEnd("load data") // Takes ~1.5s to load all data on my machine
+        }
+
         load_wind_turbine_capacity_data().then(wind_turbine_capacity_data =>
         {
             set_wind_turbine_capacity_data(wind_turbine_capacity_data)
             const annual = aggregate_to_annual_average(wind_turbine_capacity_data)
             // const annual = get_ombre_of_capacity_factors(wind_turbine_capacity_data)
             set_annual_wind_turbine_capacity_data(annual)
+            finished_loading()
         })
 
         load_solar_pv_capacity_data().then(solar_pv_capacity_data =>
@@ -63,63 +72,66 @@ export function GeoDataStack()
             set_solar_pv_capacity_data(solar_pv_capacity_data)
             const annual = aggregate_to_annual_average(solar_pv_capacity_data)
             set_annual_solar_pv_capacity_data(annual)
+            finished_loading()
         })
 
-        get_uk_land_coverage().then(set_h3_land_cells)
+        get_uk_land_coverage().then(h3_land_cells =>
+        {
+            set_h3_land_cells(h3_land_cells)
+            finished_loading()
+        })
     }, [])
 
     const sun_ambient_ref = useRef<THREE.AmbientLight>(null)
     const sun_directional_ref = useRef<THREE.DirectionalLight>(null)
 
 
-    return (
-        <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#080f1c]">
-            <Header load_error={load_error} topo_data={topo_data} resolution={resolution} />
-            {/* <h1>{resolution}</h1> */}
-            <Canvas id="scene_3d">
-                <InitialiseGeometriesEtc />
+    return <>
+        <Header load_error={load_error} topo_data={topo_data} resolution={resolution} />
+        {/* <h1>{resolution}</h1> */}
+        <Canvas id="scene_3d">
+            <InitialiseGeometriesEtc />
 
-                <IsoCamera grid_size={GRID_SIZE} cell_size={20} />
+            <IsoCamera grid_size={GRID_SIZE} cell_size={CELL_SIZE} />
 
-                <ambientLight ref={sun_ambient_ref} />
-                <directionalLight ref={sun_directional_ref} position={sun_args.direct_position} />
+            <ambientLight ref={sun_ambient_ref} />
+            <directionalLight ref={sun_directional_ref} position={sun_args.direct_position} />
 
-                <CountryMap
-                    topo_data={topo_data}
-                    country_id={UK_ID}
-                    other_country_ids={NEARBY_COUNTRY_IDS}
-                    outline_only={true}
-                    // show_eez_boundary={true}
-                    // resolution_h3={resolution}
-                    // resolution_h3={resolution + 1}
-                />
-
-                {true && <H3Grid
-                    EEZ_coords_lonlat={UK_EEZ_COORDS}
-                    resolution={resolution}
-                    set_cell_count={set_cell_count}
-                    // capacity_data={{ data: wind_turbine_capacity_data, type: "wind" }}
-                    // capacity_data={{ data: annual_wind_turbine_capacity_data, type: "wind", display_type: "continuous" }}
-                    capacity_data={{ data: solar_pv_capacity_data, type: "solar" }}
-                    // capacity_data={{ data: annual_solar_pv_capacity_data, type: "solar" }}
-                />}
-
-                {true && <H3LandCells
-                    h3_cells={h3_land_cells}
-                />}
-
-                <PowerPlantsCurrent
-                    show_aggregated={true}
-                />
-            </Canvas>
-            <Controls
-                cell_count={cell_count}
-                resolution={resolution}
-                is_computing={is_computing}
-                set_resolution={set_resolution}
+            <CountryMap
+                topo_data={topo_data}
+                country_id={UK_ID}
+                other_country_ids={NEARBY_COUNTRY_IDS}
+                outline_only={true}
+                // show_eez_boundary={true}
+                // resolution_h3={resolution}
+                // resolution_h3={resolution + 1}
             />
-        </div>
-    );
+
+            {true && <H3Grid
+                EEZ_coords_lonlat={UK_EEZ_COORDS}
+                resolution={resolution}
+                set_cell_count={set_cell_count}
+                // capacity_data={{ data: wind_turbine_capacity_data, type: "wind" }}
+                // capacity_data={{ data: annual_wind_turbine_capacity_data, type: "wind", display_type: "continuous" }}
+                capacity_data={{ data: solar_pv_capacity_data, type: "solar" }}
+                // capacity_data={{ data: annual_solar_pv_capacity_data, type: "solar" }}
+            />}
+
+            {true && <H3LandCells
+                h3_cells={h3_land_cells}
+            />}
+
+            <PowerPlantsCurrent
+                show_aggregated={true}
+            />
+        </Canvas>
+        <Controls
+            cell_count={cell_count}
+            resolution={resolution}
+            is_computing={is_computing}
+            set_resolution={set_resolution}
+        />
+    </>
 }
 
 

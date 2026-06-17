@@ -3,7 +3,7 @@ import { useMemo, useRef } from "react"
 import * as THREE from "three"
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
 
-import { LandH3Cell } from "../../data/coverage_land/uk/data"
+import { LandH3Cell, SIMPLIFIED_LAND_AREA_TYPES, SimplifiedLandAreaType } from "../../data/coverage_land/uk/data"
 import { CONSTANTS } from "../../simple_sim/constants"
 import { tile_colour } from "../../simple_sim/tile"
 import { build_geom, get_projection, latlon_tuples_to_objs } from "../projection"
@@ -28,9 +28,11 @@ export function H3LandCells(props: {
     const coords = useMemo(() => {
         const projection = get_projection()
 
-        // Build three.js geometries: extruded fills and outlines, then merge
-        const fill: { geometry: THREE.BufferGeometry, colour: string }[] = []
-        const outline_geoms: THREE.BufferGeometry[] = []
+        // Build three.js geometries: group fills by terrain type, merge per-type
+        const fills_by_type: Record<SimplifiedLandAreaType, { geometries: THREE.BufferGeometry[], colour: string }> = SIMPLIFIED_LAND_AREA_TYPES.reduce((acc, type) => {
+            acc[type] = { geometries: [], colour: tile_colour(type) }
+            return acc
+        }, {} as Record<SimplifiedLandAreaType, { geometries: THREE.BufferGeometry[], colour: string }>)
 
         h3_cells.forEach(h3_cell => {
             const latlon_tuple_boundary = h3.cellToBoundary(h3_cell.id)
@@ -39,16 +41,21 @@ export function H3LandCells(props: {
 
             const cell_geometries = build_geom(projection, latlon_boundary, extrude_depth)
             if (!cell_geometries) return
-            fill.push({ geometry: cell_geometries.fill, colour: tile_colour(h3_cell.type) })
-            outline_geoms.push(cell_geometries.outline)
 
-            cell_geometries.fill.name = h3_cell.id
+            fills_by_type[h3_cell.type].geometries.push(cell_geometries.fill)
         })
 
-        // const merged_fill = fill.length ? mergeGeometries(fill, true) : null
-        const merged_outline = outline_geoms.length ? mergeGeometries(outline_geoms, false) : null
+        const fill: { geometry: THREE.BufferGeometry, colour: string }[] = []
+        SIMPLIFIED_LAND_AREA_TYPES.forEach(type => {
+            const geoms = fills_by_type[type].geometries
+            if (!geoms.length) return
+            const merged = geoms.length > 1 ? mergeGeometries(geoms, false) : geoms[0]
+            if (merged) fill.push({ geometry: merged, colour: fills_by_type[type].colour })
+        })
 
-        return { fill, merged_outline }
+        // const merged_outline = outline_geoms.length ? mergeGeometries(outline_geoms, false) : null
+
+        return { fill }
     }, [h3_cells])
 
 

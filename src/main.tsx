@@ -35,7 +35,7 @@ import { PopulationByYear, process_uk_population_data_component } from "./sim_3d
 import { process_solar_farms_data_component, SolarFarmsByYear } from "./sim_3d/data/solar_pv_farms/process_data_component"
 import { process_wind_farms_data_component, WindFarmsByYear } from "./sim_3d/data/wind_farms/process_data_component"
 import { DevView, show_dev_view } from "./sim_3d/dev/DevView"
-import { Sim3d } from "./sim_3d/Sim3d"
+import { SimpleSim } from "./sim_3d/simple_sim/SimpleSim"
 import { DataPortal } from "./sim_3d/simple_sim/ui/DataPortal"
 import { Info } from "./sim_3d/simple_sim/ui/Info"
 
@@ -245,7 +245,8 @@ function App ()
         triggered by the footer buttons will hide the header buttons, however the header
         InfoBox(es) will not hide the footer buttons like Subscribe, Donate etc.
         Not sure how to fix this yet */}
-        {sim_or_dt && <Sim3d view={view} persective={persectives[0]} population={population} />}
+        {/* {sim_or_dt && <Sim3d view={view} persective={persectives[0]} population={population} />} */}
+        <SimpleSim persective={persectives[0]} population={population} />
     </>
 }
 

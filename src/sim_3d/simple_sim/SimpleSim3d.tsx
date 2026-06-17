@@ -1,19 +1,25 @@
 import { useFrame, useThree } from "@react-three/fiber"
-import { useCallback, useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 
 // import uk_daily_power_demand_profiles from "../data/power_demand/uk/daily_profiles.json"
 // import { uk_month_hourly_and_location_average_capacity_factor_solar_generation_2018 } from "../data/power_generation/solar_pv"
 // import { uk_month_hourly_and_location_average_capacity_factor_wind_generation_2018 } from "../data/power_generation/wind_turbine"
-import { ActiveBuildingAction } from "../../state/building_action/interface"
-import { get_app_state } from "../../state/store"
 import { uk_coverage } from "../data/coverage/uk/data"
+import { get_uk_land_coverage, LandH3Cell } from "../data/coverage_land/uk/data"
+import { UK_EEZ_COORDS } from "../data/eez/data"
+import { load_solar_pv_capacity_data, load_wind_turbine_capacity_data } from "../data/wind_and_solar_capacity/load_data"
+import { CountryMap } from "../dev/CountryMap"
+import { H3Grid } from "../dev/dgg/H3Grid"
+import { H3LandCells } from "../dev/dgg/H3LandCells"
+import { WorldAtlas } from "../dev/interface"
+import { NEARBY_COUNTRY_IDS, UK_ID } from "../dev/map_data"
 import { PowerStats } from "../model/interface"
 import pub_sub from "../state/pub_sub"
+import { aggregate_to_annual_average, CapacityFactorData } from "../utils/capacity_factor_data"
 import { CONSTANTS, DEFAULTS } from "./constants"
 import { CellData, CellsData } from "./interface"
 import { IsoCamera } from "./IsoCamera"
-import { IsoMetricGrid } from "./IsoMetricGrid"
 
 
 
@@ -49,6 +55,7 @@ interface SimpleSim3dProps
 export function SimpleSim3d(props: SimpleSim3dProps)
 {
     // const [datetime, set_datetime] = useState(start_datetime)
+    const [load_error, set_load_error] = useState<string | null>(null)
     const sun_ambient_ref = useRef<THREE.AmbientLight>(null)
     const sun_directional_ref = useRef<THREE.DirectionalLight>(null)
 
@@ -81,53 +88,98 @@ export function SimpleSim3d(props: SimpleSim3dProps)
     })
 
 
-    const state = get_app_state()
-    const current_action = state.building_action.active
+    // const state = get_app_state()
+    // const current_action = state.building_action.active
 
-    const on_click_tile = useCallback(({ x, y }: { x: number; y: number }) =>
+    // const on_click_tile = useCallback(({ x, y }: { x: number; y: number }) =>
+    // {
+    //     props.set_data(prev =>
+    //     {
+    //         const cell = prev[x]?.[y]
+    //         if (!cell) return prev
+
+    //         if (!current_action) return prev
+
+    //         const new_candidate_tile = modify_cell_with_action(cell, current_action)
+    //         const cell_valid = is_cell_valid(new_candidate_tile)
+    //         if (cell_valid !== true)
+    //         {
+    //             pub_sub.pub("invalid_placement", {
+    //                 tile: cell,
+    //                 item_type: current_action.type,
+    //                 invalid_because: cell_valid.invalid_because,
+    //             })
+    //             return prev
+    //         }
+
+    //         const new_cell = new_candidate_tile
+    //         const new_cells: CellsData = {
+    //             ...prev,
+    //             [x]: {
+    //                 ...prev[x],
+    //                 [y]: new_cell
+    //             },
+    //         }
+
+    //         const prev_power_supply = calculate_power_supply_from_data(prev)
+    //         const new_power_supply = calculate_power_supply_from_data(new_cells)
+    //         const change_in_supply_gw = new_power_supply - prev_power_supply
+
+    //         pub_sub.pub("will_update_tile", new_cell)
+    //         pub_sub.pub("tile_power_changed", { tile: new_cell, change_gw: change_in_supply_gw })
+
+    //         return new_cells
+    //     })
+    // }, [current_action])
+
+    // const on_hover_tile = useCallback((tile: CellData | null) =>
+    // {
+    //     pub_sub.pub("on_hover_tile", tile)
+    // }, [])
+
+
+    const [topo_data, set_topo_data] = useState<WorldAtlas | null>(null)
+    // Fetch world atlas data
+    useEffect(() => {
+        // Stored from https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json
+        fetch("data/countries/cdn.jsdelivr.net_npm_world-atlas@2_countries-50m.json")
+            .then((r) => {
+                if (!r.ok) throw new Error(`HTTP ${r.status}`)
+                return r.json() as Promise<WorldAtlas>
+            })
+            .then(set_topo_data)
+            .catch((e) => set_load_error(e.message))
+    }, [])
+
+    const [h3_land_cells, set_h3_land_cells] = useState<LandH3Cell[]>([])
+    useEffect(() =>
     {
-        props.set_data(prev =>
+        get_uk_land_coverage().then(h3_land_cells =>
         {
-            const cell = prev[x]?.[y]
-            if (!cell) return prev
-
-            if (!current_action) return prev
-
-            const new_candidate_tile = modify_cell_with_action(cell, current_action)
-            const cell_valid = is_cell_valid(new_candidate_tile)
-            if (cell_valid !== true)
-            {
-                pub_sub.pub("invalid_placement", {
-                    tile: cell,
-                    item_type: current_action.type,
-                    invalid_because: cell_valid.invalid_because,
-                })
-                return prev
-            }
-
-            const new_cell = new_candidate_tile
-            const new_cells: CellsData = {
-                ...prev,
-                [x]: {
-                    ...prev[x],
-                    [y]: new_cell
-                },
-            }
-
-            const prev_power_supply = calculate_power_supply_from_data(prev)
-            const new_power_supply = calculate_power_supply_from_data(new_cells)
-            const change_in_supply_gw = new_power_supply - prev_power_supply
-
-            pub_sub.pub("will_update_tile", new_cell)
-            pub_sub.pub("tile_power_changed", { tile: new_cell, change_gw: change_in_supply_gw })
-
-            return new_cells
+            set_h3_land_cells(h3_land_cells)
         })
-    }, [current_action])
+    }, [])
 
-    const on_hover_tile = useCallback((tile: CellData | null) =>
+    const [wind_turbine_capacity_data, set_wind_turbine_capacity_data] = useState<CapacityFactorData | null>(null)
+    const [annual_wind_turbine_capacity_data, set_annual_wind_turbine_capacity_data] = useState<CapacityFactorData | null>(null)
+    const [solar_pv_capacity_data, set_solar_pv_capacity_data] = useState<CapacityFactorData | null>(null)
+    const [annual_solar_pv_capacity_data, set_annual_solar_pv_capacity_data] = useState<CapacityFactorData | null>(null)
+    useEffect(() =>
     {
-        pub_sub.pub("on_hover_tile", tile)
+        load_wind_turbine_capacity_data().then(wind_turbine_capacity_data =>
+        {
+            set_wind_turbine_capacity_data(wind_turbine_capacity_data)
+            const annual = aggregate_to_annual_average(wind_turbine_capacity_data)
+            // const annual = get_ombre_of_capacity_factors(wind_turbine_capacity_data)
+            set_annual_wind_turbine_capacity_data(annual)
+        })
+
+        load_solar_pv_capacity_data().then(solar_pv_capacity_data =>
+        {
+            set_solar_pv_capacity_data(solar_pv_capacity_data)
+            const annual = aggregate_to_annual_average(solar_pv_capacity_data)
+            set_annual_solar_pv_capacity_data(annual)
+        })
     }, [])
 
     useEffect(() =>
@@ -139,94 +191,110 @@ export function SimpleSim3d(props: SimpleSim3dProps)
         }))
     }, [props.data])
 
-    const map_grid = "h3" as "squares" | "h3"
-
     return <>
         <IsoCamera grid_size={GRID_SIZE} cell_size={CELL_SIZE} />
 
         <ambientLight ref={sun_ambient_ref} />
         <directionalLight ref={sun_directional_ref} position={sun_args.direct_position} />
 
-        {map_grid === "squares" && <IsoMetricGrid
-            size={GRID_SIZE}
-            cell_size={CELL_SIZE}
-            data={props.data}
-            on_click_tile={on_click_tile}
-            on_hover_tile={on_hover_tile}
+        <CountryMap
+            topo_data={topo_data}
+            country_id={UK_ID}
+            other_country_ids={NEARBY_COUNTRY_IDS}
+            outline_only={true}
+            // show_eez_boundary={true}
+            // resolution_h3={resolution}
+            // resolution_h3={resolution + 1}
+        />
+
+        {true && <H3Grid
+            EEZ_coords_lonlat={UK_EEZ_COORDS}
+            resolution={4}
+            // set_cell_count={set_cell_count}
+            // capacity_data={{ data: wind_turbine_capacity_data, type: "wind" }}
+            // capacity_data={{ data: annual_wind_turbine_capacity_data, type: "wind", display_type: "continuous" }}
+            capacity_data={{ data: solar_pv_capacity_data, type: "solar" }}
+            // capacity_data={{ data: annual_solar_pv_capacity_data, type: "solar" }}
         />}
 
-        {/* {map_grid === "h3" && <H3Grid />} */}
+        {true && <H3LandCells
+            h3_cells={h3_land_cells}
+        />}
+
+        {/* <PowerPlantsCurrent
+            show_aggregated={true}
+        /> */}
     </>
 }
 
-function modify_cell_with_action(cell: CellData, action: ActiveBuildingAction): CellData
-{
-    if (!action) return cell
+// function modify_cell_with_action(cell: CellData, action: ActiveBuildingAction): CellData
+// {
+//     if (!action) return cell
 
-    if (action.type === "wind")
-    {
-        return { ...cell, has_wind_turbine: true }
-    }
-    else if (action.type === "solar")
-    {
-        return { ...cell, has_solar_farm: true }
-    }
-    else if (action.type === "oil_and_gas_rig")
-    {
-        return { ...cell, has_oil_rig: { state: "building", built_progress: 0 } }
-    }
-    // else if (action.type === "gas")
-    // {
-    //     return { ...cell, has_gas_power_plant: true }
-    // }
-    // else if (action.type === "nuclear")
-    // {
-    //     return { ...cell, has_nuclear_power_plant: true }
-    // }
+//     if (action.type === "wind")
+//     {
+//         return { ...cell, has_wind_turbine: true }
+//     }
+//     else if (action.type === "solar")
+//     {
+//         return { ...cell, has_solar_farm: true }
+//     }
+//     else if (action.type === "oil_and_gas_rig")
+//     {
+//         return { ...cell, has_oil_rig: { state: "building", built_progress: 0 } }
+//     }
+//     // else if (action.type === "gas")
+//     // {
+//     //     return { ...cell, has_gas_power_plant: true }
+//     // }
+//     // else if (action.type === "nuclear")
+//     // {
+//     //     return { ...cell, has_nuclear_power_plant: true }
+//     // }
 
-    // else if (action.type === "hydro_pumped_storage")
-    // {
-    //     return { ...cell, has_hydro_pumped_storage: true }
-    // }
-    // else if (action.type === "battery")
-    // {
-    //     return { ...cell, has_battery: true }
-    // }
+//     // else if (action.type === "hydro_pumped_storage")
+//     // {
+//     //     return { ...cell, has_hydro_pumped_storage: true }
+//     // }
+//     // else if (action.type === "battery")
+//     // {
+//     //     return { ...cell, has_battery: true }
+//     // }
 
-    return cell
-}
+//     return cell
+// }
 
 
-function is_cell_valid(cell: CellData): true | { invalid_because: "water" | "no_oilgas" }
-{
-    if (cell.has_wind_turbine)
-    {
-        if (cell.type === "sea")
-        {
-            if (cell.subtype === "deep") return { invalid_because: "water" }
-        }
-        else
-        {
-            if (cell.subtype === "wetland" || cell.subtype === "inland_water") return { invalid_because: "water" }
-        }
-    }
+// function is_cell_valid(cell: CellData): true | { invalid_because: "water" | "no_oilgas" }
+// {
+//     if (cell.has_wind_turbine)
+//     {
+//         if (cell.type === "sea")
+//         {
+//             if (cell.subtype === "deep") return { invalid_because: "water" }
+//         }
+//         else
+//         {
+//             if (cell.subtype === "wetland" || cell.subtype === "inland_water") return { invalid_because: "water" }
+//         }
+//     }
 
-    if (cell.has_solar_farm)
-    {
-        if (cell.type === "sea") return { invalid_because: "water" }
-        else
-        {
-            if (cell.subtype === "wetland" || cell.subtype === "inland_water") return { invalid_because: "water" }
-        }
-    }
+//     if (cell.has_solar_farm)
+//     {
+//         if (cell.type === "sea") return { invalid_because: "water" }
+//         else
+//         {
+//             if (cell.subtype === "wetland" || cell.subtype === "inland_water") return { invalid_because: "water" }
+//         }
+//     }
 
-    if (cell.has_oil_rig)
-    {
-        if (cell.type !== "sea" || !cell.has_oil_pocket) return { invalid_because: "no_oilgas" }
-    }
+//     if (cell.has_oil_rig)
+//     {
+//         if (cell.type !== "sea" || !cell.has_oil_pocket) return { invalid_because: "no_oilgas" }
+//     }
 
-    return true
-}
+//     return true
+// }
 
 
 function calculate_power_supply_from_data(data: CellsData): number

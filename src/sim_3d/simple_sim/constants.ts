@@ -10,7 +10,7 @@ const Z_THICKNESS = 0.1
 
 export const CONSTANTS = {
     GRID_SIZE: { x: 30, y: 42 },
-    CELL_SIZE: 12,
+    CELL_SIZE: 20,
 
     BUILDINGS_PER_SUBURBAN_TILE: 3,
     BUILDINGS_PER_URBAN_TILE: 3,
