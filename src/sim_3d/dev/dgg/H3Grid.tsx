@@ -9,7 +9,7 @@ import { latlon_objs_to_latlon_tuples } from "../projection"
 import { H3Cells } from "./H3Cells"
 
 
-const { Z_DGG_THICKNESS: Z_DGG } = CONSTANTS
+const { Z_DGG4_OFFSET } = CONSTANTS
 
 export function H3Grid(props: {
     EEZ_coords_lonlat: ILatLon[],
@@ -19,6 +19,7 @@ export function H3Grid(props: {
     capacity_data: {
         data: CapacityFactorData | null,
         type: "wind" | "solar",
+        display_type?: "discrete" | "continuous",
     }
 })
 {
@@ -39,7 +40,7 @@ export function H3Grid(props: {
 
     return <H3Cells
         h3_cell_ids={h3_cell_ids}
-        y_offset={Z_DGG * resolution}
+        y_offset={Z_DGG4_OFFSET}
         capacity_data={props.capacity_data}
     />
 }

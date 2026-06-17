@@ -3,6 +3,7 @@ import * as h3 from "h3-js"
 import { useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 
+import { get_uk_land_coverage, LandH3Cell } from "../data/coverage_land/uk/data"
 import { UK_EEZ_COORDS } from "../data/eez/data"
 import { H3_RESOLUTION } from "../data/power_plants"
 import { load_solar_pv_capacity_data, load_wind_turbine_capacity_data } from "../data/wind_and_solar_capacity/load_data"
@@ -12,6 +13,7 @@ import { IsoCamera } from "../simple_sim/IsoCamera"
 import { aggregate_to_annual_average, CapacityFactorData } from "../utils/capacity_factor_data"
 import { CountryMap } from "./CountryMap"
 import { H3Grid } from "./dgg/H3Grid"
+import { H3LandCells } from "./dgg/H3LandCells"
 import "./GeoDataStack.css"
 import { WorldAtlas } from "./interface"
 import { NEARBY_COUNTRY_IDS, UK_ID } from "./map_data"
@@ -32,6 +34,7 @@ export function GeoDataStack()
     const [annual_wind_turbine_capacity_data, set_annual_wind_turbine_capacity_data] = useState<CapacityFactorData | null>(null)
     const [solar_pv_capacity_data, set_solar_pv_capacity_data] = useState<CapacityFactorData | null>(null)
     const [annual_solar_pv_capacity_data, set_annual_solar_pv_capacity_data] = useState<CapacityFactorData | null>(null)
+    const [h3_land_cells, set_h3_land_cells] = useState<LandH3Cell[]>([])
 
     // Fetch world atlas once
     useEffect(() => {
@@ -54,12 +57,15 @@ export function GeoDataStack()
             // const annual = get_ombre_of_capacity_factors(wind_turbine_capacity_data)
             set_annual_wind_turbine_capacity_data(annual)
         })
+
         load_solar_pv_capacity_data().then(solar_pv_capacity_data =>
         {
             set_solar_pv_capacity_data(solar_pv_capacity_data)
             const annual = aggregate_to_annual_average(solar_pv_capacity_data)
             set_annual_solar_pv_capacity_data(annual)
         })
+
+        get_uk_land_coverage().then(set_h3_land_cells)
     }, [])
 
     const sun_ambient_ref = useRef<THREE.AmbientLight>(null)
@@ -68,8 +74,8 @@ export function GeoDataStack()
 
     return (
         <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#080f1c]">
-            <Header load_error={load_error} topo_data={topo_data} />
-            <h1>{resolution}</h1>
+            <Header load_error={load_error} topo_data={topo_data} resolution={resolution} />
+            {/* <h1>{resolution}</h1> */}
             <Canvas id="scene_3d">
                 <InitialiseGeometriesEtc />
 
@@ -92,10 +98,14 @@ export function GeoDataStack()
                     EEZ_coords_lonlat={UK_EEZ_COORDS}
                     resolution={resolution}
                     set_cell_count={set_cell_count}
-                    capacity_data={{ data: wind_turbine_capacity_data, type: "wind" }}
-                    // capacity_data={{ data: annual_wind_turbine_capacity_data, type: "wind" }}
-                    // capacity_data={{ data: solar_pv_capacity_data, type: "solar" }}
+                    // capacity_data={{ data: wind_turbine_capacity_data, type: "wind" }}
+                    // capacity_data={{ data: annual_wind_turbine_capacity_data, type: "wind", display_type: "continuous" }}
+                    capacity_data={{ data: solar_pv_capacity_data, type: "solar" }}
                     // capacity_data={{ data: annual_solar_pv_capacity_data, type: "solar" }}
+                />}
+
+                {true && <H3LandCells
+                    h3_cells={h3_land_cells}
                 />}
 
                 <PowerPlantsCurrent
@@ -113,7 +123,7 @@ export function GeoDataStack()
 }
 
 
-function Header(props: { load_error: string | null, topo_data: WorldAtlas | null })
+function Header(props: { load_error: string | null, topo_data: WorldAtlas | null, resolution: number })
 {
     return <header className="shrink-0 px-6 py-4 flex items-center justify-between border-b border-[#1e3d5a]">
         <div>
@@ -121,7 +131,7 @@ function Header(props: { load_error: string | null, topo_data: WorldAtlas | null
                 UK H3 Discrete Global Grid
             </h1>
             <p className="text-xs text-[#4a7fa8] mt-0.5">
-                H3 hexagonal grid over the UK Exclusive Economic Zone
+                H3 over the UK Exclusive Economic Zone at resolution {props.resolution}
             </p>
         </div>
         {props.load_error && (
@@ -147,7 +157,13 @@ function Controls(props: ControlsProps)
 {
     const { cell_count, resolution, is_computing, set_resolution } = props
 
-    return <div className="controls_above_canvas">
+    const [is_visible, set_is_visible] = useState(true)
+
+    if (!is_visible) return <button className="controls_above_canvas" onClick={() => set_is_visible(true)}>
+        Show Controls
+    </button>
+
+    return <div className="controls_above_canvas" onClick={() => set_is_visible(false)}>
         {/* Resolution slider */}
         <div>
             <label>

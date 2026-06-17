@@ -10,7 +10,7 @@ import { solar_yellow_material, wind_blue_material } from "../../utils/colour"
 import { build_geom, get_projection, latlon_tuples_to_objs } from "../projection"
 
 
-const { Z_DGG_THICKNESS: Z_DGG } = CONSTANTS
+const { Z_DGG_THICKNESS, RENDER_ORDER } = CONSTANTS
 
 
 export function H3Cells(props: {
@@ -20,11 +20,12 @@ export function H3Cells(props: {
     capacity_data?: {
         data: CapacityFactorData | null,
         type: "wind" | "solar",
+        display_type?: "discrete" | "continuous",
     },
 })
 {
     const { h3_cell_ids, y_offset=0 } = props
-    let { extrude_depth=Z_DGG } = props
+    let { extrude_depth=Z_DGG_THICKNESS } = props
     extrude_depth *= 0.9
 
     const fill_mesh_refs = useRef<(THREE.Mesh | null)[]>([])
@@ -73,7 +74,7 @@ export function H3Cells(props: {
         if ((elapsed_seconds - state.last_animated_at_seconds) < (1 / state.animate_fps)) return
         state.last_animated_at_seconds = elapsed_seconds
 
-        const { data: capacity_data, type } = props.capacity_data
+        const { data: capacity_data, type, display_type } = props.capacity_data
         state.datetime_index = (state.datetime_index + 1) % capacity_data.date_time_to_index.size
 
         fill_mesh_refs.current.forEach(mesh =>
@@ -82,8 +83,8 @@ export function H3Cells(props: {
             const h3_cell_id = mesh.geometry.name
             const capacity_factor = capacity_data.get_capacity_factor(state.datetime_index, h3_cell_id)
             const material_colour = type === "wind"
-                ? wind_blue_material(capacity_factor)
-                : solar_yellow_material(capacity_factor)
+                ? wind_blue_material(capacity_factor, display_type === "continuous")
+                : solar_yellow_material(capacity_factor, display_type === "continuous")
             mesh.material = material_colour
             mesh.material.needsUpdate = true
         })
@@ -91,7 +92,12 @@ export function H3Cells(props: {
 
 
     return <>
-        <group position={[0, y_offset, 0]}>
+        <group
+            position={[0, y_offset, 0]}
+            // renderOrder required otherwise h3r4 grid of wind/solar is
+            // partially rendered behind the h3r5 land cells.
+            renderOrder={RENDER_ORDER.H3_CELLS}
+        >
             {coords.fill_geoms.map((fill_geom, i) =>
                 <mesh
                     geometry={fill_geom}

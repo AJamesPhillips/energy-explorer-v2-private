@@ -6,16 +6,17 @@ import { Arc } from "topojson-specification"
 import { ILatLon } from "core/data/values/LatLon"
 
 import { UK_EEZ_COORDS } from "../data/eez/data"
-import { CONSTANTS } from "../simple_sim/constants"
+import { COLOURS, CONSTANTS } from "../simple_sim/constants"
 import { H3Cells } from "./dgg/H3Cells"
 import { WorldAtlas } from "./interface"
 import { build_geom, build_geoms, get_projection, latlon_objs_to_latlon_tuples } from "./projection"
 
 
 const {
+    Z_MAP_OFFSET,
     Z_MAP_THICKNESS,
-    Z_EEZ_OFFSET,
-    Z_EEZ_THICKNESS,
+    Z_EEZ_OUTLINE_OFFSET,
+    Z_EEZ_OUTLINE_THICKNESS,
     Z_DGG_THICKNESS,
 } = CONSTANTS
 
@@ -132,27 +133,27 @@ function RenderCountryOutlines(props: RenderCountryOutlinesProps)
     const CoI_land_geometries = build_geoms(projection, country_of_interest_land, Z_MAP_THICKNESS)
     const other_country_land_geometries = build_geoms(projection, other_outlines, Z_MAP_THICKNESS)
 
-    return <>
+    return <group position={[0, Z_MAP_OFFSET, 0]}>
         {CoI_land_geometries.map(({ fill, outline }, index) => {
             if (outline_only) return <lineSegments key={"outline" + index} geometry={outline}>
-                <lineBasicMaterial color={0x40beea} linewidth={2} />
+                <lineBasicMaterial color={COLOURS.country_outline} linewidth={2} />
             </lineSegments>
 
             return <mesh key={"land" + index} geometry={fill}>
-                <meshStandardMaterial color={0x999999} metalness={0.1} roughness={0.8} side={THREE.DoubleSide} />
+                <meshStandardMaterial color={COLOURS.country_fill} metalness={0.1} roughness={0.8} side={THREE.DoubleSide} />
             </mesh>
         })}
 
         {other_country_land_geometries.map(({ fill, outline }, index) => {
             if (outline_only) return <lineSegments key={"outline" + index} geometry={outline}>
-                <lineBasicMaterial color={0x40beea} linewidth={2} />
+                <lineBasicMaterial color={COLOURS.country_outline} linewidth={2} />
             </lineSegments>
 
             return <mesh key={"land" + index} geometry={fill}>
-                <meshStandardMaterial color={0x999999} transparent opacity={0.3} side={THREE.DoubleSide} />
+                <meshStandardMaterial color={COLOURS.country_fill} transparent opacity={0.3} side={THREE.DoubleSide} />
             </mesh>
         })}
-    </>
+    </group>
 }
 
 
@@ -193,13 +194,13 @@ function RenderEEZOutline()
 {
     // Build projected extruded geometries for outline of country of interest and its EEZ
     const projection = get_projection()
-    const CoI_eez_geometries = [build_geom(projection, UK_EEZ_COORDS, Z_EEZ_THICKNESS)].filter(g => !!g)
+    const CoI_eez_geometries = [build_geom(projection, UK_EEZ_COORDS, Z_EEZ_OUTLINE_THICKNESS)].filter(g => !!g)
 
     return <>
         {CoI_eez_geometries.map(({ fill }, index) => (
             <mesh
                 key={"eez" + index} geometry={fill}
-                position={[0, Z_EEZ_OFFSET, 0]}
+                position={[0, Z_EEZ_OUTLINE_OFFSET, 0]}
             >
                 <meshStandardMaterial color={0x40beea} transparent opacity={0.18} side={THREE.DoubleSide} />
             </mesh>

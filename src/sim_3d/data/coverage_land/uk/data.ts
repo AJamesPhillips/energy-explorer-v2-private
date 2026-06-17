@@ -1,5 +1,43 @@
 
-// Copy and pasted from https://wikisim.org/wiki/1261
+
+// Copied from github.com/theWorldSim/world-sim-data/tree/master/data/land_coverage/uk/plot_dominant_land_coverage_h3_cells.py
+const THRESHOLD_DOMINANT_COVERAGE_TYPE_PERCENTAGE = 21411 / 2
+
+export async function get_uk_land_coverage()
+{
+    const gb = await process_land_coverage("data/land_coverage/gb_dominant_land_coverage_h3_r5.json")
+    const ni = await process_land_coverage("data/land_coverage/ni_dominant_land_coverage_h3_r5.json")
+
+    return [...gb, ...ni]
+}
+
+
+interface RawLandH3Cell
+{
+    h3_cell_id: string
+    dominant_simplified_coverage_type: SimplifiedLandAreaType
+    dominant_simplified_coverage_type_percentage: number
+}
+export interface LandH3Cell
+{
+    id: string
+    type: SimplifiedLandAreaType
+}
+async function process_land_coverage(data_path: string): Promise<LandH3Cell[]>
+{
+    return fetch(data_path)
+        .then(response => response.json())
+        .then((entries: RawLandH3Cell[]) => entries.filter(e =>
+        {
+            return e.dominant_simplified_coverage_type_percentage > THRESHOLD_DOMINANT_COVERAGE_TYPE_PERCENTAGE
+        }).map(e => ({
+            id: e.h3_cell_id,
+            type: e.dominant_simplified_coverage_type
+        })))
+}
+
+
+// Old land coverage data copied and pasted from https://wikisim.org/wiki/1261
 // TODO have this data pulled from latest WikiSim version
 
 export const uk_land_coverage = [

@@ -110,7 +110,8 @@ export function aggregate_to_annual_average(capacity_factor_data: CapacityFactor
                 ? h3_cell_id_or_index : h3_cell_id_to_index.get(h3_cell_id_or_index)
             if (h3_cell_id_index === undefined)
             {
-                throw new Error(`Unknown h3 cell id: ${h3_cell_id_or_index}`)
+                return 0
+                // throw new Error(`Unknown h3 cell id: ${h3_cell_id_or_index}`)
             }
             const value = annual_data[h3_cell_id_index]
             if (value === undefined)

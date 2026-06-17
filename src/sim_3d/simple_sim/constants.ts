@@ -1,12 +1,12 @@
 import * as THREE from "three"
 
 
-const Z_MAP_OFFSET = 0
-const Z_MAP_THICKNESS = 0.1
-const Z_EEZ_OFFSET = Z_MAP_OFFSET + Z_MAP_THICKNESS
-const Z_EEZ_THICKNESS = 0.1
-const Z_DGG_OFFSET = Z_EEZ_OFFSET + Z_EEZ_THICKNESS
-const Z_DGG_THICKNESS = 0.1
+const Z_MAP_OFFSET = 0.0
+const Z_EEZ_OUTLINE_OFFSET = 0.1
+const Z_DGG5_OFFSET = 0.2
+const Z_DGG4_OFFSET = 0.3
+
+const Z_THICKNESS = 0.1
 
 export const CONSTANTS = {
     GRID_SIZE: { x: 30, y: 42 },
@@ -17,11 +17,18 @@ export const CONSTANTS = {
     TREES_PER_TILE: 3,
 
     Z_MAP_OFFSET,
-    Z_MAP_THICKNESS,
-    Z_EEZ_OFFSET,
-    Z_EEZ_THICKNESS,
-    Z_DGG_OFFSET,
-    Z_DGG_THICKNESS,
+    Z_MAP_THICKNESS: Z_THICKNESS,
+    Z_EEZ_OUTLINE_OFFSET,
+    Z_EEZ_OUTLINE_THICKNESS: Z_THICKNESS,
+    Z_DGG4_OFFSET,
+    Z_DGG5_OFFSET,
+    Z_DGG_THICKNESS: Z_THICKNESS,
+
+    RENDER_ORDER:
+    {
+        H3_LAND_CELLS: 0,
+        H3_CELLS: 1,
+    }
 }
 
 export const DEFAULTS = {
@@ -50,6 +57,9 @@ export const GRAPH_CONSTANTS = {
 
 
 export const COLOURS = {
+    // country_outline: "#40beea",
+    country_outline: "#404040",
+    country_fill: "#999999",
     dgg_grid: "#60b0b0",
     coal: "#333",
     oil: "#e07020",
