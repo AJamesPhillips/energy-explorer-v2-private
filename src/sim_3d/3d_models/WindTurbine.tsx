@@ -16,56 +16,31 @@ const geo_mats = {
     blade_mat_transparent: undefined as THREE.MeshStandardMaterial | undefined,
 }
 
-function wind_turbine_init(cell_size: number)
-{
-    const result = useMemo(() =>
-    {
-        const { tower_height, blade_length } = get_dimensions(cell_size)
+const BASE_SIZE = 12
+const TOWER_HEIGHT = BASE_SIZE * 0.9
+const BLADE_LENGTH = BASE_SIZE * 0.55
 
-        return {
-            tower_geo: new THREE.CylinderGeometry(cell_size * 0.02, cell_size * 0.04, tower_height, 6),
-            tower_mat: new THREE.MeshStandardMaterial({ color: 0xdddddd }),
-            tower_mat_transparent: new THREE.MeshStandardMaterial({ color: 0xdddddd, transparent: true }),
-            nacelle_geo: new THREE.BoxGeometry(cell_size * 0.14, cell_size * 0.07, cell_size * 0.07),
-            nacelle_mat: new THREE.MeshStandardMaterial({ color: 0xcccccc }),
-            nacelle_mat_transparent: new THREE.MeshStandardMaterial({ color: 0xcccccc, transparent: true }),
-            blade_geo: new THREE.ConeGeometry(cell_size * 0.035, blade_length, 4),
-            blade_mat: new THREE.MeshStandardMaterial({ color: 0xfafafa }),
-            blade_mat_transparent: new THREE.MeshStandardMaterial({ color: 0xfafafa, transparent: true }),
+export function WindTurbineInit()
+{
+    useEffect(() =>
+    {
+        geo_mats.tower_geo = new THREE.CylinderGeometry(BASE_SIZE * 0.02, BASE_SIZE * 0.04, TOWER_HEIGHT, 6)
+        geo_mats.tower_mat = new THREE.MeshStandardMaterial({ color: 0xdddddd })
+        geo_mats.tower_mat_transparent = new THREE.MeshStandardMaterial({ color: 0xdddddd, transparent: true })
+        geo_mats.nacelle_geo = new THREE.BoxGeometry(BASE_SIZE * 0.14, BASE_SIZE * 0.07, BASE_SIZE * 0.07)
+        geo_mats.nacelle_mat = new THREE.MeshStandardMaterial({ color: 0xcccccc })
+        geo_mats.nacelle_mat_transparent = new THREE.MeshStandardMaterial({ color: 0xcccccc, transparent: true })
+        geo_mats.blade_geo = new THREE.ConeGeometry(BASE_SIZE * 0.035, BLADE_LENGTH, 4)
+        geo_mats.blade_mat = new THREE.MeshStandardMaterial({ color: 0xfafafa })
+        geo_mats.blade_mat_transparent = new THREE.MeshStandardMaterial({ color: 0xfafafa, transparent: true })
+
+        return () =>
+        {
+            Object.values(geo_mats).forEach(gm => gm?.dispose())
         }
-    }, [cell_size])
-
-
-    geo_mats.tower_geo = result.tower_geo
-    geo_mats.tower_mat = result.tower_mat
-    geo_mats.tower_mat_transparent = result.tower_mat_transparent
-    geo_mats.nacelle_geo = result.nacelle_geo
-    geo_mats.nacelle_mat = result.nacelle_mat
-    geo_mats.nacelle_mat_transparent = result.nacelle_mat_transparent
-    geo_mats.blade_geo = result.blade_geo
-    geo_mats.blade_mat = result.blade_mat
-    geo_mats.blade_mat_transparent = result.blade_mat_transparent
-
-
-    useEffect(() => () =>
-    {
-        geo_mats.tower_geo?.dispose()
-        geo_mats.tower_mat?.dispose()
-        geo_mats.tower_mat_transparent?.dispose()
-        geo_mats.nacelle_geo?.dispose()
-        geo_mats.nacelle_mat?.dispose()
-        geo_mats.nacelle_mat_transparent?.dispose()
-        geo_mats.blade_geo?.dispose()
-        geo_mats.blade_mat?.dispose()
-        geo_mats.blade_mat_transparent?.dispose()
     }, Object.values(geo_mats))
-}
 
-function get_dimensions(cell_size: number)
-{
-    const tower_height = cell_size * 0.9
-    const blade_length = cell_size * 0.55
-    return { tower_height, blade_length }
+    return null
 }
 
 
@@ -73,20 +48,19 @@ function get_dimensions(cell_size: number)
 export interface WindTurbineFarmsProps
 {
     tiles: { x: number, y: number }[]
-    cell_size?: number
     size?: number
 }
 export function WindTurbineFarms(props: WindTurbineFarmsProps)
 {
-    const { tiles, cell_size = 1 } = props
+    const { tiles } = props
     if (tiles.length === 0) return null
-    const { size = cell_size } = props
+    const { size } = props
 
     return <>
         {tiles.map(({ x, y }, i) => (
             <group
                 key={`${x}-${y}`}
-                position={[x * cell_size, 0, y * cell_size]}
+                position={[x, 0, y]}
             >
                 <WindTurbine size={size} index={i} />
             </group>
@@ -95,10 +69,8 @@ export function WindTurbineFarms(props: WindTurbineFarmsProps)
 }
 
 
-export function WindTurbine({ size, index, transparent }: { size: number, index?: number, transparent?: boolean })
+export function WindTurbine({ size = BASE_SIZE, index, transparent }: { size?: number, index?: number, transparent?: boolean })
 {
-    const { tower_height, blade_length } = get_dimensions(size)
-
     const rotor_refs = useRef<(THREE.Group | null)[]>([])
 
     useFrame((_state, delta) =>
@@ -110,17 +82,17 @@ export function WindTurbine({ size, index, transparent }: { size: number, index?
         })
     })
 
-    wind_turbine_init(size)
+    const scale = useMemo(() => new THREE.Vector3(size / BASE_SIZE, size / BASE_SIZE, size / BASE_SIZE), [size])
 
-    return <>
+    return <group scale={scale}>
         {/* Tower */}
         <mesh
             geometry={geo_mats.tower_geo}
             material={transparent ? geo_mats.tower_mat_transparent : geo_mats.tower_mat}
-            position={[0, tower_height / 2, 0]}
+            position={[0, TOWER_HEIGHT / 2, 0]}
         />
         {/* Nacelle + rotor at tower top */}
-        <group position={[0, tower_height, 0]}>
+        <group position={[0, TOWER_HEIGHT, 0]}>
             {/* Nacelle body — offset slightly so rotor sits at its front face */}
             <mesh
                 geometry={geo_mats.nacelle_geo}
@@ -139,11 +111,11 @@ export function WindTurbine({ size, index, transparent }: { size: number, index?
                         <mesh
                             geometry={geo_mats.blade_geo}
                             material={transparent ? geo_mats.blade_mat_transparent : geo_mats.blade_mat}
-                            position={[0, blade_length / 2, 0]}
+                            position={[0, BLADE_LENGTH / 2, 0]}
                         />
                     </group>
                 ))}
             </group>
         </group>
-    </>
+    </group>
 }

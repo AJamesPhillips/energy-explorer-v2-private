@@ -45,25 +45,36 @@ export function SolarFarmsInit()
 interface SolarFarmProps
 {
     tiles: Array<{ x: number, y: number }>
-    cell_size?: number
     size?: number
 }
 export function SolarFarms(props: SolarFarmProps)
 {
-    const { tiles, cell_size = 1 } = props
+    const { tiles } = props
     if (tiles.length === 0) return null
 
-    const tile_top_y = cell_size * 0.06
     return tiles.map(({ x, y }) => (
         <group
             key={`${x}-${y}`}
-            position={[x * cell_size, tile_top_y, y * cell_size]}
+            position={[x, 0.06, y]}
         >
-            <SolarFarmPanels />
+            <SolarFarmPanels size={props.size} />
         </group>
     ))
 }
 
+
+const TILT = Math.PI / 6
+const PANEL_H = BASE_SIZE * 0.28
+const LEG_H = BASE_SIZE * 0.08
+const BOTTOM_Y = LEG_H
+const PANEL_CENTER_Y = LEG_H + (PANEL_H / 2) * Math.cos(TILT)
+
+const OFFSETS: Array<[number, number]> = [
+    [-BASE_SIZE * 0.22, -BASE_SIZE * 0.18],
+    [ BASE_SIZE * 0.22, -BASE_SIZE * 0.18],
+    [-BASE_SIZE * 0.22,  BASE_SIZE * 0.18],
+    [ BASE_SIZE * 0.22,  BASE_SIZE * 0.18],
+]
 
 /**
  * Shared presentational component for rendering a 2x2 grid of solar panels and
@@ -73,43 +84,30 @@ export function SolarFarms(props: SolarFarmProps)
  * Props:
  *   size: number (required)
  */
-export function SolarFarmPanels({ size = 7, transparent }: { size?: number, transparent?: boolean })
+export function SolarFarmPanels({ size = BASE_SIZE, transparent }: { size?: number, transparent?: boolean })
 {
-    const tilt = Math.PI / 6
-    const panel_h = BASE_SIZE * 0.28
-    const leg_h = BASE_SIZE * 0.08
-
-    const offsets: Array<[number, number]> = [
-        [-BASE_SIZE * 0.22, -BASE_SIZE * 0.18],
-        [ BASE_SIZE * 0.22, -BASE_SIZE * 0.18],
-        [-BASE_SIZE * 0.22,  BASE_SIZE * 0.18],
-        [ BASE_SIZE * 0.22,  BASE_SIZE * 0.18],
-    ]
-
     const scale = useMemo(() =>
     {
         return new THREE.Vector3(size / BASE_SIZE, size / BASE_SIZE, size / BASE_SIZE)
     }, [size])
 
     return <group scale={scale}>
-        {offsets.map(([ox, oz], i) => {
-            const bottom_y = leg_h
-            const panel_center_y = bottom_y + (panel_h / 2) * Math.cos(tilt)
-            const panel_center_z = oz + (panel_h / 2) * Math.sin(tilt)
+        {OFFSETS.map(([ox, oz], i) => {
+            const panel_center_z = oz + (PANEL_H / 2) * Math.sin(TILT)
             return (
                 <group key={i} position={[ox, 0, oz]}>
                     {/* Tilted panel */}
                     <mesh
                         geometry={panel_geo}
                         material={transparent ? panel_mat_transparent : panel_mat}
-                        position={[0, panel_center_y, panel_center_z - oz]}
-                        rotation={[-tilt, 0, 0]}
+                        position={[0, PANEL_CENTER_Y, panel_center_z - oz]}
+                        rotation={[-TILT, 0, 0]}
                     />
                     {/* Horizontal support rail */}
                     <mesh
                         geometry={frame_geo}
                         material={transparent ? frame_mat_transparent: frame_mat}
-                        position={[0, bottom_y, 0]}
+                        position={[0, BOTTOM_Y, 0]}
                     />
                 </group>
             )

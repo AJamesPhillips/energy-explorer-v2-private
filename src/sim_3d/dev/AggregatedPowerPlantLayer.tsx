@@ -13,12 +13,11 @@ interface AggregatedPowerPlantLayerProps
 {
     aggregated_data: Record<string, AggregatedPowerPlantData>
     plant_key: AggregatedPlantKey
-    plant_size: number
     fill_color: number
     outline_color: number
     opacity: number
     min_area_ratio?: number
-    RenderPlants: ComponentType<{ tiles: XY[], size: number }>
+    RenderPlants: ComponentType<{ tiles: XY[] }>
 }
 
 export function AggregatedPowerPlantLayer(props: AggregatedPowerPlantLayerProps)
@@ -26,7 +25,6 @@ export function AggregatedPowerPlantLayer(props: AggregatedPowerPlantLayerProps)
     const {
         aggregated_data,
         plant_key,
-        plant_size,
         fill_color,
         outline_color,
         opacity,
@@ -102,6 +100,6 @@ export function AggregatedPowerPlantLayer(props: AggregatedPowerPlantLayerProps)
                 </lineSegments>
             )}
         </group>
-        <RenderPlants tiles={tiles} size={plant_size} />
+        <RenderPlants tiles={tiles} />
     </>
 }

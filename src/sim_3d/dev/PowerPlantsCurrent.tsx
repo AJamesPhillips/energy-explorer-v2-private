@@ -40,8 +40,8 @@ export function PowerPlantsCurrent({ show_aggregated }: { show_aggregated: boole
     }, [])
 
     return <>
-        <WindTurbineFarms tiles={wind_farm_tiles} size={12} />
-        <SolarFarms tiles={solar_farm_tiles} size={2} />
+        <WindTurbineFarms tiles={wind_farm_tiles} />
+        <SolarFarms tiles={solar_farm_tiles} />
     </>
 }
 
@@ -52,7 +52,6 @@ export function PowerPlantsCurrentAggregated()
         <AggregatedPowerPlantLayer
             aggregated_data={aggregated_power_plants_by_h3_cell}
             plant_key="wind_farm"
-            plant_size={12}
             fill_color={0x1f6dff}
             outline_color={0x0f3fb2}
             opacity={0.45}
@@ -62,7 +61,6 @@ export function PowerPlantsCurrentAggregated()
         <AggregatedPowerPlantLayer
             aggregated_data={aggregated_power_plants_by_h3_cell}
             plant_key="solar_farm"
-            plant_size={2}
             fill_color={0xf2b705}
             outline_color={0xc78b00}
             opacity={0.4}

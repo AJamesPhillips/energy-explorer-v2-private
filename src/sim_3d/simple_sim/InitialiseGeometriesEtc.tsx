@@ -1,4 +1,5 @@
 import { Text } from "@react-three/drei"
+import { WindTurbineInit } from "../3d_models/WindTurbine"
 import { SolarFarmsInit } from "./tiles/SolarFarm"
 
 
@@ -9,5 +10,6 @@ export function InitialiseGeometriesEtc()
             it causes the whole scene to unmount and remount for some reason. */}
         <Text>{""}</Text>
         <SolarFarmsInit />
+        <WindTurbineInit />
     </>
 }
