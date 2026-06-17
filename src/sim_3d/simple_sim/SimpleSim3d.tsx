@@ -1,5 +1,5 @@
 import { useFrame, useThree } from "@react-three/fiber"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import * as THREE from "three"
 
 // import uk_daily_power_demand_profiles from "../data/power_demand/uk/daily_profiles.json"
@@ -7,19 +7,16 @@ import * as THREE from "three"
 // import { uk_month_hourly_and_location_average_capacity_factor_wind_generation_2018 } from "../data/power_generation/wind_turbine"
 import { uk_coverage } from "../data/coverage/uk/data"
 import { get_uk_land_coverage, LandH3Cell } from "../data/coverage_land/uk/data"
-import { UK_EEZ_COORDS } from "../data/eez/data"
-import { load_solar_pv_capacity_data, load_wind_turbine_capacity_data } from "../data/wind_and_solar_capacity/load_data"
 import { CountryMap } from "../dev/CountryMap"
-import { H3Grid } from "../dev/dgg/H3Grid"
 import { H3LandCells } from "../dev/dgg/H3LandCells"
 import { WorldAtlas } from "../dev/interface"
 import { NEARBY_COUNTRY_IDS, UK_ID } from "../dev/map_data"
 import { PowerStats } from "../model/interface"
 import pub_sub from "../state/pub_sub"
-import { aggregate_to_annual_average, CapacityFactorData } from "../utils/capacity_factor_data"
 import { CONSTANTS, DEFAULTS } from "./constants"
 import { CellData, CellsData } from "./interface"
 import { IsoCamera } from "./IsoCamera"
+import { WindSolarH3Grid } from "./WindSolarH3Grid"
 
 
 
@@ -54,10 +51,7 @@ interface SimpleSim3dProps
 }
 export function SimpleSim3d(props: SimpleSim3dProps)
 {
-    // const [datetime, set_datetime] = useState(start_datetime)
-    const [load_error, set_load_error] = useState<string | null>(null)
-    const sun_ambient_ref = useRef<THREE.AmbientLight>(null)
-    const sun_directional_ref = useRef<THREE.DirectionalLight>(null)
+    const [_load_error, set_load_error] = useState<string | null>(null)
 
     useThree(({ scene }) =>
     {
@@ -66,21 +60,6 @@ export function SimpleSim3d(props: SimpleSim3dProps)
 
     useFrame((state, delta) =>
     {
-        // const new_datetime = new Date(datetime.getTime() + (delta * speed))
-        // set_datetime(new_datetime)
-
-        // const sun_args = sun_light_colour_and_intensity_from_datetime_and_latlon(new_datetime, lat_lon, false)
-        if (sun_ambient_ref.current)
-        {
-            sun_ambient_ref.current.color = new THREE.Color(sun_args.colour)
-            sun_ambient_ref.current.intensity = sun_args.ambient_intensity
-        }
-        if (sun_directional_ref.current)
-        {
-            sun_directional_ref.current.color = new THREE.Color(sun_args.colour)
-            sun_directional_ref.current.intensity = sun_args.direct_intensity
-        }
-
         pub_sub.pub("animation_tick", {
             delta_seconds: delta,
             elapsed_seconds: state.clock.getElapsedTime(),
@@ -160,28 +139,6 @@ export function SimpleSim3d(props: SimpleSim3dProps)
         })
     }, [])
 
-    const [wind_turbine_capacity_data, set_wind_turbine_capacity_data] = useState<CapacityFactorData | null>(null)
-    const [annual_wind_turbine_capacity_data, set_annual_wind_turbine_capacity_data] = useState<CapacityFactorData | null>(null)
-    const [solar_pv_capacity_data, set_solar_pv_capacity_data] = useState<CapacityFactorData | null>(null)
-    const [annual_solar_pv_capacity_data, set_annual_solar_pv_capacity_data] = useState<CapacityFactorData | null>(null)
-    useEffect(() =>
-    {
-        load_wind_turbine_capacity_data().then(wind_turbine_capacity_data =>
-        {
-            set_wind_turbine_capacity_data(wind_turbine_capacity_data)
-            const annual = aggregate_to_annual_average(wind_turbine_capacity_data)
-            // const annual = get_ombre_of_capacity_factors(wind_turbine_capacity_data)
-            set_annual_wind_turbine_capacity_data(annual)
-        })
-
-        load_solar_pv_capacity_data().then(solar_pv_capacity_data =>
-        {
-            set_solar_pv_capacity_data(solar_pv_capacity_data)
-            const annual = aggregate_to_annual_average(solar_pv_capacity_data)
-            set_annual_solar_pv_capacity_data(annual)
-        })
-    }, [])
-
     useEffect(() =>
     {
         const new_power_supply = calculate_power_supply_from_data(props.data)
@@ -194,8 +151,8 @@ export function SimpleSim3d(props: SimpleSim3dProps)
     return <>
         <IsoCamera grid_size={GRID_SIZE} cell_size={CELL_SIZE} />
 
-        <ambientLight ref={sun_ambient_ref} />
-        <directionalLight ref={sun_directional_ref} position={sun_args.direct_position} />
+        <ambientLight />
+        <directionalLight position={sun_args.direct_position} />
 
         <CountryMap
             topo_data={topo_data}
@@ -207,15 +164,7 @@ export function SimpleSim3d(props: SimpleSim3dProps)
             // resolution_h3={resolution + 1}
         />
 
-        {true && <H3Grid
-            EEZ_coords_lonlat={UK_EEZ_COORDS}
-            resolution={4}
-            // set_cell_count={set_cell_count}
-            // capacity_data={{ data: wind_turbine_capacity_data, type: "wind", display_type: "continuous" }}
-            // capacity_data={{ data: annual_wind_turbine_capacity_data, type: "wind" }}
-            capacity_data={{ data: solar_pv_capacity_data, type: "solar", display_type: "continuous" }}
-            // capacity_data={{ data: annual_solar_pv_capacity_data, type: "solar" }}
-        />}
+        <WindSolarH3Grid />
 
         {true && <H3LandCells
             h3_cells={h3_land_cells}
