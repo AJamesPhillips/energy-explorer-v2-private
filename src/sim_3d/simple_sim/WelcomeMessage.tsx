@@ -4,8 +4,12 @@ import { MailIcon } from "../../components/svgs"
 import { WarningAppUnderConstruction } from "../../components/WarningAppUnderConstruction"
 
 
+const should_show = document.location.hostname !== "localhost"
+
 export function WelcomeMessage1()
 {
+    if (!should_show) return null
+
     return <OnceOffInfoBox
         id="simple_sim_welcome_message"
         message={() =>
@@ -59,6 +63,8 @@ export function WelcomeMessage1()
 
 export function WelcomeMessage2()
 {
+    if (!should_show) return null
+
     return <OnceOffInfoBox
         id="simple_sim_welcome_message"
         message={() =>

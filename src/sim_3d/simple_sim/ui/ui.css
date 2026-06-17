@@ -15,6 +15,13 @@
     background-color: white;
     padding: 0px 12px;
     min-height: 36px;
-    border: 1px solid rgb(204, 204, 204);
+    border: 1px solid var(--colour-border-gray);
     border-radius: 4px;
+}
+
+
+.ui_button.active
+{
+    border-color: var(--colour-button-active-border);
+    background-color: var(--colour-button-active);
 }

@@ -5,6 +5,7 @@ import { deep_copy } from "core/utils/deep_copy"
 import { deep_freeze } from "core/utils/deep_freeze"
 
 import * as building_action from "./building_action"
+import * as game_datetime from "./game_datetime"
 import { AppState } from "./interface"
 import * as power_demand from "./power_demand"
 
@@ -21,6 +22,7 @@ export const get_new_app_store = () =>
     const app_store = create<AppState>()(immer((set_state, _get_state) =>
     {
         return {
+            game_datetime: game_datetime.initial_state(set_state),
             building_action: building_action.initial_state(set_state),
             power_demand: power_demand.initial_state(set_state),
         }
@@ -45,10 +47,26 @@ export const get_new_app_store = () =>
 // This allows us to create the store only when it's needed, which would allow
 // us to stub out the calls to supabase in tests, for example.
 let _app_store: AppStore | undefined = undefined
-export const get_app_state = () =>
-{
-    if (_app_store) return _app_store()
-    _app_store = get_new_app_store()
 
-    return _app_store()
+// Accessor for the raw store instance (hook + store API). Lazily created.
+export const get_app_store = () =>
+{
+    if (!_app_store) _app_store = get_new_app_store()
+    return _app_store
+}
+
+// Hook usage: subscribe to store (or a selected slice).
+export function get_app_state(): AppState
+export function get_app_state<T>(selector: (state: AppState) => T, equality_func?: (a: T, b: T) => boolean): T
+export function get_app_state(selector?: (state: AppState) => any, equality_func?: (a: any, b: any) => boolean)
+{
+    if (!_app_store) _app_store = get_new_app_store()
+
+    // Forward to the zustand hook. If no selector is provided this subscribes
+    // to the whole store (legacy behaviour). Prefer calling with a selector
+    // to subscribe to only a slice: `get_app_state(s => s.game_datetime, shallow)`.
+    if (selector === undefined) return _app_store()
+
+    // @ts-ignore
+    return _app_store(selector as any, equality_func as any)
 }

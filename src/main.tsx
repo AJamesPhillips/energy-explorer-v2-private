@@ -36,6 +36,7 @@ import { process_wind_farms_data_component, WindFarmsByYear } from "./sim_3d/dat
 import { DevView, show_dev_view } from "./sim_3d/dev/DevView"
 import { SimpleSim } from "./sim_3d/simple_sim/SimpleSim"
 import { DataPortal } from "./sim_3d/simple_sim/ui/DataPortal"
+import { GameDatetimeUI } from "./sim_3d/simple_sim/ui/GameDatetimeUI"
 import { Info } from "./sim_3d/simple_sim/ui/Info"
 
 
@@ -201,12 +202,7 @@ function App ()
                     <div id="app_top_bar_side">
                         {sim_or_dt && <>
                             <div className="app_controls_row">
-                                {/* <SelectCountry selected_country_ISO2="GB" /> */}
-                                <div>
-                                    <span style={{ fontSize: "var(--font-small)", fontWeight: "bold" }}>2026 JUNE 17</span>
-                                    <br/>
-                                    <span style={{ fontSize: "var(--font-medium)", fontWeight: "bold" }}>14:00</span>
-                                </div>
+                                <GameDatetimeUI />
                             </div>
                             <div className="app_controls_row">
                                 <Info />
