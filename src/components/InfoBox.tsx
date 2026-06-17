@@ -91,6 +91,7 @@ interface OnceOffInfoBoxProps
     id: string
     message: string | JSX.Element | ((p: { close_info_box: (() => void) }) => JSX.Element)
     on_close?: () => void
+    confirmation_button_text?: string
     confirmation_button?: ((p: { close_info_box: (() => void) }) => JSX.Element)
 }
 export function OnceOffInfoBox(props: OnceOffInfoBoxProps)
@@ -104,7 +105,7 @@ export function OnceOffInfoBox(props: OnceOffInfoBoxProps)
     {
         return <>
             <button onClick={p.close_info_box}>
-                Got it!
+                {props.confirmation_button_text ?? "Got it!"}
             </button>
 
             <input

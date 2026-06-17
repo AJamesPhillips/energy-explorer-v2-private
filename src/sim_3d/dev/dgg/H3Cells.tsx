@@ -79,14 +79,14 @@ export function H3Cells(props: {
         }
     }, [])
 
-    // Shader material: reads an attribute `paletteIndex` and samples a small
+    // Shader material: reads an attribute `palette_index` and samples a small
     // `palette[8]` uniform. Values can be fractional for interpolation.
     const shader_material = useMemo(() => {
         const vertexShader = `
-            attribute float paletteIndex;
-            varying float vPaletteIndex;
+            attribute float palette_index;
+            varying float v_palette_index;
             void main() {
-                vPaletteIndex = paletteIndex;
+                v_palette_index = palette_index;
                 vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
                 gl_Position = projectionMatrix * mvPosition;
             }
@@ -95,9 +95,9 @@ export function H3Cells(props: {
         const fragmentShader = `
             precision highp float;
             uniform vec4 palette[8];
-            varying float vPaletteIndex;
+            varying float v_palette_index;
             void main() {
-                float idxf = clamp(vPaletteIndex, 0.0, 7.0);
+                float idxf = clamp(v_palette_index, 0.0, 7.0);
                 float lowerf = floor(idxf);
                 int lower = int(lowerf);
                 int upper = int(min(lowerf + 1.0, 7.0));
@@ -119,14 +119,14 @@ export function H3Cells(props: {
         })
     }, [palettes])
 
-    // Allocate paletteIndex attribute once
+    // Allocate palette_index attribute once
     useMemo(() => {
         if (!coords.merged_fill) return
         const geom = coords.merged_fill
         const vertex_count = geom.attributes.position.count
-        if (!geom.getAttribute("paletteIndex")) {
+        if (!geom.getAttribute("palette_index")) {
             const arr = new Float32Array(vertex_count)
-            geom.setAttribute("paletteIndex", new THREE.BufferAttribute(arr, 1))
+            geom.setAttribute("palette_index", new THREE.BufferAttribute(arr, 1))
         }
     }, [coords.merged_fill])
 
@@ -158,7 +158,7 @@ export function H3Cells(props: {
         const palette = type === "wind" ? palettes.wind : palettes.solar
         shader_material.uniforms.palette.value = palette
 
-        const attr = geom.getAttribute("paletteIndex") as THREE.BufferAttribute
+        const attr = geom.getAttribute("palette_index") as THREE.BufferAttribute
         const arr = attr.array as Float32Array
         const palette_count = palette.length
 

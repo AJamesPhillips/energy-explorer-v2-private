@@ -1,6 +1,7 @@
+import { JSX } from "react"
 
 
-export function WarningAppUnderConstruction(props: { custom_message?: string })
+export function WarningAppUnderConstruction(props: { custom_message?: string | JSX.Element })
 {
     return <div style={{
         backgroundColor: "#fff3cd",
@@ -10,6 +11,18 @@ export function WarningAppUnderConstruction(props: { custom_message?: string })
         marginBottom: "16px",
         textAlign: "center",
     }}>
-        🚧 {props.custom_message ?? "This section is under construction" } 🚧
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+            <span style={{ flex: "0 0 auto" }}>🚧</span>
+            <span style={{
+                flex: "0 1 auto",
+                minWidth: 0,
+                whiteSpace: "normal",
+                overflowWrap: "break-word",
+                maxWidth: "60ch",
+            }}>
+                {props.custom_message ?? "This section is under construction"}
+            </span>
+            <span style={{ flex: "0 0 auto" }}>🚧</span>
+        </div>
     </div>
 }

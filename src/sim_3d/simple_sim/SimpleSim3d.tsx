@@ -211,9 +211,9 @@ export function SimpleSim3d(props: SimpleSim3dProps)
             EEZ_coords_lonlat={UK_EEZ_COORDS}
             resolution={4}
             // set_cell_count={set_cell_count}
-            // capacity_data={{ data: wind_turbine_capacity_data, type: "wind" }}
-            // capacity_data={{ data: annual_wind_turbine_capacity_data, type: "wind", display_type: "continuous" }}
-            capacity_data={{ data: solar_pv_capacity_data, type: "solar" }}
+            // capacity_data={{ data: wind_turbine_capacity_data, type: "wind", display_type: "continuous" }}
+            // capacity_data={{ data: annual_wind_turbine_capacity_data, type: "wind" }}
+            capacity_data={{ data: solar_pv_capacity_data, type: "solar", display_type: "continuous" }}
             // capacity_data={{ data: annual_solar_pv_capacity_data, type: "solar" }}
         />}
 

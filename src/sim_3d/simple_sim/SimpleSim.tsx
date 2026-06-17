@@ -12,7 +12,7 @@ import { CellsData } from "./interface"
 import { map_data_cells } from "./map_data"
 import { PowerStatus } from "./PowerStatus"
 import { SimpleSim3d } from "./SimpleSim3d"
-import { WelcomeMessage } from "./WelcomeMessage"
+import { WelcomeMessage1, WelcomeMessage2 } from "./WelcomeMessage"
 
 
 const hours_per_day = 24
@@ -66,7 +66,8 @@ export function SimpleSim(props: { persective: PerspectiveKnowledgeGraph | undef
         </Canvas>
 
         <PowerStatus view="simulation" power={power} />
-        <WelcomeMessage />
+        <WelcomeMessage2 />
+        <WelcomeMessage1 />
         <Footer />
     </>
 }
