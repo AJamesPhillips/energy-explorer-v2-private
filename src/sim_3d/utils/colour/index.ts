@@ -4,13 +4,13 @@ import { Color, MeshBasicMaterial } from "three"
 
 const WIND_BLUE: [Color, number][] = [
     [new Color(0.85, 0.92, 1.00), 0.4],
-    [new Color(0.72, 0.82, 1.00), 0.5],
-    [new Color(0.60, 0.70, 1.00), 0.6],
-    [new Color(0.49, 0.59, 1.00), 0.7],
-    [new Color(0.38, 0.48, 1.00), 0.7],
-    [new Color(0.27, 0.37, 1.00), 0.7],
-    [new Color(0.18, 0.26, 0.96), 0.7],
-    [new Color(0.06, 0.14, 0.88), 0.7],
+    [new Color(0.72, 0.82, 1.00), 0.4],
+    [new Color(0.60, 0.70, 1.00), 0.4],
+    [new Color(0.49, 0.59, 1.00), 0.4],
+    [new Color(0.38, 0.48, 1.00), 0.4],
+    [new Color(0.27, 0.37, 1.00), 0.4],
+    [new Color(0.18, 0.26, 0.96), 0.4],
+    [new Color(0.06, 0.14, 0.88), 0.4],
 ]
 
 const WIND_BLUE_NUMBER_OF_BUCKETS = WIND_BLUE.length - 1 // -1 makes math easier
@@ -25,10 +25,11 @@ const SOLAR_YELLOW: [Color, number][] = Array(8).fill(0).map((_, i) =>
 {
     const capacity_factor = i / 7
     const capacity_factor2 = 0.2 + capacity_factor * 0.8
-    const r = capacity_factor2
-    const g = capacity_factor2
-    const b = capacity_factor * 0.1
-    const opacity = 0.4 + Math.min(capacity_factor * 0.7, 0.3)
+    const r = 1 //capacity_factor2
+    const g = 1 // capacity_factor2
+    const b = 0.3 + capacity_factor * 0.7
+    // const opacity = 0.4 + Math.min(capacity_factor * 0.7, 0.3)
+    const opacity = capacity_factor
     return [new Color(r, g, b).convertSRGBToLinear(), opacity]
 })
 
@@ -40,7 +41,7 @@ export function solar_yellow(capacity_factor: number)
 }
 
 
-const WIND_BLUE_MATERIAL: MeshBasicMaterial[] = WIND_BLUE.map(([color, opacity]) => {
+export const WIND_BLUE_MATERIAL: MeshBasicMaterial[] = WIND_BLUE.map(([color, opacity]) => {
     return new MeshBasicMaterial({
         color,
         transparent: true,
@@ -56,7 +57,7 @@ export function wind_blue_material(capacity_factor: number, is_continuous = fals
     return WIND_BLUE_MATERIAL[bucket_index]!
 }
 
-const SOLAR_YELLOW_MATERIAL: MeshBasicMaterial[] = SOLAR_YELLOW.map(([color, opacity]) => {
+export const SOLAR_YELLOW_MATERIAL: MeshBasicMaterial[] = SOLAR_YELLOW.map(([color, opacity]) => {
     return new MeshBasicMaterial({
         color,
         transparent: true,
