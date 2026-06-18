@@ -207,24 +207,25 @@ export function GraphViewer(props: GraphViewerProps)
 
     useEffect(() =>
     {
-        const el = container_ref.current
-        if (!el) return
-
-        const update_width = (w: number) =>
+        function handle_resize()
         {
-            if (w > 0) set_container_w(w)
+            const el = container_ref.current
+            if (!el) return
+
+            const approx_width_of_sidebar = 244
+            const width = window.innerWidth - approx_width_of_sidebar
+            if (width <= 0) return
+            el.style.width = `${width}px`
+            set_container_w(width)
         }
 
-        update_width(el.getBoundingClientRect().width)
+        // Call it initially to set the width based on the current window size
+        handle_resize()
+        // listen to window resize events and update the container width accordingly
+        window.addEventListener("resize", handle_resize)
 
-        const observer = new ResizeObserver(entries =>
-        {
-            const w = entries[0]?.contentRect.width
-            if (w !== undefined) update_width(w)
-        })
-        observer.observe(el)
-        return () => observer.disconnect()
-    }, [])
+        return () => window.removeEventListener("resize", handle_resize)
+    }, [container_ref.current])
 
 
     const tree_w_ref = useRef(0)
