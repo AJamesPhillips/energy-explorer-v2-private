@@ -249,7 +249,7 @@ function App ()
         InfoBox(es) will not hide the footer buttons like Subscribe, Donate etc.
         Not sure how to fix this yet */}
         {/* {sim_or_dt && <Sim3d view={view} persective={persectives[0]} population={population} />} */}
-        <SimpleSim persective={persectives[0]} population={population} />
+        {sim_or_dt && <SimpleSim persective={persectives[0]} population={population} />}
     </>
 }
 

@@ -65,7 +65,7 @@ export function SimpleSim(props: { persective: PerspectiveKnowledgeGraph | undef
             />
         </Canvas>
 
-        <PowerStatus view="simulation" power={power} />
+        {false && <PowerStatus view="simulation" power={power} />}
         <WelcomeMessage2 />
         <WelcomeMessage1 />
         <Footer />
