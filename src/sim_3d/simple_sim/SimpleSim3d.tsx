@@ -163,7 +163,7 @@ export function SimpleSim3d(props: SimpleSim3dProps)
             country_id={UK_ID}
             other_country_ids={NEARBY_COUNTRY_IDS}
             outline_only={true}
-            // show_eez_boundary={true}
+            show_eez_boundary={false}
             // resolution_h3={resolution}
             // resolution_h3={resolution + 1}
         />

@@ -144,6 +144,14 @@ export function init_model_power_supply_updates()
                     battery: 0,
                     hydro_pumped_storage: 0,
                 }
+                const capacity_gw_by_type: SupplyGWByType = {
+                    wind: 0,
+                    solar: 0,
+                    gas: 0,
+                    nuclear: 0,
+                    battery: 0,
+                    hydro_pumped_storage: 0,
+                }
 
                 let total_mw = 0
                 Object.values(by_cell).forEach(c =>
@@ -155,6 +163,13 @@ export function init_model_power_supply_updates()
                     supply_gw_by_type.nuclear += c.nuclear.generated_mw / 1000
                     supply_gw_by_type.battery += c.battery.generated_mw / 1000
                     supply_gw_by_type.hydro_pumped_storage += c.hydro_pumped_storage.generated_mw / 1000
+
+                    capacity_gw_by_type.wind += c.wind.capacity_mw / 1000
+                    capacity_gw_by_type.solar += c.solar.capacity_mw / 1000
+                    capacity_gw_by_type.gas += c.gas.capacity_mw / 1000
+                    capacity_gw_by_type.nuclear += c.nuclear.capacity_mw / 1000
+                    capacity_gw_by_type.battery += c.battery.capacity_mw / 1000
+                    capacity_gw_by_type.hydro_pumped_storage += c.hydro_pumped_storage.capacity_mw / 1000
                 })
 
                 const supply_gw = total_mw / 1000
@@ -162,6 +177,7 @@ export function init_model_power_supply_updates()
                 pub_sub.pub("power_supply", {
                     supply_gw,
                     supply_gw_by_type,
+                    capacity_gw_by_type,
                     generation_by_cell: by_cell,
                     datetime_ms: payload.datetime_ms,
                 })

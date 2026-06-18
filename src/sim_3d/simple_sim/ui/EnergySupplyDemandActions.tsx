@@ -18,6 +18,14 @@ export function EnergySupplyDemandActions(_props: {})
             battery: 0,
             hydro_pumped_storage: 0,
         },
+        capacity_gw_by_type: {
+            wind: 0,
+            solar: 0,
+            gas: 0,
+            nuclear: 0,
+            battery: 0,
+            hydro_pumped_storage: 0,
+        },
     })
 
     useEffect(() =>
@@ -28,6 +36,7 @@ export function EnergySupplyDemandActions(_props: {})
                 ...existing,
                 supply_gw: payload.supply_gw,
                 supply_gw_by_type: payload.supply_gw_by_type,
+                capacity_gw_by_type: payload.capacity_gw_by_type,
             }))
         }, "model-power")
 
@@ -44,12 +53,11 @@ export function EnergySupplyDemandActions(_props: {})
                     <td>GW</td>
                 </tr> */}
                 <tr>
-                    <td><Suburban /></td>
+                    <td style={{ display: "flex", flexDirection: "column", gap: -3 }}>
+                        <Suburban />
+                        <Urban />
+                    </td>
                     <td>-30</td>
-                </tr>
-                <tr>
-                    <td><Urban /></td>
-                    <td>-60</td>
                 </tr>
                 <tr>
                     <td style={{ borderTop: "1px solid var(--colour-border-gray)" }}></td>
@@ -57,11 +65,11 @@ export function EnergySupplyDemandActions(_props: {})
                 </tr>
                 <tr>
                     <td>Wind</td>
-                    <td>{power.supply_gw_by_type.wind.toFixed(1)}</td>
+                    <td>{power.supply_gw_by_type.wind.toFixed(1)} / {power.capacity_gw_by_type.wind.toFixed(1)}</td>
                 </tr>
                 <tr>
                     <td>Solar</td>
-                    <td>{power.supply_gw_by_type.solar.toFixed(1)}</td>
+                    <td>{power.supply_gw_by_type.solar.toFixed(1)} / {power.capacity_gw_by_type.solar.toFixed(1)}</td>
                 </tr>
                 <tr>
                     <td style={{ borderTop: "1px solid var(--colour-border-gray)" }}></td>
@@ -80,6 +88,7 @@ function Suburban()
         height: 50,
         objectFit: "cover",
         objectPosition: "0px -140px",
+        marginLeft: -10,
     }} />
 }
 
@@ -90,5 +99,7 @@ function Urban()
         height: 50,
         objectFit: "cover",
         objectPosition: "0px -185px",
+        marginTop: -10,
+        marginRight: -10,
     }} />
 }
