@@ -7,10 +7,3 @@ export interface Popup
     tile: CellDataV2
     change_gw: number
 }
-
-
-export const CONSTANTS =
-{
-    DURATION_S: 2.0,
-    FLOAT_HEIGHT: 1.5,
-}

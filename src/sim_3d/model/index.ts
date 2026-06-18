@@ -6,6 +6,7 @@ import { uk_demand_gw_by_hour_2018 } from "../data/power_demand/uk"
 import { promise_aggregated_power_plants_by_h3_cell } from "../data/power_plants"
 import type { AggregatedPowerPlantData } from "../data/power_plants/interface"
 import { AllCapacityFactorData, promise_load_all_capacity_factor_data } from "../data/wind_and_solar_capacity/load_data"
+import { cells_to_xy, XY } from "../dev/projection"
 import pub_sub from "../state/pub_sub"
 import { get_capacity_factor_mix } from "../utils/capacity_factor_data"
 import { DemandByH3R4Cell, DemandForCell } from "./interface"
@@ -168,6 +169,7 @@ const last_updated_at =
 const max_update_frequency_ms = 1000
 export function init_model_power_supply_updates(h3_land_cells: LandH3Cell[])
 {
+    let h3r4_cell_to_xy: Map<string, XY> | undefined = undefined
     const demand_by_h3r4 = get_initial_demand_by_h3_cell(h3_land_cells)
 
     const unsub = pub_sub.sub("simulation_datetime", (payload) =>
@@ -188,6 +190,10 @@ export function init_model_power_supply_updates(h3_land_cells: LandH3Cell[])
             try
             {
                 const capacity_factor_data = await promise_capacity_factor_data
+                if (!h3r4_cell_to_xy)
+                {
+                    h3r4_cell_to_xy = cells_to_xy([...capacity_factor_data.wind.h3_cell_id_to_index.keys()])
+                }
                 const aggregated_power_plants_by_h3_cell = await promise_aggregated_power_plants_by_h3_cell as Record<string, AggregatedPowerPlantData>
                 const by_cell = get_generation_by_h3_cell(
                     capacity_factor_data,
@@ -249,6 +255,7 @@ export function init_model_power_supply_updates(h3_land_cells: LandH3Cell[])
                     generation_by_cell: by_cell,
                     demand_gw,
                     demand_by_h3r4,
+                    h3r4_cell_to_xy,
                     datetime_ms: payload.datetime_ms,
                 })
             }

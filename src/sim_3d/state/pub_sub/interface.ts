@@ -1,7 +1,8 @@
-import { BuildingActionTypeString } from "../../../state/building_action/interface"
-import { DemandByH3R4Cell } from "../../model/interface"
-import { SupplyGWByType } from "../../model/old_interface"
-import { CellDataV2 } from "../../simple_sim/interface"
+import type { BuildingActionTypeString } from "../../../state/building_action/interface"
+import type { XY } from "../../dev/projection"
+import type { DemandByH3R4Cell } from "../../model/interface"
+import type { SupplyGWByType } from "../../model/old_interface"
+import type { CellDataV2 } from "../../simple_sim/interface"
 
 
 export type InfoSectionId =
@@ -43,6 +44,7 @@ export interface PublishableEvents
         }>
         demand_gw: number
         demand_by_h3r4: DemandByH3R4Cell
+        h3r4_cell_to_xy: Map<string, XY>
         datetime_ms?: number
     }
     show_message: {

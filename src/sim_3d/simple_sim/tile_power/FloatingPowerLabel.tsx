@@ -2,7 +2,15 @@ import { Text } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
 import { useEffect, useRef } from "react"
 
-import { CONSTANTS, Popup } from "."
+import { Popup } from "./interface"
+
+
+
+const CONSTANTS =
+{
+    DURATION_S: 2.0,
+    FLOAT_HEIGHT: 1.5,
+}
 
 
 export function FloatingPowerLabel({ popup, cell_size, on_done }: {

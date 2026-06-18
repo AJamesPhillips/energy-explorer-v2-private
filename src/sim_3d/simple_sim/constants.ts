@@ -34,7 +34,23 @@ export const CONSTANTS = {
     {
         H3_LAND_CELLS: 0,
         H3_CELLS: 1,
-    }
+    },
+
+    ANIMATION:
+    {
+        LIGHTNING_BOLT:
+        {
+            DURATION_SIM_HOURS: 0.1,
+            DURATION_FADE_SIM_HOURS: 0.00,
+            RISE_HEIGHT_FACTOR: 2,
+            // The amount of GW hours to represent each lighting bolt.
+            GW_HOUR_CHUNKS: 0.2,
+            // Maximum time between lightning bolts, in simulation time
+            MAX_INTERVAL_SIM_HOURS: 1,
+            // The smallest a lighting bolt can be scaled down to
+            MIN_LIGHTNING_BOLT_SCALE: 0.1,
+        }
+    },
 }
 
 export const DEFAULTS = {
@@ -95,6 +111,12 @@ export const COLOURS = {
     country_territorial_waters: subtype_to_colour.deep,
     dgg_grid: "#60b0b0",
     dgg_highlight: "#f0c000",
+
+    supply_electricity: "#44bbff",
+    supply_electricity_emissive: "#0055ff",
+    demand_electricity: "#ff4444",
+    demand_electricity_emissive: "#550000",
+
     coal: "#333",
     oil: "#e07020",
     gas: "#2a7ae4",

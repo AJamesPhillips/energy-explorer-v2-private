@@ -23,7 +23,7 @@ export function Dev3dModels ()
         <ambientLight intensity={1.5} />
         <directionalLight position={[8, 10, 5]} intensity={1} />
 
-        <LightningBolt x={1.5} y={-2} cell_size={20} />
+        <LightningBolt x={1.5} y={-2} size={20} />
         <OilBarrel x={0.5} y={-2} cell_size={20} fuel_type="heating_fuel" />
         <NuclearPlant x={-1.5} y={-2} cell_size={20} />
         <CCGTPlant x={0} y={-1} cell_size={20} />

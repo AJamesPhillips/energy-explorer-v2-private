@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 
-import { Popup } from "."
 import pub_sub from "../../state/pub_sub"
 import { FloatingPowerLabel } from "./FloatingPowerLabel"
+import { Popup } from "./interface"
 
 
 let next_id = 0

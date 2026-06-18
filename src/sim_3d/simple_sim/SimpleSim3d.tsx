@@ -6,7 +6,9 @@ import * as THREE from "three"
 // import { uk_month_hourly_and_location_average_capacity_factor_solar_generation_2018 } from "../data/power_generation/solar_pv"
 // import { uk_month_hourly_and_location_average_capacity_factor_wind_generation_2018 } from "../data/power_generation/wind_turbine"
 import { get_uk_land_coverage, LandH3Cell } from "../data/coverage_land/uk/data"
+import { UK_EEZ_COORDS } from "../data/eez/data"
 import { CountryMap } from "../dev/CountryMap"
+import { H3Grid } from "../dev/dgg/H3Grid"
 import { H3LandCells } from "../dev/dgg/H3LandCells"
 import { WorldAtlas } from "../dev/interface"
 import { NEARBY_COUNTRY_IDS, UK_ID } from "../dev/map_data"
@@ -17,7 +19,7 @@ import { sim_clock } from "../state/sim_clock"
 import { CONSTANTS, DEFAULTS } from "./constants"
 import { CellsData } from "./interface"
 import { IsoCamera } from "./IsoCamera"
-import { WindSolarH3Grid } from "./WindSolarH3Grid"
+import { MapLightningBoltFlow } from "./tile_power/MapLightningBoltFlow"
 
 
 
@@ -159,7 +161,7 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
         <ambientLight />
         <directionalLight position={sun_args.direct_position} />
 
-        <CountryMap
+        {true && <CountryMap
             topo_data={topo_data}
             country_id={UK_ID}
             other_country_ids={NEARBY_COUNTRY_IDS}
@@ -167,17 +169,22 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
             show_eez_boundary={false}
             // resolution_h3={resolution}
             // resolution_h3={resolution + 1}
-        />
+        />}
 
-        <WindSolarH3Grid />
+        {true && <H3Grid
+            EEZ_coords_lonlat={UK_EEZ_COORDS}
+            resolution={4}
+        />}
 
         {true && <H3LandCells
             h3_cells={h3_land_cells}
         />}
 
-        <PowerPlantsCurrent
+        {true && <PowerPlantsCurrent
             show_aggregated={true}
-        />
+        />}
+
+        <MapLightningBoltFlow />
     </>
 }
 

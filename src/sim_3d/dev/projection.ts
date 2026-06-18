@@ -1,5 +1,5 @@
 import { geoMercator } from "d3-geo"
-import { cellToBoundary } from "h3-js"
+import { cellToBoundary, cellToLatLng } from "h3-js"
 import * as THREE from "three"
 
 import { ILatLon } from "core/data/values/LatLon"
@@ -19,6 +19,27 @@ export function latlon_tuples_to_objs(latlons: [number, number][]): ILatLon[]
 export function latlon_tuple_to_obj([lat, lon]: [number, number]): ILatLon
 {
     return { lat, lon }
+}
+
+export function cell_to_xy(cell: string): XY | null
+{
+    const lat_lon = cellToLatLng(cell)
+    const projection = get_projection()
+    return projection(latlon_tuple_to_obj(lat_lon))
+}
+
+export function cells_to_xy(cell: string[]): Map<string, XY>
+{
+    const projection = get_projection()
+    const cell_to_xy: Map<string, XY> = new Map()
+    cell.forEach(cell_id =>
+    {
+        const lat_lon = cellToLatLng(cell_id)
+        const xy = projection(latlon_tuple_to_obj(lat_lon))
+        if (!xy) return
+        cell_to_xy.set(cell_id, xy)
+    })
+    return cell_to_xy
 }
 
 

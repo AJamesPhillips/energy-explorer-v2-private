@@ -1,0 +1,54 @@
+
+import { useEffect, useState } from "react"
+
+import pub_sub from "../../state/pub_sub"
+import { LightningBoltFlow } from "./LightningBoltFlow"
+
+
+interface FlowEntry
+{
+    id: string
+    x: number
+    y: number
+    supply_gw: number
+    demand_gw: number
+}
+
+export function MapLightningBoltFlow()
+{
+    const [flows, set_flows] = useState<FlowEntry[]>([])
+
+    useEffect(() => pub_sub.sub("power_supply_and_demand", ({ generation_by_cell, demand_by_h3r4, h3r4_cell_to_xy }) =>
+    {
+        if (!generation_by_cell) return
+
+        const ids = new Set<string>()
+        Object.keys(generation_by_cell).forEach(k => ids.add(k))
+        Object.keys(demand_by_h3r4).forEach(k => ids.add(k))
+
+        const next: FlowEntry[] = []
+        ids.forEach(h3_id =>
+        {
+            const supply_gw = (generation_by_cell?.[h3_id]?.total_generated_mw ?? 0) / 1000
+            const demand_gw = demand_by_h3r4?.[h3_id]?.demand_gw ?? 0
+            if (!supply_gw && !demand_gw) return
+            const xy = h3r4_cell_to_xy.get(h3_id)
+            if (!xy) return
+            next.push({ id: h3_id, x: xy.x, y: xy.y, supply_gw, demand_gw })
+        })
+
+        set_flows(next)
+    }, "MapLightningBoltFlow"), [])
+
+    return <group>
+        {flows.map(f => (
+            <LightningBoltFlow
+                key={f.id}
+                x={f.x}
+                y={f.y}
+                supply_gw={f.supply_gw}
+                demand_gw={f.demand_gw}
+            />
+        ))}
+    </group>
+}
