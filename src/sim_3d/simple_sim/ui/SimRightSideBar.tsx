@@ -1,9 +1,9 @@
+import { is_on_wikisim } from "../../../utils/is_on_wikisim"
 import { OilGasByYear } from "../../data/fossil_fuels/process_data_component"
 import { PopulationByYear } from "../../data/population/process_data_component"
 import { SolarFarmsByYear } from "../../data/solar_pv_farms/process_data_component"
 import { WindFarmsByYear } from "../../data/wind_farms/process_data_component"
 import { DataPortal } from "./DataPortal"
-import { GameDatetimeUI } from "./GameDatetimeUI"
 import { Info } from "./Info"
 
 
@@ -21,10 +21,10 @@ interface SimRightSideBarProps
 
 export function SimRightSideBar(props: SimRightSideBarProps)
 {
+    const on_wikisim = is_on_wikisim()
+
     return <>
-        <div className="app_controls_row">
-            <GameDatetimeUI />
-        </div>
+        {on_wikisim && <div className="app_controls_row" style={{ minHeight: 38 }} />}
         <div className="app_controls_row">
             <Info />
         </div>

@@ -5,6 +5,7 @@ import { BlueSkyLogo, GitHubLogo, MailIcon } from "../components/svgs"
 import { CountryData, extended_countries_data, get_country_by_code } from "../data/countries"
 import { CountryISO2Code } from "../data/countries_data"
 import pub_sub from "../sim_3d/state/pub_sub"
+import { is_on_wikisim } from "../utils/is_on_wikisim"
 import { Link } from "./Link"
 import "./SelectCountry.css"
 
@@ -12,7 +13,7 @@ import "./SelectCountry.css"
 type LocalUserVotesByCountryCode2 = Partial<Record<CountryISO2Code, boolean>>
 
 
-const on_wikisim = document.URL.includes("https://wikisim-server.wikisim.deno.net")
+const on_wikisim = is_on_wikisim()
 
 interface SelectCountryProps
 {
