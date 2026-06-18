@@ -9,8 +9,8 @@ import { CapacityData, CapacityFactorData, get_capacity_factor_mix } from "../..
 
 export function RenderCapacityFactorData(props: {
     coords: {
-        merged_fill: THREE.BufferGeometry | null
-        merged_outline: THREE.BufferGeometry | null
+        // merged_fill: THREE.BufferGeometry | null
+        // merged_outline: THREE.BufferGeometry | null
         cell_ids: string[]
         cell_vertex_ranges: { start: number; count: number }[]
     }
@@ -78,7 +78,17 @@ export function RenderCapacityFactorData(props: {
 
     useEffect(() =>
     {
-        if (!capacity_data?.data || !coords.merged_fill) return
+        if (!capacity_data?.data)
+        {
+            // Clear the palette and set all palette indices to 0
+            apply_capacity_palette_and_indices({
+                mesh: merged_mesh_ref.current,
+                coords,
+                shader_material,
+                palettes,
+            })
+            return
+        }
 
         // Build an index -> ms array for fast lookup (ordered by index)
         const datetime_ms_by_index: number[] = new Array(capacity_data.data.date_time_to_index.size)
@@ -91,47 +101,90 @@ export function RenderCapacityFactorData(props: {
         const unsub = pub_sub.sub("simulation_datetime", payload => {
             const now = performance.now()
             if (!state.animate_fps) return
-            if (!capacity_data.data) return
             if ((now - state.last_animated_at_ms) < (1000 / state.animate_fps)) return
             state.last_animated_at_ms = now
 
-            const mesh = merged_mesh_ref.current
-            if (!mesh) return
-            const geom = mesh.geometry as THREE.BufferGeometry
-            if (!geom || !coords.cell_ids || !coords.cell_vertex_ranges) return
-
-            // Use the shader material and update its palette uniform for the current type
-            mesh.material = shader_material
-            const palette = capacity_data!.type === "wind" ? palettes.wind : palettes.solar
-            ;(shader_material.uniforms as any).palette.value = palette
-
-            const datetime_index1 = payload.datetime_annual_hourly_index1
-            const datetime_index2 = payload.datetime_annual_hourly_index2
-            const datetime_index_mix = payload.datetime_annual_hourly_index_mix
-            const attr = geom.getAttribute("palette_index") as THREE.BufferAttribute
-            const arr = attr.array as Float32Array
-            const palette_count = palette.length
-
-            coords.cell_ids.forEach((cell_id, i) =>
-            {
-                if (!capacity_data.data) return
-
-                const capacity_factor = get_capacity_factor_mix(capacity_data.data, datetime_index1, datetime_index2, datetime_index_mix, cell_id) ?? 0
-                const idxf = capacity_data.display_type === "continuous"
-                    ? capacity_factor * (palette_count - 1)
-                    : Math.round(capacity_factor * (palette_count - 1))
-
-                const range = coords.cell_vertex_ranges[i]!
-                const start = range.start
-                const end = start + range.count
-                for (let v = start; v < end; v++) arr[v] = idxf
+            apply_capacity_palette_and_indices({
+                mesh: merged_mesh_ref.current,
+                coords,
+                shader_material,
+                palettes,
+                capacity_data,
+                datetime_index1: payload.datetime_annual_hourly_index1,
+                datetime_index2: payload.datetime_annual_hourly_index2,
+                datetime_index_mix: payload.datetime_annual_hourly_index_mix,
             })
-
-            attr.needsUpdate = true
         }, "H3Cells-sim")
 
         return unsub
-    }, [capacity_data, coords.merged_fill, coords.cell_ids, coords.cell_vertex_ranges, palettes, shader_material, merged_mesh_ref])
+    }, [capacity_data, coords.cell_ids, coords.cell_vertex_ranges, palettes, shader_material, merged_mesh_ref])
 
     return null
+}
+
+
+
+function apply_capacity_palette_and_indices(params: {
+    mesh: THREE.Mesh | null
+    coords: { cell_ids: string[]; cell_vertex_ranges: { start: number; count: number }[] }
+    shader_material: THREE.ShaderMaterial
+    palettes: { wind: THREE.Vector4[]; solar: THREE.Vector4[] }
+    capacity_data?: CapacityData | null
+    datetime_index1?: number
+    datetime_index2?: number
+    datetime_index_mix?: number
+}) {
+    const {
+        mesh,
+        coords,
+        shader_material,
+        palettes,
+        capacity_data,
+        datetime_index1 = 0,
+        datetime_index2 = 0,
+        datetime_index_mix = 0,
+    } = params
+
+    if (!mesh) return
+    const geom = mesh.geometry as THREE.BufferGeometry | null
+    if (!geom || !coords.cell_ids || !coords.cell_vertex_ranges) return
+
+    const attr = geom.getAttribute("palette_index") as THREE.BufferAttribute | undefined
+    if (!attr) return
+    const arr = attr.array as Float32Array
+
+    const pad_palette = (p: THREE.Vector4[]) => {
+        const out: THREE.Vector4[] = p.slice(0, 8).map(v => new THREE.Vector4(v.x, v.y, v.z, (v.w === undefined ? 1 : v.w)))
+        while (out.length < 8) out.push(new THREE.Vector4(0, 0, 0, 0))
+        return out
+    }
+
+    const data = capacity_data?.data
+    if (!data)
+    {
+        const base = (palettes.wind && palettes.wind.length) ? palettes.wind : palettes.solar
+        const clear_palette = pad_palette(base.map(v => new THREE.Vector4(v.x, v.y, v.z, 0)))
+        ;(shader_material.uniforms as any).palette.value = clear_palette
+        for (let i = 0; i < arr.length; i++) arr[i] = 0
+        attr.needsUpdate = true
+        return
+    }
+
+    const palette = capacity_data.type === "wind" ? palettes.wind : palettes.solar
+    ;(shader_material.uniforms as any).palette.value = pad_palette(palette)
+
+    const palette_count = Math.max(1, palette.length)
+    coords.cell_ids.forEach((cell_id, i) => {
+        const capacity_factor = get_capacity_factor_mix(data, datetime_index1, datetime_index2, datetime_index_mix, cell_id) ?? 0
+        const idxf = capacity_data.display_type === "continuous"
+            ? capacity_factor * (palette_count - 1)
+            : Math.round(capacity_factor * (palette_count - 1))
+
+        const range = coords.cell_vertex_ranges[i]!
+        const start = range.start
+        const end = start + range.count
+        for (let v = start; v < end; v++) arr[v] = idxf
+    })
+
+    attr.needsUpdate = true
 }
