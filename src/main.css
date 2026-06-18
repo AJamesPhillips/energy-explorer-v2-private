@@ -154,7 +154,7 @@ html, body, #app, #app_html {
 #app_top_bar
 {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     margin-bottom: 1em;
     padding: 10px;
 }
@@ -171,6 +171,10 @@ html, body, #app, #app_html {
     gap: 8px;
     flex-direction: row;
     justify-content: flex-end;
+}
+#app_top_bar_side .app_controls_row.justify_left
+{
+    justify-content: flex-start;
 }
 
 #app_main_view

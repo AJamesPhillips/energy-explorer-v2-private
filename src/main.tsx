@@ -35,6 +35,7 @@ import { process_solar_farms_data_component, SolarFarmsByYear } from "./sim_3d/d
 import { process_wind_farms_data_component, WindFarmsByYear } from "./sim_3d/data/wind_farms/process_data_component"
 import { DevView, show_dev_view } from "./sim_3d/dev/DevView"
 import { SimpleSim } from "./sim_3d/simple_sim/SimpleSim"
+import { SimLeftSideBar } from "./sim_3d/simple_sim/ui/SimLeftSideBar"
 import { SimRightSideBar } from "./sim_3d/simple_sim/ui/SimRightSideBar"
 import { LilGui } from "./utils/LilGui"
 
@@ -200,6 +201,18 @@ function App ()
 
             <div style={{ display: "flex", gap: "20px", flexDirection: "column", flexGrow: 1 }}>
                 <div id="app_top_bar">
+                    <div id="app_top_bar_side">
+                        {sim_or_dt && <SimLeftSideBar
+                            year={year}
+                            population_by_year={population_by_year}
+                            population={population}
+                            set_population={set_population}
+
+                            oil_gas_by_year={oil_gas_by_year}
+                            solar_farms_by_year={solar_farms_by_year}
+                            wind_farms_by_year={wind_farms_by_year}
+                        />}
+                    </div>
                     <div id="app_top_bar_side">
                         {sim_or_dt && <SimRightSideBar
                             year={year}
