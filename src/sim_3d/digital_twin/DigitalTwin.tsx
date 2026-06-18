@@ -5,7 +5,7 @@ import * as THREE from "three"
 import { OrbitControls as OrbitControlsImplementation } from "three/examples/jsm/Addons.js"
 
 import uk_daily_power_demand_profiles from "../data/power_demand/uk/daily_profiles.json"
-import { PowerStats } from "../model/interface"
+import { PowerStats } from "../model/old_interface"
 import { CONSTANTS } from "../scene/CONSTANTS"
 import { Earth } from "../scene/earth/Earth"
 import { SpatialData } from "../scene/spatial_data/SpatialData"

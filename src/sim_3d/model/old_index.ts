@@ -3,7 +3,7 @@ import { DatetimeRange } from "core/data/values/DatetimeRange"
 import { ILatLon } from "core/data/values/LatLon"
 import { factory_change_date } from "core/utils/datetime"
 
-import { ModelData, ModelRunOutput, ModelScenario, StoragePowerPlant, UserChoices } from "./interface"
+import { ModelData, ModelRunOutput, ModelScenario, StoragePowerPlant, UserChoices } from "./old_interface"
 
 
 export function run_model(model_data: ModelData, model_scenario: ModelScenario, user_actions: UserChoices): ModelRunOutput

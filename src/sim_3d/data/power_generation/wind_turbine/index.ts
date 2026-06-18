@@ -1,4 +1,4 @@
-import { TemporalSpatialDataSeries } from "../../../model/interface"
+import { TemporalSpatialDataSeries } from "../../../model/old_interface"
 import {
     datetime_range_2018_hourly,
 } from "../../_2018"

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { lerp } from "three/src/math/MathUtils.js"
 
 import { LimitedViewType } from "../interface"
-import { PowerStats } from "../model/interface"
+import { PowerStats } from "../model/old_interface"
 import pub_sub from "../state/pub_sub"
 import "./PowerStatus.css"
 

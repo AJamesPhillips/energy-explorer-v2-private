@@ -6,7 +6,7 @@ import { uk_demand_gw_by_hour_2018 } from "../../data/power_demand/uk"
 import { uk_hourly_capacity_factor_solar_generation_2018 } from "../../data/power_generation/solar_pv"
 import { uk_hourly_capacity_factor_wind_generation_2018 } from "../../data/power_generation/wind_turbine"
 import { get_spatial_data_grid } from "../../data/spatial_grid/uk"
-import { ModelData } from "../../model/interface"
+import { ModelData } from "../../model/old_interface"
 
 
 let async_model_data: Promise<ModelData> | undefined = undefined

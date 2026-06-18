@@ -4,7 +4,7 @@ import * as THREE from "three"
 
 import { ILatLon, ILatLonWithIsOnshore } from "core/data/values/LatLon"
 
-import { ModelData } from "../../model/interface"
+import { ModelData } from "../../model/old_interface"
 import { solar_yellow_material, wind_blue_material } from "../../utils/colour"
 import {
     convert_lat_lon_to_sphere as convert_lat_lon_to_sphere_orig
