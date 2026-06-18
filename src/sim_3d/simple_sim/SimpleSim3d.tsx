@@ -13,7 +13,6 @@ import { WorldAtlas } from "../dev/interface"
 import { NEARBY_COUNTRY_IDS, UK_ID } from "../dev/map_data"
 import { PowerPlantsCurrent } from "../dev/PowerPlantsCurrent"
 import { init_model_power_supply_updates } from "../model"
-import { PowerStats } from "../model/old_interface"
 import pub_sub from "../state/pub_sub"
 import { sim_clock } from "../state/sim_clock"
 import { CONSTANTS, DEFAULTS } from "./constants"
@@ -50,7 +49,7 @@ interface SimpleSim3dProps
     data: CellsData
     set_data: React.Dispatch<React.SetStateAction<CellsData>>
     // power: PowerStats
-    set_power: React.Dispatch<React.SetStateAction<PowerStats>>
+    // set_power: React.Dispatch<React.SetStateAction<PowerStats>>
 }
 export function SimpleSim3d(props: SimpleSim3dProps)
 {
@@ -152,25 +151,6 @@ export function SimpleSim3d(props: SimpleSim3dProps)
             set_h3_land_cells(h3_land_cells)
         })
     }, [])
-
-    useEffect(() =>
-    {
-        const new_power_supply = calculate_power_supply_from_data(props.data)
-        props.set_power(existing => ({
-            supply_gw: new_power_supply,
-            demand_gw: existing.demand_gw,
-        }))
-    }, [props.data])
-
-    useEffect(() =>
-    {
-        const unsub = pub_sub.sub("power_supply", (payload) =>
-        {
-            props.set_power(existing => ({ ...existing, supply_gw: payload.supply_gw }))
-        }, "model-power")
-
-        return unsub
-    }, [props.set_power])
 
     return <>
         <IsoCamera grid_size={GRID_SIZE} cell_size={CELL_SIZE} />

@@ -4,6 +4,7 @@ import { promise_load_all_capacity_factor_data } from "../data/wind_and_solar_ca
 import type { AggregatedPowerPlantData } from "../data/power_plants/interface"
 import pub_sub from "../state/pub_sub"
 import { get_capacity_factor_mix } from "../utils/capacity_factor_data"
+import { SupplyGWByType } from "./old_interface"
 
 
 const capacity_factor_data = promise_load_all_capacity_factor_data()
@@ -33,13 +34,15 @@ const power_plants = promise_aggregated_power_plants_by_h3_cell
 export type GenerationBySource = { generated_mw: number; capacity_mw: number }
 export interface GenerationByCell
 {
-	h3_id: string
-	wind: GenerationBySource
-	solar: GenerationBySource
-	gas: GenerationBySource
-	nuclear: GenerationBySource
-	total_generated_mw: number
-	total_capacity_mw: number
+    h3_id: string
+    wind: GenerationBySource
+    solar: GenerationBySource
+    gas: GenerationBySource
+    nuclear: GenerationBySource
+    battery: GenerationBySource
+    hydro_pumped_storage: GenerationBySource
+    total_generated_mw: number
+    total_capacity_mw: number
 }
 
 /**
@@ -49,51 +52,57 @@ export interface GenerationByCell
  */
 export async function get_generation_by_h3_cell(datetime_index1: number, datetime_index2: number, mix: number = 0): Promise<Record<string, GenerationByCell>>
 {
-	const cf = await capacity_factor_data
-	const aggregated = await power_plants as Record<string, AggregatedPowerPlantData>
+    const cf = await capacity_factor_data
+    const aggregated = await power_plants as Record<string, AggregatedPowerPlantData>
 
-	const wind_cf = cf.wind
-	const solar_cf = cf.solar
+    const wind_cf = cf.wind
+    const solar_cf = cf.solar
 
-	const out: Record<string, GenerationByCell> = {}
+    const out: Record<string, GenerationByCell> = {}
 
-	for (const [h3_id, data] of Object.entries(aggregated))
-	{
-		const wind_capacity_mw = data.wind_farm.capacity_mw ?? 0
-		const solar_capacity_mw = data.solar_farm.capacity_mw ?? 0
-		const gas_capacity_mw = data.gas_plant.capacity_mw ?? 0
-		const nuclear_capacity_mw = data.nuclear_plant.capacity_mw ?? 0
+    for (const [h3_id, data] of Object.entries(aggregated))
+    {
+        const wind_capacity_mw = data.wind_farm.capacity_mw ?? 0
+        const solar_capacity_mw = data.solar_farm.capacity_mw ?? 0
+        const gas_capacity_mw = data.gas_plant.capacity_mw ?? 0
+        const nuclear_capacity_mw = data.nuclear_plant.capacity_mw ?? 0
 
-		const cf_wind = get_capacity_factor_mix(wind_cf, datetime_index1, datetime_index2, mix, h3_id) ?? 0
-		const cf_solar = get_capacity_factor_mix(solar_cf, datetime_index1, datetime_index2, mix, h3_id) ?? 0
+        const cf_wind = get_capacity_factor_mix(wind_cf, datetime_index1, datetime_index2, mix, h3_id) ?? 0
+        const cf_solar = get_capacity_factor_mix(solar_cf, datetime_index1, datetime_index2, mix, h3_id) ?? 0
 
-		const wind_generated_mw = wind_capacity_mw * cf_wind
-		const solar_generated_mw = solar_capacity_mw * cf_solar
+        const wind_generated_mw = wind_capacity_mw * cf_wind
+        const solar_generated_mw = solar_capacity_mw * cf_solar
+        const gas_generated_mw = 0 // TODO: get from data
+        const nuclear_generated_mw = 0 // TODO: get from data
+        const battery_generated_mw = 0 // TODO: get from data
+        const hydro_pumped_storage_generated_mw = 0 // TODO: get from data
 
-		const total_generated_mw = wind_generated_mw + solar_generated_mw
-		const total_capacity_mw = wind_capacity_mw + solar_capacity_mw + gas_capacity_mw + nuclear_capacity_mw
+        const total_generated_mw = wind_generated_mw + solar_generated_mw + gas_generated_mw + nuclear_generated_mw + battery_generated_mw + hydro_pumped_storage_generated_mw
+        const total_capacity_mw = wind_capacity_mw + solar_capacity_mw + gas_capacity_mw + nuclear_capacity_mw
 
-		out[h3_id] = {
-			h3_id,
-			wind: { generated_mw: wind_generated_mw, capacity_mw: wind_capacity_mw },
-			solar: { generated_mw: solar_generated_mw, capacity_mw: solar_capacity_mw },
-			gas: { generated_mw: 0, capacity_mw: gas_capacity_mw },
-			nuclear: { generated_mw: 0, capacity_mw: nuclear_capacity_mw },
-			total_generated_mw,
-			total_capacity_mw,
-		}
-	}
+        out[h3_id] = {
+            h3_id,
+            wind: { generated_mw: wind_generated_mw, capacity_mw: wind_capacity_mw },
+            solar: { generated_mw: solar_generated_mw, capacity_mw: solar_capacity_mw },
+            gas: { generated_mw: gas_generated_mw, capacity_mw: gas_capacity_mw },
+            nuclear: { generated_mw: nuclear_generated_mw, capacity_mw: nuclear_capacity_mw },
+            battery: { generated_mw: battery_generated_mw, capacity_mw: 0 },
+            hydro_pumped_storage: { generated_mw: hydro_pumped_storage_generated_mw, capacity_mw: 0 },
+            total_generated_mw,
+            total_capacity_mw,
+        }
+    }
 
-	return out
+    return out
 }
 
 
 export async function get_total_generation_gw(datetime_index1: number, datetime_index2: number, mix: number = 0): Promise<number>
 {
-	const by_cell = await get_generation_by_h3_cell(datetime_index1, datetime_index2, mix)
-	let total_mw = 0
-	Object.values(by_cell).forEach(c => total_mw += c.total_generated_mw)
-	return total_mw / 1000
+    const by_cell = await get_generation_by_h3_cell(datetime_index1, datetime_index2, mix)
+    let total_mw = 0
+    Object.values(by_cell).forEach(c => total_mw += c.total_generated_mw)
+    return total_mw / 1000
 }
 
 
@@ -127,14 +136,32 @@ export function init_model_power_supply_updates()
                     payload.datetime_annual_hourly_index2,
                     payload.datetime_annual_hourly_index_mix,
                 )
+                const supply_gw_by_type: SupplyGWByType = {
+                    wind: 0,
+                    solar: 0,
+                    gas: 0,
+                    nuclear: 0,
+                    battery: 0,
+                    hydro_pumped_storage: 0,
+                }
 
                 let total_mw = 0
-                Object.values(by_cell).forEach(c => total_mw += c.total_generated_mw)
+                Object.values(by_cell).forEach(c =>
+                {
+                    total_mw += c.total_generated_mw
+                    supply_gw_by_type.wind += c.wind.generated_mw / 1000
+                    supply_gw_by_type.solar += c.solar.generated_mw / 1000
+                    supply_gw_by_type.gas += c.gas.generated_mw / 1000
+                    supply_gw_by_type.nuclear += c.nuclear.generated_mw / 1000
+                    supply_gw_by_type.battery += c.battery.generated_mw / 1000
+                    supply_gw_by_type.hydro_pumped_storage += c.hydro_pumped_storage.generated_mw / 1000
+                })
 
                 const supply_gw = total_mw / 1000
 
                 pub_sub.pub("power_supply", {
                     supply_gw,
+                    supply_gw_by_type,
                     generation_by_cell: by_cell,
                     datetime_ms: payload.datetime_ms,
                 })

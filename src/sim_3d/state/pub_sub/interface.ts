@@ -1,4 +1,5 @@
 import { BuildingActionTypeString } from "../../../state/building_action/interface"
+import { SupplyGWByType } from "../../model/old_interface"
 import { CellDataV2 } from "../../simple_sim/interface"
 
 
@@ -28,6 +29,7 @@ export interface PublishableEvents
     }
     power_supply: {
         supply_gw: number
+        supply_gw_by_type: SupplyGWByType
         generation_by_cell?: Record<string, {
             h3_id: string
             wind: { generated_mw: number; capacity_mw: number }

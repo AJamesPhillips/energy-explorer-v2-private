@@ -12,6 +12,16 @@ export interface PowerStats
 {
     demand_gw: number
     supply_gw: number
+    supply_gw_by_type: SupplyGWByType
+}
+export interface SupplyGWByType
+{
+    wind: number
+    solar: number
+    gas: number
+    nuclear: number
+    battery: number
+    hydro_pumped_storage: number
 }
 
 
