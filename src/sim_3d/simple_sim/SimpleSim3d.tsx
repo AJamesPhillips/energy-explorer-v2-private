@@ -60,25 +60,6 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
     })
 
 
-    useEffect(() =>
-    {
-        init_model_power_supply_updates()
-        sim_clock.init({
-            start_timestamp: new Date("2026-06-01T00:00:00.000Z").getTime(),
-            current_timestamp: new Date("2026-06-01T09:00:00.000Z").getTime(),
-            end_timestamp: new Date("2026-06-15T00:00:00.000Z").getTime(),
-        })
-    }, [])
-    useFrame((state, delta) =>
-    {
-        const elapsed_seconds = state.clock.getElapsedTime()
-        pub_sub.pub("animation_tick", {
-            delta_seconds: delta,
-            elapsed_seconds,
-        })
-    })
-
-
     // const state = get_app_state()
     // const current_action = state.building_action.active
 
@@ -150,6 +131,27 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
             set_h3_land_cells(h3_land_cells)
         })
     }, [])
+
+
+    useEffect(() =>
+    {
+        if (h3_land_cells.length === 0) return
+
+        init_model_power_supply_updates(h3_land_cells)
+        sim_clock.init({
+            start_timestamp: new Date("2026-06-01T00:00:00.000Z").getTime(),
+            current_timestamp: new Date("2026-06-01T09:00:00.000Z").getTime(),
+            end_timestamp: new Date("2026-06-15T00:00:00.000Z").getTime(),
+        })
+    }, [h3_land_cells])
+    useFrame((state, delta) =>
+    {
+        const elapsed_seconds = state.clock.getElapsedTime()
+        pub_sub.pub("animation_tick", {
+            delta_seconds: delta,
+            elapsed_seconds,
+        })
+    })
 
     return <>
         <IsoCamera grid_size={GRID_SIZE} cell_size={CELL_SIZE} />

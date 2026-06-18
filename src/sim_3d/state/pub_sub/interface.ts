@@ -1,4 +1,5 @@
 import { BuildingActionTypeString } from "../../../state/building_action/interface"
+import { DemandByH3R4Cell } from "../../model/interface"
 import { SupplyGWByType } from "../../model/old_interface"
 import { CellDataV2 } from "../../simple_sim/interface"
 
@@ -27,7 +28,7 @@ export interface PublishableEvents
         datetime_annual_hourly_index2: number
         datetime_annual_hourly_index_mix: number
     }
-    power_supply: {
+    power_supply_and_demand: {
         supply_gw: number
         supply_gw_by_type: SupplyGWByType
         capacity_gw_by_type: SupplyGWByType
@@ -40,6 +41,8 @@ export interface PublishableEvents
             total_generated_mw: number
             total_capacity_mw: number
         }>
+        demand_gw: number
+        demand_by_h3r4: DemandByH3R4Cell
         datetime_ms?: number
     }
     show_message: {

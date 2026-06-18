@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+
 import { asset_url } from "../../../utils/asset_url"
 import pub_sub from "../../state/pub_sub"
 import "./EnergySupplyDemandActions.css"
@@ -26,18 +27,20 @@ export function EnergySupplyDemandActions(_props: {})
             battery: 0,
             hydro_pumped_storage: 0,
         },
+        demand_gw: 0,
     })
 
     useEffect(() =>
     {
-        return pub_sub.sub("power_supply", payload =>
+        return pub_sub.sub("power_supply_and_demand", payload =>
         {
-            set_power(existing => ({
-                ...existing,
+
+            set_power({
                 supply_gw: payload.supply_gw,
                 supply_gw_by_type: payload.supply_gw_by_type,
                 capacity_gw_by_type: payload.capacity_gw_by_type,
-            }))
+                demand_gw: payload.demand_gw,
+            })
         }, "model-power")
 
     }, [])
@@ -48,16 +51,20 @@ export function EnergySupplyDemandActions(_props: {})
     >
         <table>
             <tbody>
-                {/* <tr>
-                    <td></td>
-                    <td>GW</td>
-                </tr> */}
                 <tr>
                     <td style={{ display: "flex", flexDirection: "column", gap: -3 }}>
                         <Suburban />
                         <Urban />
                     </td>
-                    <td>-30</td>
+                    <td>
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                            <div>
+                                {power.demand_gw.toFixed(1)}
+                                <span style={{ fontSize: "var(--font-small)" }}> GW</span>
+                            </div>
+                            <span style={{ fontSize: "var(--font-small)", marginTop: -4 }}> DEMAND</span>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td style={{ borderTop: "1px solid var(--colour-border-gray)" }}></td>
@@ -88,7 +95,7 @@ function Suburban()
         height: 50,
         objectFit: "cover",
         objectPosition: "0px -140px",
-        marginLeft: -10,
+        // marginLeft: -10,
     }} />
 }
 
@@ -100,6 +107,6 @@ function Urban()
         objectFit: "cover",
         objectPosition: "0px -185px",
         marginTop: -10,
-        marginRight: -10,
+        // marginRight: -10,
     }} />
 }
