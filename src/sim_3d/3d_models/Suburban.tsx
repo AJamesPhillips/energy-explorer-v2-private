@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 
-import { seeded_rand } from "../../utils/seeded_random"
-import { CONSTANTS } from "../constants"
+import { CONSTANTS } from "../simple_sim/constants"
+import { seeded_rand } from "../utils/seeded_random"
 
 
 interface SuburbanTilesProps

@@ -1,5 +1,5 @@
-import { SingleOilRig } from "../../3d_models/SingleOilRig"
-import { CellDataV1 } from "../interface"
+import { CellDataV1 } from "../simple_sim/interface"
+import { SingleOilRig } from "./SingleOilRig"
 
 
 interface OilRigTilesProps

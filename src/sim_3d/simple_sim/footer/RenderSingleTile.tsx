@@ -1,17 +1,17 @@
 import { Box } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
 
+import { OilRigTiles } from "../../3d_models/OilRig"
 import { SolarFarms } from "../../3d_models/SolarFarm"
+import { SuburbanTiles } from "../../3d_models/Suburban"
+import { UrbanTiles } from "../../3d_models/Urban"
 import { WindTurbineFarms } from "../../3d_models/WindTurbine"
+import { Woodland } from "../../3d_models/Woodland"
 import { CONSTANTS, DEFAULTS } from "../constants"
 import { CellDataV1 } from "../interface"
 import { IsoCamera } from "../IsoCamera"
 import { bevel_colours, box_geometry_for_cell_size } from "../IsoMetricTileConstants"
 import { tile_colour } from "../tile"
-import { OilRigTiles } from "../tiles/OilRig"
-import { SuburbanTiles } from "../tiles/Suburban"
-import { UrbanTiles } from "../tiles/Urban"
-import { Woodland } from "../tiles/Woodland"
 import "./TileInfo.css"
 
 

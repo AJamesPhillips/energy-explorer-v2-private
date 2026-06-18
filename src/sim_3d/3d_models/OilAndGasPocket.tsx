@@ -2,7 +2,7 @@ import { Text } from "@react-three/drei"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import * as THREE from "three"
 
-import pub_sub from "../../state/pub_sub"
+import pub_sub from "../state/pub_sub"
 
 
 interface OilPocketConfig

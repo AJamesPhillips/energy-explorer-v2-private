@@ -1,13 +1,13 @@
 import { useMemo } from "react"
 
+import { OilAndGasPocketTiles } from "../3d_models/OilAndGasPocket"
+import { OilRigTiles } from "../3d_models/OilRig"
 import { SolarFarms } from "../3d_models/SolarFarm"
+import { SuburbanTiles } from "../3d_models/Suburban"
+import { UrbanTiles } from "../3d_models/Urban"
 import { WindTurbineFarms } from "../3d_models/WindTurbine"
+import { Woodland } from "../3d_models/Woodland"
 import { CellDataV1 } from "./interface"
-import { OilAndGasPocketTiles } from "./tiles/OilAndGasPocket"
-import { OilRigTiles } from "./tiles/OilRig"
-import { SuburbanTiles } from "./tiles/Suburban"
-import { UrbanTiles } from "./tiles/Urban"
-import { Woodland } from "./tiles/Woodland"
 
 
 interface IsoMetricGridContentTilesProps
