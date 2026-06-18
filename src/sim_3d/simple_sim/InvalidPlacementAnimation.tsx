@@ -4,10 +4,10 @@ import * as THREE from "three"
 
 import { BuildingActionTypeString } from "../../state/building_action/interface"
 import { asset_url } from "../../utils/asset_url"
+import { SolarFarmPanels } from "../3d_models/SolarFarm"
 import { WindTurbine } from "../3d_models/WindTurbine"
 import pub_sub from "../state/pub_sub"
 import { CellDataV1 } from "./interface"
-import { SolarFarmPanels } from "./tiles/SolarFarm"
 
 const bubbles_audio_url = asset_url("/audio/bubbles.mp3")
 

@@ -1,6 +1,6 @@
 import { Text } from "@react-three/drei"
+import { SolarFarmsInit } from "../3d_models/SolarFarm"
 import { WindTurbineInit } from "../3d_models/WindTurbine"
-import { SolarFarmsInit } from "./tiles/SolarFarm"
 
 
 export function InitialiseGeometriesEtc()

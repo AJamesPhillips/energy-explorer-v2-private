@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react"
 
+import { SolarFarms } from "../3d_models/SolarFarm"
 import { WindTurbineFarms } from "../3d_models/WindTurbine"
 import { power_plants_data, promise_aggregated_power_plants_by_h3_cell } from "../data/power_plants"
-import { SolarFarms } from "../simple_sim/tiles/SolarFarm"
 import { AggregatedPowerPlantLayer } from "./AggregatedPowerPlantLayer"
 import { get_projection, XY } from "./projection"
 

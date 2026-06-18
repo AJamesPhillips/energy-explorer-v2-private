@@ -14,14 +14,10 @@ export function GameDatetimeUI()
         set_dt(datetime)
     }), [])
 
-    return <div style={{
+    return <div className="ui_section" style={{
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        border: "1px solid var(--colour-border-gray)",
-        borderRadius: 4,
-        padding: "2px 8px",
-        backgroundColor: "rgba(255, 255, 255, 0.8)",
     }}>
         <div>
             <span style={{ fontSize: "var(--font-small)", fontWeight: "bold" }}>

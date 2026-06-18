@@ -202,16 +202,7 @@ function App ()
             <div style={{ display: "flex", gap: "20px", flexDirection: "column", flexGrow: 1 }}>
                 <div id="app_top_bar">
                     <div id="app_top_bar_side">
-                        {sim_or_dt && <SimLeftSideBar
-                            year={year}
-                            population_by_year={population_by_year}
-                            population={population}
-                            set_population={set_population}
-
-                            oil_gas_by_year={oil_gas_by_year}
-                            solar_farms_by_year={solar_farms_by_year}
-                            wind_farms_by_year={wind_farms_by_year}
-                        />}
+                        {sim_or_dt && <SimLeftSideBar />}
                     </div>
                     <div id="app_top_bar_side">
                         {sim_or_dt && <SimRightSideBar
