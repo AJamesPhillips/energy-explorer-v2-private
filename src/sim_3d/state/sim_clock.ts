@@ -3,8 +3,9 @@ import { GameSpeed } from "../../state/game_datetime/interface"
 import pub_sub from "../state/pub_sub"
 
 
-const NORMAL_SPEED = 3600 / 5
-const FAST_SPEED = 3600 * 10
+const BASE_SPEED = 3600 / 5
+const NORMAL_SPEED_FACTOR = 1
+const FAST_SPEED_FACTOR = 50
 
 let sim_seconds_per_real_second: number
 let last_real = 0
@@ -22,10 +23,19 @@ export function init(opts: { start_timestamp: number, current_timestamp: number,
     loop()
 }
 
-export function set_speed(g: GameSpeed)
+export function set_speed(new_speed: GameSpeed)
 {
-    sim_seconds_per_real_second = g === "paused" ? 0 : g === "normal" ? NORMAL_SPEED : FAST_SPEED
-    if (g !== "paused" && start_timestamp) loop()
+    const original_sim_seconds_per_real_second = sim_seconds_per_real_second
+    const speed_factor = new_speed === "paused" ? 0 : new_speed === "normal" ? NORMAL_SPEED_FACTOR : FAST_SPEED_FACTOR
+    sim_seconds_per_real_second = BASE_SPEED * speed_factor
+    if (new_speed !== "paused" && start_timestamp) loop()
+
+    if (original_sim_seconds_per_real_second === sim_seconds_per_real_second) return
+    pub_sub.pub("simulation_speed_changed", {
+        speed: new_speed,
+        factor: speed_factor,
+        sim_seconds_per_real_second,
+    })
 }
 set_speed(DEFAULT_SPEED)
 

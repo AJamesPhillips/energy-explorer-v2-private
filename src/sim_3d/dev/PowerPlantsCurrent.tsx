@@ -1,3 +1,4 @@
+import { latLngToCell } from "h3-js"
 import { useEffect, useMemo, useState } from "react"
 
 import { SolarFarms } from "../3d_models/SolarFarm"
@@ -21,16 +22,17 @@ export function PowerPlantsCurrent({ show_aggregated }: { show_aggregated: boole
     {
         const projection = get_projection()
 
-        const wind_farm_tiles: XY[] = []
+        const wind_farm_tiles: (XY & { h3r4_id: string })[] = []
         const solar_farm_tiles: XY[] = []
         const gas_plant_tiles: XY[] = []
         const nuclear_plant_tiles: XY[] = []
 
         power_plants_data.forEach(p =>
         {
+            const h3r4_id = latLngToCell(p.lat, p.lon, 4)
             const xy = projection(p)
             if (!xy) return
-            if (p.type === "wind_farm") wind_farm_tiles.push(xy)
+            if (p.type === "wind_farm") wind_farm_tiles.push({ ...xy, h3r4_id })
             else if (p.type === "solar_farm") solar_farm_tiles.push(xy)
             else if (p.type === "gas") gas_plant_tiles.push(xy)
             else if (p.type === "nuclear") nuclear_plant_tiles.push(xy)

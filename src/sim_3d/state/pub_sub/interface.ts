@@ -29,6 +29,11 @@ export interface PublishableEvents
         datetime_annual_hourly_index2: number
         datetime_annual_hourly_index_mix: number
     }
+    simulation_speed_changed: {
+        speed: "paused" | "normal" | "fast"
+        factor: number
+        sim_seconds_per_real_second: number
+    }
     power_supply_and_demand: {
         supply_gw: number
         supply_gw_by_type: SupplyGWByType

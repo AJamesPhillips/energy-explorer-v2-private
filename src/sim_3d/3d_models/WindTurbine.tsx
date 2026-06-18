@@ -1,6 +1,7 @@
 import { useFrame } from "@react-three/fiber"
 import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
+import pub_sub from "../state/pub_sub"
 
 
 
@@ -47,7 +48,7 @@ export function WindTurbineInit()
 
 export interface WindTurbineFarmsProps
 {
-    tiles: { x: number, y: number }[]
+    tiles: { h3r4_id: string, x: number, y: number }[]
     size?: number
 }
 export function WindTurbineFarms(props: WindTurbineFarmsProps)
@@ -57,30 +58,52 @@ export function WindTurbineFarms(props: WindTurbineFarmsProps)
     const { size } = props
 
     return <>
-        {tiles.map(({ x, y }, i) => (
+        {tiles.map(({ x, y, h3r4_id }, i) => (
             <group
-                key={`${x}-${y}`}
+                key={h3r4_id}
                 position={[x, 0, y]}
             >
-                <WindTurbine size={size} index={i} />
+                <WindTurbine size={size} index={i} h3r4_id={h3r4_id} />
             </group>
         ))}
     </>
 }
 
 
-export function WindTurbine({ size = BASE_SIZE, index, transparent }: { size?: number, index?: number, transparent?: boolean })
+const BASE_SPEED = 6
+export function WindTurbine({ size = BASE_SIZE, index, transparent, h3r4_id }: { size?: number, index?: number, transparent?: boolean, h3r4_id?: string })
 {
     const rotor_refs = useRef<(THREE.Group | null)[]>([])
+    const speed = useRef(BASE_SPEED)
+    const sim_speed_factor = useRef(1)
 
     useFrame((_state, delta) =>
     {
-        const d = delta * 2.0
+        const d = delta * speed.current * sim_speed_factor.current
         rotor_refs.current.forEach(ref =>
         {
             if (ref) ref.rotation.x += d
         })
     })
+
+    useEffect(() =>
+    {
+        if (!h3r4_id) return
+
+        return pub_sub.sub("power_supply_and_demand", ({ generation_by_cell }) =>
+        {
+            if (!generation_by_cell) return
+            const generation = generation_by_cell[h3r4_id]
+            if (!generation) return
+            const new_speed = (generation.wind.generated_mw / generation.wind.capacity_mw) * BASE_SPEED
+            speed.current = new_speed
+        })
+    }, [])
+
+    useEffect(() => pub_sub.sub("simulation_speed_changed", ({ factor }) =>
+    {
+        sim_speed_factor.current = Math.min(factor, 1)
+    }, "WindTurbine"), [])
 
     const scale = useMemo(() => new THREE.Vector3(size / BASE_SIZE, size / BASE_SIZE, size / BASE_SIZE), [size])
 

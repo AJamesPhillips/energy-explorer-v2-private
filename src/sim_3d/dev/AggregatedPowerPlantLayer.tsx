@@ -18,7 +18,7 @@ interface AggregatedPowerPlantLayerProps
     outline_color: number
     opacity: number
     min_area_ratio?: number
-    RenderPlants: ComponentType<{ tiles: XY[] }>
+    RenderPlants: ComponentType<{ tiles: (XY & { h3r4_id: string })[] }>
 }
 
 export function AggregatedPowerPlantLayer(props: AggregatedPowerPlantLayerProps)
@@ -41,7 +41,7 @@ export function AggregatedPowerPlantLayer(props: AggregatedPowerPlantLayerProps)
     {
         const projection = get_projection()
 
-        const tiles: XY[] = []
+        const tiles: (XY & { h3r4_id: string })[] = []
         const fill_geometries: THREE.BufferGeometry[] = []
         const outline_geometries: THREE.BufferGeometry[] = []
 
@@ -59,7 +59,7 @@ export function AggregatedPowerPlantLayer(props: AggregatedPowerPlantLayerProps)
             const area_ratio = clamp(plant_area_km2 / cell_area_km2)
             if (area_ratio < min_area_ratio) continue
 
-            tiles.push(center)
+            tiles.push({ ...center, h3r4_id: h3_id })
 
             if (area_ratio === 0) continue
 
