@@ -5,7 +5,7 @@ import { CONSTANTS } from "../simple_sim/constants"
 import { seeded_rand } from "../utils/seeded_random"
 
 
-const BASE_SIZE = 12
+const { DEFAULT_SIZE_FOR_TILE_CONTENT: BASE_SIZE } = CONSTANTS
 
 interface UrbanTilesProps
 {
