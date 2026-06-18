@@ -12,6 +12,7 @@ import { H3LandCells } from "../dev/dgg/H3LandCells"
 import { WorldAtlas } from "../dev/interface"
 import { NEARBY_COUNTRY_IDS, UK_ID } from "../dev/map_data"
 import { PowerPlantsCurrent } from "../dev/PowerPlantsCurrent"
+import { init_model_power_supply_updates } from "../model"
 import { PowerStats } from "../model/old_interface"
 import pub_sub from "../state/pub_sub"
 import { sim_clock } from "../state/sim_clock"
@@ -63,6 +64,7 @@ export function SimpleSim3d(props: SimpleSim3dProps)
 
     useEffect(() =>
     {
+        init_model_power_supply_updates()
         sim_clock.init({
             start_timestamp: new Date("2026-06-01T00:00:00.000Z").getTime(),
             current_timestamp: new Date("2026-06-01T09:00:00.000Z").getTime(),
@@ -159,6 +161,16 @@ export function SimpleSim3d(props: SimpleSim3dProps)
             demand_gw: existing.demand_gw,
         }))
     }, [props.data])
+
+    useEffect(() =>
+    {
+        const unsub = pub_sub.sub("power_supply", (payload) =>
+        {
+            props.set_power(existing => ({ ...existing, supply_gw: payload.supply_gw }))
+        }, "model-power")
+
+        return unsub
+    }, [props.set_power])
 
     return <>
         <IsoCamera grid_size={GRID_SIZE} cell_size={CELL_SIZE} />

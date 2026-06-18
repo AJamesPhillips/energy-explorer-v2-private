@@ -2,7 +2,7 @@ import { cellToLatLng, latLngToCell } from "h3-js"
 
 import { get_projection, latlon_tuple_to_obj } from "../../dev/projection"
 import { CapacityFactorData } from "../../utils/capacity_factor_data"
-import { load_all_capacity_factor_data } from "../wind_and_solar_capacity/load_data"
+import { promise_load_all_capacity_factor_data } from "../wind_and_solar_capacity/load_data"
 import { AggregatedPowerPlantData, PowerPlant } from "./interface"
 import { parse_solar_farm_data, parse_wind_farm_data } from "./parse_data"
 import { solar_farms } from "./solar_farm_data"
@@ -97,9 +97,9 @@ function aggregate_power_plants_by_h3_cell(
 }
 
 
-export const power_plants_by_h3_cell = map_power_plants_by_h3_cell(power_plants_data)
+const power_plants_by_h3_cell = map_power_plants_by_h3_cell(power_plants_data)
 
-export const promise_aggregated_power_plants_by_h3_cell = load_all_capacity_factor_data().then(({ wind, solar }) =>
+export const promise_aggregated_power_plants_by_h3_cell = promise_load_all_capacity_factor_data().then(({ wind, solar }) =>
 {
     return aggregate_power_plants_by_h3_cell(power_plants_by_h3_cell, wind, solar)
 })

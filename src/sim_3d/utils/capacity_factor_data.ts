@@ -232,3 +232,21 @@ function factory(args: FactoryArgs)
         get_capacity_factor,
     }
 }
+
+
+export function get_capacity_factor_mix(capacity_data: CapacityFactorData, idx1: number, idx2: number, mix: number, cell_id: string): number | undefined
+{
+    const size = capacity_data.date_time_to_index.size
+    if (size === 0) return undefined
+
+    // index normalization (wrap-around)
+    const i1 = idx1 % size
+    const i2 = idx2 % size
+
+    const cf1 = capacity_data.get_capacity_factor(i1, cell_id)
+    const cf2 = capacity_data.get_capacity_factor(i2, cell_id)
+    if (cf1 === undefined && cf2 === undefined) return undefined
+    if (cf1 === undefined) return cf2
+    if (cf2 === undefined) return cf1
+    return cf1 * (1 - mix) + cf2 * mix
+}

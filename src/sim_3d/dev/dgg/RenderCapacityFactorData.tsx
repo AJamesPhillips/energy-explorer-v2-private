@@ -2,9 +2,9 @@ import { useEffect, useMemo, useRef, useState, type RefObject } from "react"
 import * as THREE from "three"
 
 import { get_app_state } from "../../../state/store"
-import { load_all_capacity_factor_data } from "../../data/wind_and_solar_capacity/load_data"
+import { promise_load_all_capacity_factor_data } from "../../data/wind_and_solar_capacity/load_data"
 import pub_sub from "../../state/pub_sub"
-import { CapacityData, CapacityFactorData } from "../../utils/capacity_factor_data"
+import { CapacityData, CapacityFactorData, get_capacity_factor_mix } from "../../utils/capacity_factor_data"
 
 
 export function RenderCapacityFactorData(props: {
@@ -29,7 +29,7 @@ export function RenderCapacityFactorData(props: {
     const [annual_solar_pv_capacity_data, set_annual_solar_pv_capacity_data] = useState<CapacityFactorData | null>(null)
     useEffect(() =>
     {
-        load_all_capacity_factor_data().then(({ wind, annual_wind, solar, annual_solar}) =>
+        promise_load_all_capacity_factor_data().then(({ wind, annual_wind, solar, annual_solar}) =>
         {
             set_wind_turbine_capacity_data(wind)
             set_annual_wind_turbine_capacity_data(annual_wind)
@@ -88,16 +88,12 @@ export function RenderCapacityFactorData(props: {
 
         const state = animation_state_ref.current
 
-        const unsub = pub_sub.sub("simulation_datetime", (payload) => {
+        const unsub = pub_sub.sub("simulation_datetime", payload => {
             const now = performance.now()
             if (!state.animate_fps) return
             if (!capacity_data.data) return
             if ((now - state.last_animated_at_ms) < (1000 / state.animate_fps)) return
             state.last_animated_at_ms = now
-
-            const datetime_index1 = payload.datetime_annual_hourly_index1 % capacity_data.data.date_time_to_index.size
-            const datetime_index2 = payload.datetime_annual_hourly_index2 % capacity_data.data.date_time_to_index.size
-            const datetime_index_mix = payload.datetime_annual_hourly_index_mix
 
             const mesh = merged_mesh_ref.current
             if (!mesh) return
@@ -109,6 +105,9 @@ export function RenderCapacityFactorData(props: {
             const palette = capacity_data!.type === "wind" ? palettes.wind : palettes.solar
             ;(shader_material.uniforms as any).palette.value = palette
 
+            const datetime_index1 = payload.datetime_annual_hourly_index1
+            const datetime_index2 = payload.datetime_annual_hourly_index2
+            const datetime_index_mix = payload.datetime_annual_hourly_index_mix
             const attr = geom.getAttribute("palette_index") as THREE.BufferAttribute
             const arr = attr.array as Float32Array
             const palette_count = palette.length
@@ -135,14 +134,4 @@ export function RenderCapacityFactorData(props: {
     }, [capacity_data, coords.merged_fill, coords.cell_ids, coords.cell_vertex_ranges, palettes, shader_material, merged_mesh_ref])
 
     return null
-}
-
-function get_capacity_factor_mix(capacity_data: CapacityFactorData, idx1: number, idx2: number, mix: number, cell_id: string): number | undefined
-{
-    const cf1 = capacity_data.get_capacity_factor(idx1, cell_id)
-    const cf2 = capacity_data.get_capacity_factor(idx2, cell_id)
-    if (cf1 === undefined && cf2 === undefined) return undefined
-    if (cf1 === undefined) return cf2
-    if (cf2 === undefined) return cf1
-    return cf1 * (1 - mix) + cf2 * mix
 }

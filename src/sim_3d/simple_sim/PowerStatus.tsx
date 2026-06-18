@@ -77,7 +77,7 @@ export function PowerStatus ({ power, datetime }: { view: LimitedViewType, power
                             title={supply_status_text}
                             onClick={open_power_supply_source}
                         >
-                            {is_surplus ? "+" : ""}{diff}
+                            {is_surplus ? "+" : ""}{current_supply_gw.toFixed(1)}
                         </td>
                     </tr>
 

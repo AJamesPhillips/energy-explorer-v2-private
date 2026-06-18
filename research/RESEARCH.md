@@ -52,6 +52,11 @@ https://www.bbc.co.uk/news/articles/cdedjnw8e85o
 Paying for curtailment
 > How the Current GB Wholesale Market Design Fails to Make Best Use of Flexible Assets: the Curious Case of Batteries Flip-Flopping in the BM
 https://www.fticonsulting.com/insights/reports/how-current-gb-wholesale-market-design-fails-make-best-use-flexible-assets-curious-case
+* BM == Balancing Mechanism
+* A battery follows the wholesale market price signal and schedules itself to charge or discharge.
+* Shortly afterwards, in the Balancing Mechanism, NESO instructs the battery to do the opposite because of transmission constraints or congestion.
+* The battery's original position is effectively reversed (“flip-flopped”), creating additional system costs.
+
 
 > Households in Liverpool pay 50% more in standing charges than London thanks to energy postcode lottery
 * Primarily due to differences in standing charge for electricity.  With rural and more northern areas

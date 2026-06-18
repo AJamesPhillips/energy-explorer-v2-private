@@ -26,6 +26,19 @@ export interface PublishableEvents
         datetime_annual_hourly_index2: number
         datetime_annual_hourly_index_mix: number
     }
+    power_supply: {
+        supply_gw: number
+        generation_by_cell?: Record<string, {
+            h3_id: string
+            wind: { generated_mw: number; capacity_mw: number }
+            solar: { generated_mw: number; capacity_mw: number }
+            gas: { generated_mw: number; capacity_mw: number }
+            nuclear: { generated_mw: number; capacity_mw: number }
+            total_generated_mw: number
+            total_capacity_mw: number
+        }>
+        datetime_ms?: number
+    }
     show_message: {
         id?: string
         message: string

@@ -1,7 +1,7 @@
 import { aggregate_to_annual_average, CapacityFactorData, load_capacity_factor_data } from "../../utils/capacity_factor_data"
 
 
-export async function load_all_capacity_factor_data(): Promise<{
+export async function promise_load_all_capacity_factor_data(): Promise<{
     wind: CapacityFactorData,
     annual_wind: CapacityFactorData,
     solar: CapacityFactorData,
