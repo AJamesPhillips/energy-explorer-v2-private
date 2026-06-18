@@ -7,8 +7,7 @@ import { SuburbanTiles } from "../../3d_models/Suburban"
 import { UrbanTiles } from "../../3d_models/Urban"
 import { Woodland } from "../../3d_models/Woodland"
 import { LandH3Cell, SIMPLIFIED_LAND_AREA_TYPES, SimplifiedLandAreaType } from "../../data/coverage_land/uk/data"
-import { CONSTANTS } from "../../simple_sim/constants"
-import { tile_colour } from "../../simple_sim/tile"
+import { CONSTANTS, tile_colour } from "../../simple_sim/constants"
 import { build_geom, get_projection, latlon_tuples_to_objs } from "../projection"
 
 

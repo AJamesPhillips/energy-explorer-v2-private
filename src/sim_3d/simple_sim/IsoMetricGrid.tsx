@@ -1,13 +1,13 @@
+import { Instance, Instances } from "@react-three/drei"
 import { ThreeEvent } from "@react-three/fiber"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 
-import { Instance, Instances } from "@react-three/drei"
+import { tile_colour } from "./constants"
 import { CellDataV1, CellsData } from "./interface"
 import { InvalidPlacementAnimations } from "./InvalidPlacementAnimation"
 import { IsoMetricGridContentTiles } from "./IsoMetricGridContentTiles"
 import { bevel_colours, box_geometry_for_cell_size } from "./IsoMetricTileConstants"
-import { tile_colour } from "./tile"
 import { TilePowerChangeAnimations } from "./tile_power/TilePowerChangeAnimation"
 
 

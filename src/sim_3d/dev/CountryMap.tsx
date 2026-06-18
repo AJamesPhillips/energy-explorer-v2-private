@@ -201,7 +201,7 @@ function RenderEEZOutline()
                 key={"eez" + index} geometry={fill}
                 position={[0, Z_EEZ_OUTLINE_OFFSET, 0]}
             >
-                <meshStandardMaterial color={0x40beea} transparent opacity={0.18} side={THREE.DoubleSide} />
+                <meshStandardMaterial color={COLOURS.country_territorial_waters} transparent opacity={0.8} side={THREE.DoubleSide} />
             </mesh>
         ))}
     </>

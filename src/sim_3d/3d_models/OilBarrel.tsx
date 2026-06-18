@@ -1,20 +1,11 @@
 import { useEffect, useMemo } from "react"
 import * as THREE from "three"
+import { COLOURS } from "../simple_sim/constants"
 
 
 export type FuelType = "crude" | "diesel" | "heating_fuel" | "jet_fuel" | "petrol" | "natural_gas"
 
-const FUEL_COLORS: Record<FuelType, string> = {
-    crude:        "#1a1a1a",
-    diesel:       "#4f371f",
-    heating_fuel: "#85573e",
-    jet_fuel:     "#c8b45a",
-    petrol:       "#e8dfa0",
-    natural_gas:  "#2266ee",
-}
-
-const METAL_COLOR = "#7a7a7a"
-
+const { FUEL_COLORS } = COLOURS
 
 interface OilBarrelProps
 {
