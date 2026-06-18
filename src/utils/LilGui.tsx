@@ -4,7 +4,7 @@ import { useEffect } from "react"
 
 let display_lil_gui = window.location.hostname === "localhost"
 display_lil_gui = false
-export const gui = new GUI({ width: 300 })
+export const lil_gui = new GUI({ width: 300 })
 
 export function LilGui()
 {
@@ -12,20 +12,20 @@ export function LilGui()
     {
         if (!display_lil_gui)
         {
-            gui.hide()
+            lil_gui.hide()
             return
         }
 
-        gui.show()
-        gui.domElement.style.position = "absolute"
-        gui.domElement.style.top = "10px"
-        gui.domElement.style.right = "10px"
-        gui.domElement.style.zIndex = "1000"
-        document.body.appendChild(gui.domElement)
+        lil_gui.show()
+        lil_gui.domElement.style.position = "absolute"
+        lil_gui.domElement.style.top = "10px"
+        lil_gui.domElement.style.right = "10px"
+        lil_gui.domElement.style.zIndex = "1000"
+        document.body.appendChild(lil_gui.domElement)
 
         return () =>
         {
-            gui.destroy()
+            lil_gui.destroy()
         }
     }, [])
 
