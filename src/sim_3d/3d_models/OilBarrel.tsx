@@ -5,7 +5,7 @@ import { COLOURS } from "../simple_sim/constants"
 
 export type FuelType = "crude" | "diesel" | "heating_fuel" | "jet_fuel" | "petrol" | "natural_gas"
 
-const { FUEL_COLORS } = COLOURS
+const { FUEL_COLORS, METAL_COLOR } = COLOURS
 
 interface OilBarrelProps
 {

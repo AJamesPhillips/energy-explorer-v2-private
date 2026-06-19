@@ -18,9 +18,9 @@ export function FloatingPowerLabel({ popup, cell_size, on_done }: {
     const label = `${sign}${round(popup.change_gw)} GW`
     const color = popup.change_gw > 0 ? "#000000" : "red"
 
-    const base_x = popup.tile.x * cell_size
+    const base_x = 0 // popup.tile.x * cell_size
     const base_y = cell_size * 0.8
-    const base_z = popup.tile.y * cell_size
+    const base_z = 0 // popup.tile.y * cell_size
 
     useEffect(() =>
     {

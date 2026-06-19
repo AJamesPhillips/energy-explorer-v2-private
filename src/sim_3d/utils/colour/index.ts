@@ -24,7 +24,7 @@ export function wind_blue(capacity_factor: number): [Color, number]
 const SOLAR_YELLOW: [Color, number][] = Array(8).fill(0).map((_, i) =>
 {
     const capacity_factor = i / 7
-    const capacity_factor2 = 0.2 + capacity_factor * 0.8
+    // const capacity_factor2 = 0.2 + capacity_factor * 0.8
     const r = 1 //capacity_factor2
     const g = 1 // capacity_factor2
     const b = 0.3 + capacity_factor * 0.7

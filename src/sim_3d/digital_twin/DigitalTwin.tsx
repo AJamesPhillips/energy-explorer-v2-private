@@ -1,15 +1,12 @@
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 import { OrbitControls as OrbitControlsImplementation } from "three/examples/jsm/Addons.js"
 
-import uk_daily_power_demand_profiles from "../data/power_demand/uk/daily_profiles.json"
-import { PowerStats } from "../model/old_interface"
 import { CONSTANTS } from "../scene/CONSTANTS"
 import { Earth } from "../scene/earth/Earth"
 import { SpatialData } from "../scene/spatial_data/SpatialData"
-import { PowerStatus } from "../simple_sim/PowerStatus"
 import { clamp } from "../utils/clamp"
 import { StarsV2 } from "./StarsV2"
 import { Sun } from "./Sun"
@@ -19,31 +16,32 @@ import { WelcomeMessage } from "./WelcomeMessage"
 
 const start_datetime = Date.UTC(2010, 0, 1, 0, 0, 0)
 const end_datetime = Date.UTC(2010, 0, 2, 0, 0, 0)
-function get_half_hour_index_from_datetime(datetime_ms: number): number
-{
-    const datetime = new Date(datetime_ms)
-    const hours = datetime.getUTCHours()
-    const minutes = datetime.getUTCMinutes()
-    const half_hour_index = (hours * 2) + (minutes >= 30 ? 1 : 0)
-    return half_hour_index
-}
+// function get_half_hour_index_from_datetime(datetime_ms: number): number
+// {
+//     const datetime = new Date(datetime_ms)
+//     const hours = datetime.getUTCHours()
+//     const minutes = datetime.getUTCMinutes()
+//     const half_hour_index = (hours * 2) + (minutes >= 30 ? 1 : 0)
+//     return half_hour_index
+// }
 
 
 export const DigitalTwin = () =>
 {
     const [datetime, set_datetime] = useState(start_datetime)
-    const power_demand_series = useMemo(() => uk_daily_power_demand_profiles["2010"].average_demand.data, [])
-    const [power, set_power] = useState<PowerStats>({
-        demand_gw: 0,
-        supply_gw: 0,
-    })
+    // const power_demand_series = useMemo(() => uk_daily_power_demand_profiles["2010"].average_demand.data, [])
+    // const [power, set_power] = useState<PowerStats>({
+    //     demand_gw: 0,
+    //     supply_gw: 0,
+    //     supply_gw_by_type: {},
+    // })
 
     useEffect(() =>
     {
-        // power_demand_series is an array with 3 + 48 elements in it
-        const index = get_half_hour_index_from_datetime(datetime)
-        const demand_w = power_demand_series[index + 1]![2]! as number
-        set_power(prev => ({ ...prev, demand_gw: Math.round(demand_w / 1e3) }))
+        // // power_demand_series is an array with 3 + 48 elements in it
+        // const index = get_half_hour_index_from_datetime(datetime)
+        // const demand_w = power_demand_series[index + 1]![2]! as number
+        // set_power(prev => ({ ...prev, demand_gw: Math.round(demand_w / 1e3) }))
 
     }, [datetime])
 
@@ -53,7 +51,7 @@ export const DigitalTwin = () =>
             <DigitalTwinInner />
         </Canvas>
 
-        <PowerStatus view="digital_twin" power={power} datetime={datetime} />
+        {/* <PowerStatus view="digital_twin" power={power} datetime={datetime} /> */}
         <WelcomeMessage />
     </>
 }

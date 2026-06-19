@@ -15,8 +15,8 @@ export function PowerPlantsCurrent({ show_aggregated }: { show_aggregated: boole
     const {
         wind_farm_tiles,
         solar_farm_tiles,
-        gas_plant_tiles,
-        nuclear_plant_tiles,
+        // gas_plant_tiles,
+        // nuclear_plant_tiles,
     } = useMemo(() =>
     {
         const projection = get_projection()

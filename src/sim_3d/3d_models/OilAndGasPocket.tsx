@@ -39,7 +39,7 @@ function OilAndGasPocket({ x, y, depth, ratio_remaining, cell_size }: OilAndGasP
 {
     const s = cell_size
 
-    const [highlighted_pocket, set_highlighted_pocket] = useState(null as null | { x: number, y: number })
+    const [highlighted_pocket, _set_highlighted_pocket] = useState(null as null | { x: number, y: number })
 
     const sea_bed_geo   = useMemo(() => new THREE.BoxGeometry(s * 1.5, s * 0.055, s * 1.5), [s])
     const pocket_geo   = useMemo(() => new THREE.SphereGeometry(s * 0.195, 8, 5), [s])
@@ -69,14 +69,14 @@ function OilAndGasPocket({ x, y, depth, ratio_remaining, cell_size }: OilAndGasP
         sea_bed_mat, depleted_mat, oil_mat])
 
 
-    const highlight_oil_reserves = useCallback((highlight: boolean) =>
+    const highlight_oil_reserves = useCallback((_highlight: boolean) =>
     {
         // return pub_sub.pub("on_highlight_oil_reserves", highlight ? { x, y } : null)
     }, [x, y])
 
     useEffect(() =>
     {
-        return pub_sub.sub("on_highlight_oil_reserves", highlighted =>
+        return pub_sub.sub("on_highlight_oil_reserves", _highlighted =>
         {
             // set_highlighted_pocket(highlighted)
         })

@@ -19,14 +19,13 @@ interface SinkingEntry
     item_type: BuildingActionTypeString
 }
 
-let next_id = 0
 const SINK_DURATION_S = 2.0
 
 export function InvalidPlacementAnimations({ cell_size }: { cell_size: number })
 {
     const [entries, set_entries] = useState<SinkingEntry[]>([])
 
-    useEffect(() => pub_sub.sub("invalid_placement", ({ tile, item_type, invalid_because }) =>
+    useEffect(() => pub_sub.sub("invalid_placement", ({ tile: _tile, item_type: _item_type, invalid_because }) =>
     {
         // set_entries(prev => [...prev, { id: next_id++, tile, item_type }])
         if (invalid_because === "water") play_bubbling_sound()

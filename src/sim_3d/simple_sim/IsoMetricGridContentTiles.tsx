@@ -19,6 +19,7 @@ interface IsoMetricGridContentTilesProps
 export function IsoMetricGridContentTiles(props: IsoMetricGridContentTilesProps)
 {
     const { cell_size, tiles } = props
+    const size = cell_size
 
     const woodland_tiles = useMemo(
         () => tiles.filter(cell => cell.type === "land" && cell.subtype === "woodland"),
@@ -62,12 +63,12 @@ export function IsoMetricGridContentTiles(props: IsoMetricGridContentTilesProps)
     )
 
     return <>
-        <Woodland tiles={woodland_tiles} cell_size={cell_size} />
-        <SuburbanTiles tiles={suburban_tiles} cell_size={cell_size} />
-        <UrbanTiles tiles={urban_tiles} cell_size={cell_size} />
+        <Woodland tiles={woodland_tiles} size={size} />
+        <SuburbanTiles tiles={suburban_tiles} size={size} />
+        <UrbanTiles tiles={urban_tiles} size={size} />
 
-        <WindTurbineFarms tiles={wind_turbine_tiles} cell_size={cell_size} />
-        <SolarFarms tiles={solar_farm_tiles} cell_size={cell_size} />
+        <WindTurbineFarms tiles={wind_turbine_tiles} size={size} />
+        <SolarFarms tiles={solar_farm_tiles} size={size} />
 
         <OilRigTiles tiles={oil_rig_tiles} cell_size={cell_size} />
         <OilAndGasPocketTiles tiles={oil_and_gas_pocket_tiles} cell_size={cell_size} />

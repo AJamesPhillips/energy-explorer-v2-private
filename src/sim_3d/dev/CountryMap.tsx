@@ -70,7 +70,6 @@ export function CountryMap(props: {
 
         {resolution_h3 !== undefined && <CountryH3Map
             country_of_interest_land={lat_lon_country_outlines.country_of_interest_land}
-            other_outlines={lat_lon_country_outlines.other_country_land}
             resolution={resolution_h3}
         />}
         <RenderCountryOutlines
@@ -160,13 +159,11 @@ function RenderCountryOutlines(props: RenderCountryOutlinesProps)
 interface CountryH3MapProps
 {
     country_of_interest_land: ILatLon[][]
-    other_outlines: ILatLon[][]
     resolution: number
 }
 function CountryH3Map(props: CountryH3MapProps)
 {    const {
         country_of_interest_land,
-        other_outlines,
         resolution,
     } = props
 
