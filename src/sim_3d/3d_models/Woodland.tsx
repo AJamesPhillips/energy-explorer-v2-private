@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 
 import { CONSTANTS } from "../simple_sim/constants"
@@ -9,15 +9,19 @@ const { DEFAULT_SIZE_FOR_TILE_CONTENT: BASE_SIZE } = CONSTANTS
 
 interface WoodlandProps
 {
-    tiles: Array<{ x: number, y: number, id: number }>
+    tiles: Array<{ x: number, y: number }>
     size?: number
 }
 export function Woodland({ tiles, size = BASE_SIZE }: WoodlandProps)
 {
     const tree_mesh_ref = useRef<THREE.InstancedMesh>(null)
 
-    // Place tree instances on woodland tiles.
-    useEffect(() =>
+    console.log(tiles)
+
+    // Place tree instances on woodland tiles. Use `useLayoutEffect` so the
+    // matrices are populated before paint; then compute bounding volumes so
+    // Three's frustum culling has correct bounds for the instanced mesh.
+    useLayoutEffect(() =>
     {
         const mesh = tree_mesh_ref.current
         if (!mesh) return
@@ -26,19 +30,22 @@ export function Woodland({ tiles, size = BASE_SIZE }: WoodlandProps)
         const tile_top_y = size * 0.03  // half the tile height (0.06 * size / 2)
         const cone_half_h = size * 0.15 // half of cone height (0.3 * size / 2)
 
-        tiles.forEach(({ x, y, id }, index) =>
+        const instanceCount =
+
+        tiles.forEach(({ x, y }, index) =>
         {
             for (let i = 0; i < CONSTANTS.TREES_PER_TILE; ++i)
             {
                 const idx = index * CONSTANTS.TREES_PER_TILE + i
-                const ox    = (seeded_rand(id, i * 3)     - 0.5) * size * 0.7
-                const oz    = (seeded_rand(id, i * 3 + 1) - 0.5) * size * 0.7
-                const scale = 0.7 + seeded_rand(id, i * 3 + 2) * 0.6
+                const stable_seed = x * 10000 + y
+                const ox    = (seeded_rand(stable_seed, i * 3)     - 0.5) * size * 0.7
+                const oz    = (seeded_rand(stable_seed, i * 3 + 1) - 0.5) * size * 0.7
+                const scale = 0.7 + seeded_rand(stable_seed, i * 3 + 2) * 0.6
 
                 dummy.position.set(
-                    x * size + ox,
+                    x + ox,
                     tile_top_y + cone_half_h * scale,
-                    y * size + oz,
+                    y + oz,
                 )
                 dummy.scale.setScalar(scale)
                 dummy.updateMatrix()
@@ -47,7 +54,9 @@ export function Woodland({ tiles, size = BASE_SIZE }: WoodlandProps)
         })
 
         mesh.instanceMatrix.needsUpdate = true
-    }, [tiles, size])
+
+        // compute_bounding_box(tree_geo, tiles.length * CONSTANTS.TREES_PER_TILE, mesh)
+    }, [tiles, tiles.length, size])
 
 
     const { tree_geo, tree_mat } = useMemo(() =>
@@ -70,6 +79,7 @@ export function Woodland({ tiles, size = BASE_SIZE }: WoodlandProps)
     if (tiles.length === 0) return null
 
     return <instancedMesh
+        frustumCulled={false}
         ref={tree_mesh_ref}
         args={[tree_geo, tree_mat, tiles.length * CONSTANTS.TREES_PER_TILE]}
     />

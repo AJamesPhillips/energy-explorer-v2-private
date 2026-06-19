@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 
 import { CONSTANTS } from "../simple_sim/constants"
@@ -9,15 +9,17 @@ const { DEFAULT_SIZE_FOR_TILE_CONTENT: BASE_SIZE } = CONSTANTS
 
 interface UrbanTilesProps
 {
-    tiles: Array<{ x: number, y: number, id: number }>
+    tiles: Array<{ x: number, y: number }>
     size?: number
 }
 export function UrbanTiles({ tiles, size = BASE_SIZE }: UrbanTilesProps)
 {
     const urban_mesh_ref = useRef<THREE.InstancedMesh>(null)
 
-    // Place office-block instances on urban tiles.
-    useEffect(() =>
+    // Place office-block instances on urban tiles. Use layout effect so the
+    // transforms are applied before paint, and compute bounding volumes for
+    // frustum culling.
+    useLayoutEffect(() =>
     {
         const mesh = urban_mesh_ref.current
         if (!mesh) return
@@ -26,19 +28,20 @@ export function UrbanTiles({ tiles, size = BASE_SIZE }: UrbanTilesProps)
         const tile_top_y = size * 0.03
         const half_h = size * 0.225  // half of 0.45 * size
 
-        tiles.forEach(({ x, y, id }, index) =>
+        tiles.forEach(({ x, y }, index) =>
         {
             for (let i = 0; i < CONSTANTS.BUILDINGS_PER_URBAN_TILE; ++i)
             {
                 const idx = index * CONSTANTS.BUILDINGS_PER_URBAN_TILE + i
-                const ox    = (seeded_rand(id, i * 3 + 100)     - 0.5) * size * 0.6
-                const oz    = (seeded_rand(id, i * 3 + 101) - 0.5) * size * 0.6
-                const scale = 0.5 + seeded_rand(id, i * 3 + 102) * 1.0  // 0.5 – 1.5
+                const stable_seed = x * 10000 + y
+                const ox    = (seeded_rand(stable_seed, i * 3 + 100)     - 0.5) * size * 0.6
+                const oz    = (seeded_rand(stable_seed, i * 3 + 101) - 0.5) * size * 0.6
+                const scale = 0.5 + seeded_rand(stable_seed, i * 3 + 102) * 1.0  // 0.5 – 1.5
 
                 dummy.position.set(
-                    x * size + ox,
+                    x + ox,
                     tile_top_y + half_h * scale,
-                    y * size + oz,
+                    y + oz,
                 )
                 dummy.scale.setScalar(scale)
                 dummy.updateMatrix()
@@ -47,7 +50,9 @@ export function UrbanTiles({ tiles, size = BASE_SIZE }: UrbanTilesProps)
         })
 
         mesh.instanceMatrix.needsUpdate = true
-    }, [tiles, size])
+
+        // compute_bounding_box(urban_geo, tiles.length * CONSTANTS.BUILDINGS_PER_URBAN_TILE, mesh)
+    }, [tiles, tiles.length, size])
 
 
     const { urban_geo, urban_mat } = useMemo(() =>

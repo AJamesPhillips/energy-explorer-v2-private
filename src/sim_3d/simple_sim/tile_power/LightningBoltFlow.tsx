@@ -4,7 +4,7 @@ import * as THREE from "three"
 
 import { LightningBolt } from "../../3d_models/LightningBolt"
 import pub_sub from "../../state/pub_sub"
-import { clamp, ease_in_quad, ease_out_cubic } from "../../utils/clamp"
+import { clamp, ease_in_quad, ease_out_quad } from "../../utils/clamp"
 import { COLOURS, CONSTANTS } from "../constants"
 
 
@@ -81,7 +81,6 @@ export function LightningBoltFlow({ x, y, supply_gw, demand_gw }: LightningBoltF
 
     function spawn_supply(now: number, scale: number, convert_on_top: boolean)
     {
-        console.log("spawn_supply", { now, scale, convert_on_top })
         const id = ++id_counter.current
         const material = create_material("supply")
         const group_ref = { current: null } as RefObject<THREE.Group | null>
@@ -110,7 +109,6 @@ export function LightningBoltFlow({ x, y, supply_gw, demand_gw }: LightningBoltF
 
     function spawn_demand(now: number, scale: number)
     {
-        console.log("spawn_demand", { now, scale })
         const id = ++id_counter.current
         const material = create_material("demand")
         const group_ref = { current: null } as RefObject<THREE.Group | null>
@@ -193,7 +191,7 @@ export function LightningBoltFlow({ x, y, supply_gw, demand_gw }: LightningBoltF
 
             if (b.phase === "rising")
             {
-                const yPos = ease_out_cubic(progress) * b.target_y
+                const yPos = ease_out_quad(progress) * b.target_y
                 if (group) group.position.y = yPos
                 if (progress >= 1)
                 {

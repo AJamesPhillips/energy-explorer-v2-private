@@ -20,7 +20,7 @@ interface RawLandH3Cell
 }
 export interface LandH3Cell
 {
-    id: string
+    h3h5_id: string
     type: SimplifiedLandAreaType
 }
 async function process_land_coverage(data_path: string): Promise<LandH3Cell[]>
@@ -31,7 +31,7 @@ async function process_land_coverage(data_path: string): Promise<LandH3Cell[]>
         {
             return e.dominant_simplified_coverage_type_percentage > THRESHOLD_DOMINANT_COVERAGE_TYPE_PERCENTAGE
         }).map(e => ({
-            id: e.h3_cell_id,
+            h3h5_id: e.h3_cell_id,
             type: e.dominant_simplified_coverage_type
         })))
 }

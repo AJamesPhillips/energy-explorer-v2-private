@@ -116,7 +116,7 @@ function get_initial_demand_by_h3_cell(h3_land_cells: LandH3Cell[]): DemandByH3R
     {
         if (cell.type !== "suburban" && cell.type !== "urban") return
         total_h5_cells++
-        const h3_res5_id = cell.id
+        const h3_res5_id = cell.h3h5_id
         const h3_res4_id = cellToParent(h3_res5_id, 4)
 
         const entry: DemandForCell = demand_by_h3r4[h3_res4_id] || {

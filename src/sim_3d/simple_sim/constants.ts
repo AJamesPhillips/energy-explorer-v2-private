@@ -33,16 +33,17 @@ export const CONSTANTS = {
     RENDER_ORDER:
     {
         H3_LAND_CELLS: 0,
-        H3_CELLS: 1,
+        H3_LAND_ITEMS: 1,
+        H3_CELLS: 2,
     },
 
     ANIMATION:
     {
         LIGHTNING_BOLT:
         {
-            DURATION_SIM_HOURS: 0.1,
+            DURATION_SIM_HOURS: 0.05,
             DURATION_FADE_SIM_HOURS: 0.00,
-            RISE_HEIGHT_FACTOR: 2,
+            RISE_HEIGHT_FACTOR: 1.5,
             // The amount of GW hours to represent each lighting bolt.
             GW_HOUR_CHUNKS: 0.2,
             // Maximum time between lightning bolts, in simulation time

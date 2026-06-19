@@ -184,7 +184,7 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
             show_aggregated={true}
         />}
 
-        <MapLightningBoltFlow />
+        {true && <MapLightningBoltFlow />}
     </>
 }
 

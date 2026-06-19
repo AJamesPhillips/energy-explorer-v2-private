@@ -15,7 +15,6 @@ const {
     Z_DGG_THICKNESS,
     Z_DGG5_OFFSET,
     RENDER_ORDER,
-    DEFAULT_SIZE_FOR_TILE_CONTENT: BASE_SIZE,
 } = CONSTANTS
 
 
@@ -31,7 +30,7 @@ export function H3LandCells(props: {
 
     const fill_mesh_refs = useRef<(THREE.Mesh | null)[]>([])
 
-    const { fill, tiles_for_render } = calculate_cell_fills_and_models_to_render(h3_cells, extrude_depth)
+    const { fill, tiles_by_type } = calculate_cell_fills_and_models_to_render(h3_cells, extrude_depth)
 
     return <>
         <group
@@ -49,25 +48,17 @@ export function H3LandCells(props: {
                     <meshStandardMaterial color={colour} transparent opacity={0.78} side={THREE.DoubleSide} />
                 </mesh>
             )}
-            {/* Render instanced tile models for specific land subtypes */}
-            {tiles_for_render && (
-                <>
-                    {tiles_for_render.woodland && tiles_for_render.woodland.length > 0 && (
-                        <Woodland tiles={tiles_for_render.woodland} />
-                    )}
-                    {tiles_for_render.urban && tiles_for_render.urban.length > 0 && (
-                        <UrbanTiles tiles={tiles_for_render.urban} />
-                    )}
-                    {tiles_for_render.suburban && tiles_for_render.suburban.length > 0 && (
-                        <SuburbanTiles tiles={tiles_for_render.suburban} />
-                    )}
-                </>
-            )}
             {/* {coords.merged_outline && (
                 <lineSegments geometry={coords.merged_outline}>
                     <lineBasicMaterial color={COLOURS.dgg_grid} linewidth={2} />
                 </lineSegments>
             )} */}
+        </group>
+
+        <group position={[0, y_offset, 0]}>
+            <Woodland tiles={tiles_by_type.woodland} />
+            <UrbanTiles tiles={tiles_by_type.urban} />
+            <SuburbanTiles tiles={tiles_by_type.suburban} />
         </group>
     </>
 }
@@ -87,13 +78,13 @@ function calculate_cell_fills_and_models_to_render(h3_cells: LandH3Cell[], extru
         // Collect tile centers and size estimates per-type so we can render
         // Suburban/Urban/Woodland instanced meshes positioned in the same
         // projection coordinate space as the fills.
-        const tiles_by_type: Record<SimplifiedLandAreaType, { x: number; y: number; id: number }[]> = SIMPLIFIED_LAND_AREA_TYPES.reduce((acc, type) => {
+        const tiles_by_type: Record<SimplifiedLandAreaType, { x: number; y: number; h3h5_id: string }[]> = SIMPLIFIED_LAND_AREA_TYPES.reduce((acc, type) => {
             acc[type] = []
             return acc
-        }, {} as Record<SimplifiedLandAreaType, { x: number; y: number; id: number }[]>)
+        }, {} as Record<SimplifiedLandAreaType, { x: number; y: number; h3h5_id: string }[]>)
 
         h3_cells.forEach(h3_cell => {
-            const latlon_tuple_boundary = h3.cellToBoundary(h3_cell.id)
+            const latlon_tuple_boundary = h3.cellToBoundary(h3_cell.h3h5_id)
             // h3 gives lat,lon tuple
             const latlon_boundary = latlon_tuples_to_objs(latlon_tuple_boundary)
 
@@ -110,7 +101,7 @@ function calculate_cell_fills_and_models_to_render(h3_cells: LandH3Cell[], extru
                 const ys = pts.map(p => p.y)
                 const centerX = xs.reduce((a, b) => a + b, 0) / xs.length
                 const centerY = ys.reduce((a, b) => a + b, 0) / ys.length
-                tiles_by_type[h3_cell.type].push({ x: centerX, y: centerY, id: id_str_to_num(h3_cell.id) })
+                tiles_by_type[h3_cell.type].push({ x: centerX, y: centerY, h3h5_id: h3_cell.h3h5_id })
             }
         })
 
@@ -122,21 +113,6 @@ function calculate_cell_fills_and_models_to_render(h3_cells: LandH3Cell[], extru
             if (merged) fill.push({ geometry: merged, colour: fills_by_type[type].colour })
         })
 
-        // Convert world-space centers into the `(x,y)` grid values expected by
-        // the instanced tile components (they multiply `x * size`).
-        const tiles_for_render: Record<SimplifiedLandAreaType, { x: number; y: number; id: number }[]> = SIMPLIFIED_LAND_AREA_TYPES.reduce((acc, type) => {
-            acc[type] = tiles_by_type[type].map(t => ({ x: t.x / BASE_SIZE, y: t.y / BASE_SIZE, id: t.id }))
-            return acc
-        }, {} as Record<SimplifiedLandAreaType, { x: number; y: number; id: number }[]>)
-
-        return { fill, tiles_for_render }
-    }, [h3_cells])
-}
-
-
-function id_str_to_num(s: string)
-{
-    let h = 0
-    for (let i = 0; i < s.length; i++) h = Math.imul(31, h) + s.charCodeAt(i) | 0
-    return Math.abs(h)
+        return { fill, tiles_by_type }
+    }, [h3_cells, h3_cells.length, extrude_depth])
 }

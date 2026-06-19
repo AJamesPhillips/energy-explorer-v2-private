@@ -47,7 +47,7 @@ export function MapLightningBoltFlow()
                 x={f.x}
                 y={f.y}
                 supply_gw={f.supply_gw}
-                demand_gw={f.demand_gw}
+                demand_gw={f.demand_gw / 10}
             />
         ))}
     </group>
