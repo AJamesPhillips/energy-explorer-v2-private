@@ -30,15 +30,15 @@ export default defineConfig({
         //     https://sfkgqscbwofiphfxhnxg.supabase.co/vendor-Cm_jY_mP.js
         // and that is not being found, instead of:
         //     https://wikisim-server.wikisim.deno.net/1272v4/assets/vendor-Cm_jY_mP.js
-        // rollupOptions:
-        // {
-        //     output:
-        //     {
-        //         manualChunks(id) {
-        //             if (id.includes("node_modules")) return "vendor"
-        //         },
-        //     },
-        // },
+        rollupOptions:
+        {
+            output:
+            {
+                manualChunks(id) {
+                    if (id.includes("node_modules")) return "vendor"
+                },
+            },
+        },
     },
     plugins:
     [
