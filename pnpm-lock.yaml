@@ -18,11 +18,8 @@ importers:
         specifier: 10.49.0
         version: 10.49.0(react@19.2.4)
       d3-geo:
-        specifier: ^3.1.1
+        specifier: 3.1.1
         version: 3.1.1
-      dggal:
-        specifier: ^0.0.6
-        version: 0.0.6
       earcut:
         specifier: 3.0.2
         version: 3.0.2
@@ -48,7 +45,7 @@ importers:
         specifier: 0.179.1
         version: 0.179.1
       topojson-client:
-        specifier: ^3.1.0
+        specifier: 3.1.0
         version: 3.1.0
       zod:
         specifier: 4.1.8
@@ -61,7 +58,7 @@ importers:
         specifier: 5.2.2
         version: 5.2.2
       '@types/d3-geo':
-        specifier: ^3.1.0
+        specifier: 3.1.0
         version: 3.1.0
       '@types/earcut':
         specifier: 3.0.0
@@ -85,10 +82,10 @@ importers:
         specifier: 0.178.1
         version: 0.178.1
       '@types/topojson-client':
-        specifier: ^3.1.5
+        specifier: 3.1.5
         version: 3.1.5
       '@types/topojson-specification':
-        specifier: ^1.0.5
+        specifier: 1.0.5
         version: 1.0.5
       chai:
         specifier: 5.2.1
@@ -1348,9 +1345,6 @@ packages:
 
   detect-gpu@5.0.70:
     resolution: {integrity: sha512-bqerEP1Ese6nt3rFkwPnGbsUF9a4q+gMmpTVVOEzoCyeCc+y7/RvJnQZJx1JwhgQI5Ntg0Kgat8Uu7XpBqnz1w==}
-
-  dggal@0.0.6:
-    resolution: {integrity: sha512-NukfkIF4xz/rZpAbwS3/DidoFZAo/D1Q624/HQVTlygAi9lNj+Oo2Huk3Sjru29H0ISiCdVxCC58rS4cNBZgnA==}
 
   diff@7.0.0:
     resolution: {integrity: sha512-PJWHUb1RFevKCwaFA9RlG5tCd+FO5iRh9A8HEtkmBH2Li03iJriB6m6JIN4rGz3K3JLawI7/veA1xzRKP6ISBw==}
@@ -3531,8 +3525,6 @@ snapshots:
   detect-gpu@5.0.70:
     dependencies:
       webgl-constants: 1.1.1
-
-  dggal@0.0.6: {}
 
   diff@7.0.0: {}
 
