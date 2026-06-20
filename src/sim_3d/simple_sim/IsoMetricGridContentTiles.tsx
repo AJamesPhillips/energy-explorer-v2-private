@@ -5,7 +5,6 @@ import { OilRigTiles } from "../3d_models/OilRig"
 import { SolarFarms } from "../3d_models/SolarFarm"
 import { SuburbanTiles } from "../3d_models/Suburban"
 import { UrbanTiles } from "../3d_models/Urban"
-import { WindTurbineFarms } from "../3d_models/WindTurbine"
 import { Woodland } from "../3d_models/Woodland"
 import { CellDataV1 } from "./interface"
 
@@ -36,10 +35,10 @@ export function IsoMetricGridContentTiles(props: IsoMetricGridContentTilesProps)
         [tiles],
     )
 
-    const wind_turbine_tiles = useMemo(
-        () => tiles.filter(cell => cell.has_wind_turbine),
-        [tiles],
-    )
+    // const wind_turbine_tiles = useMemo(
+    //     () => tiles.filter(cell => cell.has_wind_turbine),
+    //     [tiles],
+    // )
 
     const solar_farm_tiles = useMemo(
         () => tiles.filter(cell => cell.has_solar_farm),
@@ -67,7 +66,7 @@ export function IsoMetricGridContentTiles(props: IsoMetricGridContentTilesProps)
         <SuburbanTiles tiles={suburban_tiles} size={size} />
         <UrbanTiles tiles={urban_tiles} size={size} />
 
-        <WindTurbineFarms tiles={wind_turbine_tiles} size={size} />
+        {/* <WindTurbineFarms tiles={wind_turbine_tiles} size={size} /> */}
         <SolarFarms tiles={solar_farm_tiles} size={size} />
 
         <OilRigTiles tiles={oil_rig_tiles} cell_size={cell_size} />

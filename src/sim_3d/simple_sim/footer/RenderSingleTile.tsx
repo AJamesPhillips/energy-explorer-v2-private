@@ -5,7 +5,6 @@ import { OilRigTiles } from "../../3d_models/OilRig"
 import { SolarFarms } from "../../3d_models/SolarFarm"
 import { SuburbanTiles } from "../../3d_models/Suburban"
 import { UrbanTiles } from "../../3d_models/Urban"
-import { WindTurbineFarms } from "../../3d_models/WindTurbine"
 import { Woodland } from "../../3d_models/Woodland"
 import { CONSTANTS, DEFAULTS, tile_colour } from "../constants"
 import { CellDataV1 } from "../interface"
@@ -60,16 +59,16 @@ export function RenderSingleTile({ tile_data, size, border }: RenderSingleTilePr
             </Box>
 
             {tile_data?.subtype === "woodland" && <>
-                <Woodland tiles={[{ x: 0, y: 0, id: tile_data.id }]} size={CELL_SIZE} />
+                <Woodland tiles={[{ x: 0, y: 0 }]} size={CELL_SIZE} />
             </>}
             {tile_data?.subtype === "urban" && <>
-                <UrbanTiles tiles={[{ x: 0, y: 0, id: tile_data.id }]} size={CELL_SIZE} />
+                <UrbanTiles tiles={[{ x: 0, y: 0 }]} size={CELL_SIZE} />
             </>}
             {tile_data?.subtype === "suburban" && <>
-                <SuburbanTiles tiles={[{ x: 0, y: 0, id: tile_data.id }]} size={CELL_SIZE} />
+                <SuburbanTiles tiles={[{ x: 0, y: 0 }]} size={CELL_SIZE} />
             </>}
             {tile_data?.has_wind_turbine && <>
-                <WindTurbineFarms tiles={[{ x: 0, y: 0 }]} size={CELL_SIZE} />
+                {/* <WindTurbineFarms tiles={[{ x: 0, y: 0 }]} size={CELL_SIZE} /> */}
             </>}
             {tile_data?.has_solar_farm && <>
                 <SolarFarms tiles={[{ x: 0, y: 0 }]} size={CELL_SIZE} />

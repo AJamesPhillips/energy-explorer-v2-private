@@ -30,8 +30,6 @@ export function Woodland({ tiles, size = BASE_SIZE }: WoodlandProps)
         const tile_top_y = size * 0.03  // half the tile height (0.06 * size / 2)
         const cone_half_h = size * 0.15 // half of cone height (0.3 * size / 2)
 
-        const instanceCount =
-
         tiles.forEach(({ x, y }, index) =>
         {
             for (let i = 0; i < CONSTANTS.TREES_PER_TILE; ++i)

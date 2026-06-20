@@ -646,7 +646,7 @@ export const uk_eez_h3_res_4: Map<string, { land: boolean | "some" }> = new Map(
 
 uk_eez_h3_res_4_csv.split("\n").slice(1).map(line =>
 {
-    const [h3r4_id, lat, lng, land] = line.split(",")
+    const [h3r4_id, _lat, _lng, land] = line.split(",")
 
     uk_eez_h3_res_4.set(h3r4_id!, { land: land === "L" ? true : land === "l" ? "some" : false })
 })
