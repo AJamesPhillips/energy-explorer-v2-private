@@ -123,7 +123,9 @@ export const COLOURS = {
     gas: "#2a7ae4",
 
     FUEL_COLORS,
-    METAL_COLOR: "#7a7a7a"
+    METAL_COLOR: "#7a7a7a",
+    pylon: "#444444",
+    pylon_arm: "#6666ff",
 }
 
 export function tile_colour(subtype: LandOrSeaType | undefined): string

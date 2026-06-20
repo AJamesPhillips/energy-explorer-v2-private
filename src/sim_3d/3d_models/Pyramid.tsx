@@ -1,20 +1,23 @@
 import { useEffect, useMemo } from "react"
 import * as THREE from "three"
+import { COLOURS } from "../simple_sim/constants"
 
 
 export interface PyramidProps
 {
-    cell_size: number
+    size: number
     base_width: number
     height: number
     inverted?: boolean
     point_offset?: THREE.Vector2
     position?: THREE.Vector3
+    colour?: string
     // A value between 0 and 3 of the base point to use to add two additional
     // struts from the base to the midpoint of the line going between the apex
     // a neighbouring base point
     extra_strut_indices?: number[]
     extra_strut_position?: number
+    thickness?: number
 }
 
 export function Pyramid(props: PyramidProps)
@@ -74,25 +77,27 @@ export function Pyramid(props: PyramidProps)
     }, [])
 
     return <WireFrame
-        cell_size={props.cell_size}
+        size={props.size}
         vertices={vertices}
         position={props.position}
-        color={0x444444}
+        colour={props.colour}
+        thickness={props.thickness}
     />
 }
 
 
 export interface LinesWireFrameProps
 {
-    cell_size: number
+    size: number
     vertices: number[]
     close_loop?: boolean
     position?: THREE.Vector3
-    color?: number
+    colour?: string
+    thickness?: number
 }
 export function LinesWireFrame(props: LinesWireFrameProps)
 {
-    const { close_loop = true } = props
+    const { close_loop = true, thickness } = props
 
     const vertices = useMemo(() =>
     {
@@ -114,20 +119,21 @@ export function LinesWireFrame(props: LinesWireFrameProps)
         return line_vertices
     }, [props.vertices, close_loop])
 
-    return <WireFrame {...props} vertices={vertices} />
+    return <WireFrame {...props} thickness={thickness} vertices={vertices} />
 }
 
 
 interface WireFrameProps
 {
-    cell_size: number
+    size: number
     vertices: number[]
     position?: THREE.Vector3
-    color?: number
+    colour?: string
+    thickness?: number
 }
-function WireFrame({ cell_size, vertices, position, color = 0x444444 }: WireFrameProps)
+function WireFrame({ size, vertices, position, colour = COLOURS.pylon, thickness = 0.006 }: WireFrameProps)
 {
-    const mat = useMemo(() => new THREE.MeshBasicMaterial({ color }), [color])
+    const mat = useMemo(() => new THREE.MeshBasicMaterial({ color: colour }), [colour])
 
     const tube_geos = useMemo(() =>
     {
@@ -138,10 +144,10 @@ function WireFrame({ cell_size, vertices, position, color = 0x444444 }: WireFram
             const v2 = new THREE.Vector3(vertices[i + 3], vertices[i + 4], vertices[i + 5])
 
             const curve = new THREE.LineCurve3(v1, v2)
-            geos.push(new THREE.TubeGeometry(curve, 1, cell_size * 0.006, 6, false))
+            geos.push(new THREE.TubeGeometry(curve, 1, size * thickness, 6, false))
         }
         return geos
-    }, [vertices, cell_size])
+    }, [vertices, size])
 
     useEffect(() => () =>
     {
@@ -150,6 +156,11 @@ function WireFrame({ cell_size, vertices, position, color = 0x444444 }: WireFram
     }, [mat, tube_geos])
 
     return <>
-        {tube_geos.map(tube_geo => <mesh geometry={tube_geo} position={position} material={mat} />)}
+        {tube_geos.map(tube_geo => <mesh
+            key={tube_geo.uuid}
+            geometry={tube_geo}
+            position={position}
+            material={mat}
+        />)}
     </>
 }

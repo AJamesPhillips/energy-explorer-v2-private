@@ -11,8 +11,8 @@ import { PowerLine, PowerPylon, PowerPylonProps } from "../3d_models/PowerPylon"
 
 export function Dev3dModels ()
 {
-    const pylon_1: PowerPylonProps = { x: 1, y: 0, cell_size: 20, rotation: deg_to_rad(90) }
-    const pylon_2: PowerPylonProps = { x: -0.5, y: 0, cell_size: 20, rotation: deg_to_rad(90) }
+    const pylon_1: PowerPylonProps = { x: 1, y: 0, rotation: deg_to_rad(90), capacity: 4 }
+    const pylon_2: PowerPylonProps = { x: -0.5, y: 0, rotation: deg_to_rad(90), capacity: 2 }
 
     return <>
         <OrbitControls />

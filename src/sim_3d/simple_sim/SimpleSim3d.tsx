@@ -5,6 +5,8 @@ import * as THREE from "three"
 // import uk_daily_power_demand_profiles from "../data/power_demand/uk/daily_profiles.json"
 // import { uk_month_hourly_and_location_average_capacity_factor_solar_generation_2018 } from "../data/power_generation/solar_pv"
 // import { uk_month_hourly_and_location_average_capacity_factor_wind_generation_2018 } from "../data/power_generation/wind_turbine"
+import { deg_to_rad } from "../../utils/angle"
+import { PowerLine, PowerPylon, PowerPylonProps } from "../3d_models/PowerPylon"
 import { get_uk_land_coverage, LandH3Cell } from "../data/coverage_land/uk/data"
 import { UK_EEZ_COORDS } from "../data/eez/data"
 import { CountryMap } from "../dev/CountryMap"
@@ -13,6 +15,7 @@ import { H3LandCells } from "../dev/dgg/H3LandCells"
 import { WorldAtlas } from "../dev/interface"
 import { NEARBY_COUNTRY_IDS, UK_ID } from "../dev/map_data"
 import { PowerPlantsCurrent } from "../dev/PowerPlantsCurrent"
+import { cell_to_xy } from "../dev/projection"
 import { init_model_power_supply_updates } from "../model"
 import pub_sub from "../state/pub_sub"
 import { sim_clock } from "../state/sim_clock"
@@ -155,13 +158,20 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
         })
     })
 
+    const pylon_1: PowerPylonProps = { ...cell_to_xy("841941dffffffff")!, rotation: deg_to_rad(90), capacity: 1 }
+    const pylon_2: PowerPylonProps = { ...cell_to_xy("8419419ffffffff")!, rotation: deg_to_rad(90), capacity: 2 }
+    const pylon_3: PowerPylonProps = { ...cell_to_xy("84196a5ffffffff")!, rotation: deg_to_rad(90), capacity: 3 }
+    const pylon_4: PowerPylonProps = { ...cell_to_xy("84196a1ffffffff")!, rotation: deg_to_rad(90), capacity: 4 }
+
+    const show = true
+
     return <>
         <IsoCamera grid_size={GRID_SIZE} cell_size={CELL_SIZE} />
 
         <ambientLight />
         <directionalLight position={sun_args.direct_position} />
 
-        {true && <CountryMap
+        {show && <CountryMap
             topo_data={topo_data}
             country_id={UK_ID}
             other_country_ids={NEARBY_COUNTRY_IDS}
@@ -171,20 +181,30 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
             // resolution_h3={resolution + 1}
         />}
 
-        {true && <H3Grid
+        {show && <H3Grid
             EEZ_coords_lonlat={UK_EEZ_COORDS}
             resolution={4}
         />}
 
-        {true && <H3LandCells
+        {show && <H3LandCells
             h3_cells={h3_land_cells}
         />}
 
-        {true && <PowerPlantsCurrent
+        {show && <PowerPlantsCurrent
             show_aggregated={true}
         />}
 
-        {true && <MapLightningBoltFlow />}
+        {show && <MapLightningBoltFlow />}
+
+        {/* <group scale={[10,10,10]} position={[-pylon_1.x*9.7, 0, -pylon_1.y*9.3]}> */}
+        <PowerPylon {...pylon_1} />
+        <PowerPylon {...pylon_2} />
+        <PowerLine pylon_a={pylon_1} pylon_b={pylon_2} />
+        <PowerPylon {...pylon_3} />
+        <PowerLine pylon_a={pylon_2} pylon_b={pylon_3} />
+        <PowerPylon {...pylon_4} />
+        <PowerLine pylon_a={pylon_3} pylon_b={pylon_4} />
+        {/* </group> */}
     </>
 }
 

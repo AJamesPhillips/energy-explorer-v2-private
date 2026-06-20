@@ -59,7 +59,7 @@ export function Explosion({ x: x_pos, y, scale = 1.5, active = true }: Explosion
             velocities[3 * i + 2] = dir.z * speed
 
             lifetimes[i] = 0.7 + Math.random() * 1.2
-            ages.current[i] = Math.random() * lifetimes[i]
+            ages.current[i] = Math.random() * lifetimes[i]!
 
             // fire colours (yellow -> orange)
             const c = new THREE.Color()
@@ -96,12 +96,12 @@ export function Explosion({ x: x_pos, y, scale = 1.5, active = true }: Explosion
         for (let i = 0; i < fireCount; i++)
         {
             const idx3 = 3 * i
-            if (ages.current[i] > lifetimes[i]) continue
-            ages.current[i] += delta
+            if (ages.current[i]! > lifetimes[i]!) continue
+            ages.current[i]! += delta
 
-            positions[idx3 + 0] += velocities[idx3 + 0] * delta
-            positions[idx3 + 1] += velocities[idx3 + 1] * delta + 0.5 * gravity * delta * delta
-            positions[idx3 + 2] += velocities[idx3 + 2] * delta
+            positions[idx3 + 0]! += velocities[idx3 + 0]! * delta
+            positions[idx3 + 1]! += velocities[idx3 + 1]! * delta + 0.5 * gravity * delta * delta
+            positions[idx3 + 2]! += velocities[idx3 + 2]! * delta
         }
 
         posAttr.needsUpdate = true
