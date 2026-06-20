@@ -105,7 +105,7 @@ export function IsoCamera({ grid_size, cell_size }: IsoCameraProps)
             makeDefault
             enableRotate={false}
             minZoom={is_narrow_screen() ? 1 : 3}
-            maxZoom={9}
+            maxZoom={15}
             dampingFactor={0.2}
             zoomSpeed={is_touch_screen() ? 1 : 0.7}
             panSpeed={is_touch_screen() ? 1.3 : 1}

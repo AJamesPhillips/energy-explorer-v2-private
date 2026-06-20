@@ -12,7 +12,7 @@ export interface PowerPylonProps
     x: number
     y: number
     rotation?: number
-    capacity?: 1 | 2 | 3 | 4
+    capacity?: number
 }
 
 interface PowerLineProps
@@ -22,7 +22,7 @@ interface PowerLineProps
     color?: number
 }
 
-const BASE_SIZE = 5
+const BASE_SIZE = 8
 const BASE_MAST_HEIGHT = BASE_SIZE * 0.7
 const LEG_XZ_SPREAD = BASE_SIZE * 0.35
 function get_mast_height(capacity: number)
