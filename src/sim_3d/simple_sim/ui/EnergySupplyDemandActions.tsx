@@ -79,8 +79,34 @@ export function EnergySupplyDemandActions(_props: {})
                     <td>{power.supply_gw_by_type.solar.toFixed(1)} / {power.capacity_gw_by_type.solar.toFixed(1)}</td>
                 </tr>
                 <tr>
+                    <td>Nuclear</td>
+                    <td>{power.supply_gw_by_type.nuclear.toFixed(1)} / {power.capacity_gw_by_type.nuclear.toFixed(1)}</td>
+                </tr>
+                <tr>
+                    <td>Gas</td>
+                    <td>{power.supply_gw_by_type.gas.toFixed(1)} / {power.capacity_gw_by_type.gas.toFixed(1)}</td>
+                </tr>
+                <tr>
                     <td style={{ borderTop: "1px solid var(--colour-border-gray)" }}></td>
                     <td style={{ borderTop: "1px solid var(--colour-border-gray)" }}></td>
+                </tr>
+                <tr>
+                    <td>Pumped Hydro</td>
+                    {/* <td>{power.supply_gw_by_type.nuclear.toFixed(1)} / {power.capacity_gw_by_type.nuclear.toFixed(1)}</td> */}
+                </tr>
+                <tr>
+                    <td>Grid Battery</td>
+                    {/* <td>{power.supply_gw_by_type.gas.toFixed(1)} / {power.capacity_gw_by_type.gas.toFixed(1)}</td> */}
+                </tr>
+                <tr>
+                    <td style={{ borderTop: "1px solid var(--colour-border-gray)" }}></td>
+                    <td style={{ borderTop: "1px solid var(--colour-border-gray)" }}></td>
+                </tr>
+                <tr>
+                    <td>Electric Grid</td>
+                </tr>
+                <tr>
+                    <td>Gas Grid</td>
                 </tr>
             </tbody>
         </table>
