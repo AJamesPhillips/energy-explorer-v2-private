@@ -1,7 +1,8 @@
 import { MapControls, OrthographicCamera } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
-import { useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
+import type { MapControls as ThreeMapControls } from "three/examples/jsm/controls/MapControls"
 import { lerp } from "three/src/math/MathUtils.js"
 
 import { is_narrow_screen, is_touch_screen } from "../../utils/screen_type"
@@ -16,7 +17,7 @@ const { CELL_SIZE, GRID_SIZE } = CONSTANTS
 const GRID_W = GRID_SIZE.x * CELL_SIZE
 const GRID_D = GRID_SIZE.y * CELL_SIZE
 const FUDGE_MIN = (is_touch_screen() ? 6 : 3) * CELL_SIZE
-const FUDGE_MAX = (is_touch_screen() ? 3 : 3) * CELL_SIZE
+const FUDGE_MAX = (is_touch_screen() ? 6 : 6) * CELL_SIZE
 const MARGIN_ZOOM_1 = -0.16
 const MARGIN_ZOOM_9 = 0.04
 const PAN_MARGIN = (zoom: number) => GRID_W * lerp(MARGIN_ZOOM_1, MARGIN_ZOOM_9, zoom / 9)
@@ -50,7 +51,7 @@ interface IsoCameraProps
 }
 export function IsoCamera({ grid_size, cell_size }: IsoCameraProps)
 {
-    const controls_ref = useRef<{ target: THREE.Vector3; object: THREE.Camera }>(null)
+    const controls_ref = useRef<ThreeMapControls>(null)
 
     const { initial_target, initial_position, initial_zoom, dist } = useMemo(() =>
     {
@@ -82,6 +83,32 @@ export function IsoCamera({ grid_size, cell_size }: IsoCameraProps)
     }, [])
 
     const cam_ref = useRef<THREE.OrthographicCamera>(null)
+
+
+    // Ensure middle mouse pans (instead of dolly) and
+    // prevent browser auto-scroll on middle-button mousedown over the canvas.
+    useEffect(() =>
+    {
+        const controls = controls_ref.current
+        if (controls && controls.mouseButtons)
+        {
+            controls.mouseButtons.MIDDLE = THREE.MOUSE.PAN
+        }
+
+        const on_mouse_down = (e: MouseEvent) =>
+        {
+            // button === 1 is middle button
+            if (e.button === 1)
+            {
+                // If mousedown happened on the renderer canvas, prevent autoscroll
+                const tgt = e.target as HTMLElement | null
+                if (tgt && tgt.tagName === "CANVAS") e.preventDefault()
+            }
+        }
+
+        window.addEventListener("mousedown", on_mouse_down, { passive: false })
+        return () => window.removeEventListener("mousedown", on_mouse_down)
+    }, [])
 
 
     useFrame(() =>
@@ -122,7 +149,7 @@ export function IsoCamera({ grid_size, cell_size }: IsoCameraProps)
             // lookAt - use MapControls target
         />
         <MapControls
-            ref={controls_ref as React.Ref<any>}
+            ref={controls_ref as any}
             // This is the lookAt point for the camera
             target={initial_target}
             makeDefault
@@ -135,7 +162,7 @@ export function IsoCamera({ grid_size, cell_size }: IsoCameraProps)
         />
         <DebugMapEdges
             visible={false}
-            controls_ref={controls_ref}
+            controls_ref={controls_ref as any}
             PAN_MIN_X={PAN_MIN_X}
             PAN_MAX_X={PAN_MAX_X}
             PAN_MIN_Z={PAN_MIN_Z}

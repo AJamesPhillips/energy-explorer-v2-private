@@ -1,12 +1,12 @@
 import { useFrame } from "@react-three/fiber"
-import { useMemo, useState } from "react"
+import { RefObject, useMemo, useState } from "react"
 import * as THREE from "three"
 
 
 interface DebugMapEdgesProps
 {
     visible: boolean
-    controls_ref: React.RefObject<{ object: THREE.Camera } | null>
+    controls_ref: RefObject<{ object: THREE.Camera } | null>
     PAN_MIN_X: (zoom: number) => number
     PAN_MAX_X: (zoom: number) => number
     PAN_MIN_Z: (zoom: number) => number
