@@ -25,8 +25,4 @@ export interface BuildingActionState
 {
     active: ActiveBuildingAction
     set_building_action: (build_action: ActiveBuildingAction) => void
-    map_capacity_factors: false | {
-        source: "wind" | "solar_pv"
-        aggregation: "hourly" | "annual_average"
-    }
 }

@@ -21,7 +21,8 @@ export function RenderCapacityFactorData(props: {
 {
     const { coords, merged_mesh_ref, shader_material, palettes } = props
 
-    const map_capacity_factors = get_app_state(state => state.building_action.map_capacity_factors)
+    const map_capacity_factors_source = get_app_state(state => state.view.map_capacity_factors_source)
+    const map_capacity_factors_aggregation = get_app_state(state => state.view.map_capacity_factors_aggregation)
 
     const [wind_turbine_capacity_data, set_wind_turbine_capacity_data] = useState<CapacityFactorData | null>(null)
     const [annual_wind_turbine_capacity_data, set_annual_wind_turbine_capacity_data] = useState<CapacityFactorData | null>(null)
@@ -40,13 +41,11 @@ export function RenderCapacityFactorData(props: {
 
     const capacity_data: CapacityData | undefined = useMemo(() =>
     {
-        if (!map_capacity_factors) return undefined
+        if (!map_capacity_factors_source) return undefined
         if (!wind_turbine_capacity_data) return undefined
         if (!annual_wind_turbine_capacity_data) return undefined
         if (!solar_pv_capacity_data) return undefined
         if (!annual_solar_pv_capacity_data) return undefined
-
-        const { source, aggregation } = map_capacity_factors
 
         const capacity_data: CapacityData = {
             data: wind_turbine_capacity_data,
@@ -54,21 +53,21 @@ export function RenderCapacityFactorData(props: {
             display_type: "continuous",
         }
 
-        if (source === "wind")
+        if (map_capacity_factors_source === "wind")
         {
-            capacity_data.data = aggregation === "annual_average"
+            capacity_data.data = map_capacity_factors_aggregation === "annual_average"
                 ? annual_wind_turbine_capacity_data
                 : wind_turbine_capacity_data
             return capacity_data
         }
 
         capacity_data.type = "solar"
-        capacity_data.data = aggregation === "annual_average"
+        capacity_data.data = map_capacity_factors_aggregation === "annual_average"
             ? annual_solar_pv_capacity_data
             : solar_pv_capacity_data
 
         return capacity_data
-    }, [map_capacity_factors, wind_turbine_capacity_data, annual_wind_turbine_capacity_data, solar_pv_capacity_data, annual_solar_pv_capacity_data])
+    }, [map_capacity_factors_source, map_capacity_factors_aggregation, wind_turbine_capacity_data, annual_wind_turbine_capacity_data, solar_pv_capacity_data, annual_solar_pv_capacity_data])
 
 
     const animation_state_ref = useRef({

@@ -8,6 +8,7 @@ import * as building_action from "./building_action"
 import * as game_datetime from "./game_datetime"
 import { AppState } from "./interface"
 import * as power_demand from "./power_demand"
+import * as view from "./view"
 
 
 export type AppStore = ReturnType<typeof get_new_app_store>
@@ -25,6 +26,7 @@ export const get_new_app_store = () =>
             game_datetime: game_datetime.initial_state(set_state),
             building_action: building_action.initial_state(set_state),
             power_demand: power_demand.initial_state(set_state),
+            view: view.initial_state(set_state),
         }
     }))
 

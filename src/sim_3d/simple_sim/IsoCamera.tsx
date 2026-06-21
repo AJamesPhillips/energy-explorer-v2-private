@@ -52,6 +52,7 @@ interface IsoCameraProps
 export function IsoCamera({ grid_size, cell_size }: IsoCameraProps)
 {
     const controls_ref = useRef<ThreeMapControls>(null)
+    // const angle = get_app_state(s => s.view.angle)
 
     const { initial_target, initial_position, initial_zoom, dist } = useMemo(() =>
     {

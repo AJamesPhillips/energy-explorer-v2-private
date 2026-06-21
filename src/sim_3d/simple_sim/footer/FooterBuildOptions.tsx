@@ -22,6 +22,7 @@ export function FooterBuildOptions(props: {
 })
 {
     const building_action = get_app_state(state => state.building_action)
+    const set_map_capacity_factors = get_app_state(state => state.view.set_map_capacity_factors)
     const active = building_action.active
     const selected_option = active ? active.type : false
     const show_options = props.options.some(option => option.type === selected_option)
@@ -29,6 +30,11 @@ export function FooterBuildOptions(props: {
     const handle_option_click = (action_type: BuildingActionTypeString | false) =>
     {
         building_action.set_building_action(action_type ? { type: action_type } : false)
+        if (action_type === "wind" || action_type === "solar")
+        {
+            set_map_capacity_factors(action_type)
+        }
+        set_map_capacity_factors(false)
     }
 
     return <div className="footer_row">
