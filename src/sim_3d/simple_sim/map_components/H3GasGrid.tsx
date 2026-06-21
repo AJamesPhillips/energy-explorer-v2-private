@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 
 import { Pipeline, PipelineProps } from "../../3d_models/Pipeline"
-import { UK_gas_grid } from "../../data/grid_gas/data"
+import { UK_gas_grid } from "../../data/grid/gas"
 import { cell_to_xy } from "../../dev/projection"
 
 
@@ -11,11 +11,10 @@ export function H3GasGrid()
     {
         const pipeline_props: PipelineProps[] = []
 
-        UK_gas_grid.h3r4_connections.forEach(connection_id =>
+        Object.values(UK_gas_grid.h3r4_connections).forEach(connection_info =>
         {
-            const [cell_a, cell_b] = connection_id.split("_")
-            const cell_a_xy = cell_to_xy(cell_a!)
-            const cell_b_xy = cell_to_xy(cell_b!)
+            const cell_a_xy = cell_to_xy(connection_info.paired_id.h3r4_id_a)
+            const cell_b_xy = cell_to_xy(connection_info.paired_id.h3r4_id_b)
 
             if (!cell_a_xy || !cell_b_xy) return
 

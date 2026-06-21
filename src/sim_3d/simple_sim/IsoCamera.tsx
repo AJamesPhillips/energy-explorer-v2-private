@@ -35,8 +35,8 @@ interface CameraAngle
 }
 let CAMERA_ANGLE: CameraAngle
 CAMERA_ANGLE = { yaw: 55, pitch: 45 } // partial
-CAMERA_ANGLE = { yaw: 89, pitch: 89 } // direct down
 CAMERA_ANGLE = { yaw: 45, pitch: 35 } // isometric
+CAMERA_ANGLE = { yaw: 89, pitch: 89 } // direct down
 
 /**
  * Orthographic camera positioned at the classic isometric angle (45° yaw, ~35° pitch)
