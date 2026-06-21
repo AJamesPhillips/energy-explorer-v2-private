@@ -25,6 +25,18 @@ const PAN_MAX_X = (zoom: number) => GRID_W + PAN_MARGIN(zoom) - FUDGE_MAX
 const PAN_MIN_Z = (zoom: number) => -PAN_MARGIN(zoom) - FUDGE_MIN
 const PAN_MAX_Z = (zoom: number) => GRID_D + PAN_MARGIN(zoom) - FUDGE_MAX
 
+
+interface CameraAngle
+{
+    yaw: number
+    pitch: number
+    roll?: never
+}
+let CAMERA_ANGLE: CameraAngle
+CAMERA_ANGLE = { yaw: 55, pitch: 45 } // partial
+CAMERA_ANGLE = { yaw: 89, pitch: 89 } // direct down
+CAMERA_ANGLE = { yaw: 45, pitch: 35 } // isometric
+
 /**
  * Orthographic camera positioned at the classic isometric angle (45° yaw, ~35° pitch)
  * so the tile grid fills the view. Adjust `zoom` to scale the view, or replace with
@@ -51,7 +63,18 @@ export function IsoCamera({ grid_size, cell_size }: IsoCameraProps)
         // Distance sized so the whole grid fits in view; (1,1,1) direction = iso angle.
         const dist = Math.max(grid_size.x, grid_size.y) * cell_size * 1.5
 
-        const initial_position = new THREE.Vector3(x + dist, dist * 0.85, z + dist)
+        // Compute camera initial position from CAMERA_ANGLE (yaw, pitch in degrees).
+        const yaw_rad = THREE.MathUtils.degToRad(CAMERA_ANGLE.yaw)
+        const pitch_rad = THREE.MathUtils.degToRad(CAMERA_ANGLE.pitch)
+        // Direction vector from spherical coordinates: pitch = elevation from horizontal.
+        const dir = new THREE.Vector3(
+            Math.cos(pitch_rad) * Math.cos(yaw_rad),
+            Math.sin(pitch_rad),
+            Math.cos(pitch_rad) * Math.sin(yaw_rad),
+        ).normalize()
+        // Scale to keep similar framing as previous hard-coded position.
+        const DIST_SCALE = 1.65
+        const initial_position = initial_target.clone().add(dir.multiplyScalar(dist * DIST_SCALE))
 
         const initial_zoom = is_narrow_screen() ? 2 : 3
 
