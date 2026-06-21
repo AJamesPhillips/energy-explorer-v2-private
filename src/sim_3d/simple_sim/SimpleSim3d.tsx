@@ -20,6 +20,7 @@ import { CONSTANTS, DEFAULTS } from "./constants"
 import { CellsData } from "./interface"
 import { IsoCamera } from "./IsoCamera"
 import { H3ElectricalGrid } from "./map_components/H3ElectricalGrid"
+import { H3GasGrid } from "./map_components/H3GasGrid"
 import { MapLightningBoltFlow } from "./tile_power/MapLightningBoltFlow"
 
 
@@ -190,6 +191,7 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
         {show && <MapLightningBoltFlow />}
 
         {show && <H3ElectricalGrid />}
+        {show && <H3GasGrid />}
     </>
 }
 

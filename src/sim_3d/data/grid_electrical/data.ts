@@ -24,6 +24,8 @@ export const UK_electrical_grid: UKElectricalGrid = {
         [paired_h3r4_cell_id("841941dffffffff", "8419419ffffffff")]: 1,
         [paired_h3r4_cell_id("8419419ffffffff", "84196a5ffffffff")]: 2,
         [paired_h3r4_cell_id("84196a5ffffffff", "84196a1ffffffff")]: 3,
+        [paired_h3r4_cell_id("84196a1ffffffff", "8419415ffffffff")]: 4,
+        [paired_h3r4_cell_id("8419415ffffffff", "841943bffffffff")]: 2,
     }
 }
 

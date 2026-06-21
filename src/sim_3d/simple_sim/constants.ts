@@ -126,6 +126,11 @@ export const COLOURS = {
     METAL_COLOR: "#7a7a7a",
     pylon: "#444444",
     pylon_arm: "#6666ff",
+    pipeline: {
+        electric: "#ebcc00",
+        gas: "#2a7ae4",
+        oil: "#e07020",
+    },
 }
 
 export function tile_colour(subtype: LandOrSeaType | undefined): string
