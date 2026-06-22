@@ -129,7 +129,7 @@ export function aggregate_to_annual_average(capacity_factor_data: CapacityFactor
     }
 
     // Rescale the annual data to be between 0 and 1
-    const range = max_capacity_factor - min_capacity_factor
+    // const range = max_capacity_factor - min_capacity_factor
     for (let h3_cell_id_index = 0; h3_cell_id_index < number_of_h3_cell_ids; ++h3_cell_id_index)
     {
         // annual_data[h3_cell_id_index]! = (annual_data[h3_cell_id_index]! - min_capacity_factor) / range

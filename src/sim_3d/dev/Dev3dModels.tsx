@@ -25,7 +25,7 @@ export function Dev3dModels ()
 
         <LightningBolt x={1.5} y={-2} size={20} />
         <OilBarrel x={0.5} y={-2} cell_size={20} fuel_type="heating_fuel" />
-        <NuclearPlant x={-1.5} y={-2} cell_size={20} />
+        <NuclearPlant x={-1.5} y={-2} />
         <CCGTPlant x={0} y={-1} cell_size={20} />
         <BatteryStorage x={-0.5} y={-2} cell_size={20} />
 
