@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 
-import { CONSTANTS } from "../simple_sim/constants"
+import { COLOURS, CONSTANTS } from "../simple_sim/constants"
 import { seeded_rand } from "../utils/seeded_random"
 
 
@@ -11,8 +11,9 @@ interface UrbanTilesProps
 {
     tiles: Array<{ x: number, y: number }>
     size?: number
+    opacity?: number
 }
-export function UrbanTiles({ tiles, size = BASE_SIZE }: UrbanTilesProps)
+export function UrbanTiles({ tiles, size = BASE_SIZE, opacity = 1 }: UrbanTilesProps)
 {
     const urban_mesh_ref = useRef<THREE.InstancedMesh>(null)
 
@@ -52,16 +53,25 @@ export function UrbanTiles({ tiles, size = BASE_SIZE }: UrbanTilesProps)
         mesh.instanceMatrix.needsUpdate = true
 
         // compute_bounding_box(urban_geo, tiles.length * CONSTANTS.BUILDINGS_PER_URBAN_TILE, mesh)
-    }, [tiles, tiles.length, size])
+    // We add opacity to the list of dependencies to cause the re-rendering of
+    // the instanced mesh
+    }, [tiles, tiles.length, size, opacity])
 
 
     const { urban_geo, urban_mat } = useMemo(() =>
     {
+        const transparent = opacity < 1
+
         return {
             urban_geo: new THREE.BoxGeometry(size * 0.22, size * 0.45, size * 0.22),
-            urban_mat: new THREE.MeshStandardMaterial({ color: 0x8899aa }),
+            urban_mat: new THREE.MeshStandardMaterial({
+                color: COLOURS.urban,
+                transparent,
+                opacity,
+                depthWrite: !transparent,
+            }),
         }
-    }, [size])
+    }, [size, opacity])
 
     useEffect(() => () =>
     {

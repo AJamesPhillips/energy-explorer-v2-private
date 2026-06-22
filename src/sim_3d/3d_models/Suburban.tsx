@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 
-import { CONSTANTS } from "../simple_sim/constants"
+import { COLOURS, CONSTANTS } from "../simple_sim/constants"
 import { seeded_rand } from "../utils/seeded_random"
 
 
@@ -11,8 +11,9 @@ interface SuburbanTilesProps
 {
     tiles: Array<{ x: number, y: number }>
     size?: number
+    opacity?: number
 }
-export function SuburbanTiles({ tiles, size = BASE_SIZE }: SuburbanTilesProps)
+export function SuburbanTiles({ tiles, size = BASE_SIZE, opacity = 1 }: SuburbanTilesProps)
 {
     const suburban_mesh_ref = useRef<THREE.InstancedMesh>(null)
 
@@ -52,16 +53,25 @@ export function SuburbanTiles({ tiles, size = BASE_SIZE }: SuburbanTilesProps)
         mesh.instanceMatrix.needsUpdate = true
 
         // compute_bounding_box(suburban_geo, tiles.length * CONSTANTS.BUILDINGS_PER_SUBURBAN_TILE, mesh)
-    }, [tiles, tiles.length, size])
+    // We add opacity to the list of dependencies to cause the re-rendering of
+    // the instanced mesh
+    }, [tiles, tiles.length, size, opacity])
 
 
     const { suburban_geo, suburban_mat } = useMemo(() =>
     {
+        const transparent = opacity < 1
+
         return {
             suburban_geo: new THREE.BoxGeometry(size * 0.32, size * 0.18, size * 0.32),
-            suburban_mat: new THREE.MeshStandardMaterial({ color: 0xAB5154 }),
+            suburban_mat: new THREE.MeshStandardMaterial({
+                color: COLOURS.suburban,
+                transparent,
+                opacity,
+                depthWrite: !transparent,
+            }),
         }
-    }, [size])
+    }, [size, opacity])
 
     useEffect(() => () =>
     {

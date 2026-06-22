@@ -3,6 +3,7 @@ import { useMemo, useRef } from "react"
 import * as THREE from "three"
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
 
+import { get_app_state } from "../../../state/store"
 import { SuburbanTiles } from "../../3d_models/Suburban"
 import { UrbanTiles } from "../../3d_models/Urban"
 import { Woodland } from "../../3d_models/Woodland"
@@ -27,6 +28,9 @@ export function H3LandCells(props: {
     const { h3_cells, y_offset=Z_DGG5_OFFSET } = props
     let { extrude_depth=Z_DGG_THICKNESS } = props
     extrude_depth *= 0.9
+
+    const showing_a_capacity_factor = get_app_state(state => state.view.map_capacity_factors_source !== false)
+    const opacity = showing_a_capacity_factor ? 0.5 : 1
 
     const fill_mesh_refs = useRef<(THREE.Mesh | null)[]>([])
 
@@ -56,9 +60,9 @@ export function H3LandCells(props: {
         </group>
 
         <group position={[0, y_offset, 0]}>
-            <Woodland tiles={tiles_by_type.woodland} />
-            <UrbanTiles tiles={tiles_by_type.urban} />
-            <SuburbanTiles tiles={tiles_by_type.suburban} />
+            <Woodland tiles={tiles_by_type.woodland} opacity={opacity} />
+            <UrbanTiles tiles={tiles_by_type.urban} opacity={opacity} />
+            <SuburbanTiles tiles={tiles_by_type.suburban} opacity={opacity} />
         </group>
     </>
 }

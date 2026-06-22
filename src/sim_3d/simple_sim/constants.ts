@@ -113,6 +113,10 @@ export const COLOURS = {
     dgg_grid: "#60b0b0",
     dgg_highlight: "#f0c000",
 
+    tree: "#1a4a1a",
+    suburban: "#ab5154",
+    urban: "#8899aa",
+
     supply_electricity: "#44bbff",
     supply_electricity_emissive: "#0055ff",
     demand_electricity: "#ff4444",

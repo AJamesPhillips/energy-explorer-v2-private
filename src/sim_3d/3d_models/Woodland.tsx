@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 
-import { CONSTANTS } from "../simple_sim/constants"
+import { COLOURS, CONSTANTS } from "../simple_sim/constants"
 import { seeded_rand } from "../utils/seeded_random"
 
 
@@ -11,12 +11,11 @@ interface WoodlandProps
 {
     tiles: Array<{ x: number, y: number }>
     size?: number
+    opacity?: number
 }
-export function Woodland({ tiles, size = BASE_SIZE }: WoodlandProps)
+export function Woodland({ tiles, size = BASE_SIZE, opacity = 1 }: WoodlandProps)
 {
     const tree_mesh_ref = useRef<THREE.InstancedMesh>(null)
-
-    console.log(tiles)
 
     // Place tree instances on woodland tiles. Use `useLayoutEffect` so the
     // matrices are populated before paint; then compute bounding volumes so
@@ -54,18 +53,28 @@ export function Woodland({ tiles, size = BASE_SIZE }: WoodlandProps)
         mesh.instanceMatrix.needsUpdate = true
 
         // compute_bounding_box(tree_geo, tiles.length * CONSTANTS.TREES_PER_TILE, mesh)
-    }, [tiles, tiles.length, size])
+    // We add opacity to the list of dependencies to cause the re-rendering of
+    // the instanced mesh
+    }, [tiles, tiles.length, size, opacity])
 
 
     const { tree_geo, tree_mat } = useMemo(() =>
     {
         const h = size * 0.3
         const r = size * 0.12
+
+        const transparent = opacity < 1
+
         return {
             tree_geo: new THREE.ConeGeometry(r, h, 6),
-            tree_mat: new THREE.MeshStandardMaterial({ color: 0x1a4a1a }),
+            tree_mat: new THREE.MeshStandardMaterial({
+                color: COLOURS.tree,
+                transparent,
+                opacity,
+                depthWrite: !transparent,
+            }),
         }
-    }, [size])
+    }, [size, opacity])
 
     useEffect(() => () =>
     {
