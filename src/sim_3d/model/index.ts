@@ -68,9 +68,9 @@ function get_generation_by_h3_cell(
 
         const wind_generated_mw = wind_capacity_mw * cf_wind
         const solar_generated_mw = solar_capacity_mw * cf_solar
+        const nuclear_generated_mw = nuclear_capacity_mw * 0.75 // TODO: get data for this capacity factor value
+        const hydro_RoR_generated_mw = hydro_RoR_capacity_mw * 0.5 // TODO: get data for this capacity factor value
         const gas_generated_mw = 0 // TODO: get from data
-        const nuclear_generated_mw = 0 // TODO: get from data
-        const hydro_RoR_generated_mw = 0 // TODO: get from data
         const battery_generated_mw = 0 // TODO: get from data
         const hydro_pumped_storage_generated_mw = 0 // TODO: get from data
 
