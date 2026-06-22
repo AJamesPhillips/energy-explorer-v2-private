@@ -3,17 +3,45 @@ import type { ILatLon } from "core/data/values/LatLon"
 import type { XY } from "../../dev/projection"
 
 
-export type RawWindFarmData = [number, number, number | undefined, number | undefined, number, undefined | number, number, number]
+export type RawBatteryPlantData = [number, number, number, number]
+export type RawGasPowerPlantData = [number, number, number]
+export type RawHydroPowerPlantData = [number, number, number, number | undefined]
 export type RawSolarFarmData = [number, number, number | undefined, number, number, number]
+export type RawWindFarmData = [number, number, number | undefined, number | undefined, number, undefined | number, number, number]
 
 
 interface PowerPlantBase
 {
     lat: number
     lon: number
-    nameplate_capacity_mw: number
+    nameplate_capacity_MW: number
+    storage_MWH?: number
+    // When was it commissioned
     operational_year: number | undefined
+    decommissioned_year?: number
     name?: string
+}
+export interface BatteryPlant extends PowerPlantBase
+{
+    type: "battery"
+    storage_MWH: number
+}
+export interface GasPlant extends PowerPlantBase
+{
+    type: "gas"
+}
+export interface HydroPlant extends PowerPlantBase
+{
+    type: "hydro"
+}
+export interface NuclearPlant extends PowerPlantBase
+{
+    type: "nuclear"
+}
+export interface SolarFarm extends PowerPlantBase
+{
+    type: "solar_farm"
+    area_km2: number
 }
 export interface WindFarm extends PowerPlantBase
 {
@@ -21,21 +49,8 @@ export interface WindFarm extends PowerPlantBase
     area_km2: number
     number_of_turbines: number
 }
-export interface SolarFarm extends PowerPlantBase
-{
-    type: "solar_farm"
-    area_km2: number
-}
-export interface GasPlant extends PowerPlantBase
-{
-    type: "gas"
-}
-export interface NuclearPlant extends PowerPlantBase
-{
-    type: "nuclear"
-}
 
-export type PowerPlant = WindFarm | SolarFarm | GasPlant | NuclearPlant
+export type PowerPlant = BatteryPlant | GasPlant | HydroPlant | NuclearPlant | SolarFarm | WindFarm
 
 
 interface AggregatePowerPlantData
@@ -45,7 +60,8 @@ interface AggregatePowerPlantData
     lat_lon: ILatLon
     xy: XY
     count: number
-    capacity_mw: number
+    capacity_MW: number
+    storage_MWH?: number
     area_km2?: number
 }
 export interface AggregatedPowerPlantData
@@ -54,4 +70,8 @@ export interface AggregatedPowerPlantData
     solar_farm: AggregatePowerPlantData
     gas_plant: AggregatePowerPlantData
     nuclear_plant: AggregatePowerPlantData
+    battery_plant: AggregatePowerPlantData
+    hydro_pumped_plant: AggregatePowerPlantData
+    // Run of river hydro plants (no storage)
+    hydro_RoR_plant: AggregatePowerPlantData
 }

@@ -30,6 +30,11 @@
     --colour-button-active: #eff8ff;
 }
 
+.font_sm
+{
+    font-size: var(--font-small);
+}
+
 
 /* Overwrite user agent style from chrome which sets buttontext to white */
 /* Ensure button text appears in the intended color across browsers,

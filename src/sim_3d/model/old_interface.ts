@@ -14,7 +14,10 @@ export interface PowerStats
     supply_gw: number
     supply_gw_by_type: SupplyGWByType
 }
-export interface SupplyGWByType
+/**
+ * @deprecated use ValueByPowerType<number> instead
+*/
+interface SupplyGWByType
 {
     wind: number
     solar: number

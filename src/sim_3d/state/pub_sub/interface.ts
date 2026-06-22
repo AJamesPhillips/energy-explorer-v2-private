@@ -1,7 +1,6 @@
 import type { BuildingActionTypeString } from "../../../state/building_action/interface"
 import type { XY } from "../../dev/projection"
-import type { DemandByH3R4Cell } from "../../model/interface"
-import type { SupplyGWByType } from "../../model/old_interface"
+import type { DemandByH3R4Cell, GenerationByCell, ValueByPowerType } from "../../model/interface"
 import type { CellDataV2 } from "../../simple_sim/interface"
 
 
@@ -36,17 +35,9 @@ export interface PublishableEvents
     }
     power_supply_and_demand: {
         supply_gw: number
-        supply_gw_by_type: SupplyGWByType
-        capacity_gw_by_type: SupplyGWByType
-        generation_by_cell?: Record<string, {
-            h3_id: string
-            wind: { generated_mw: number; capacity_mw: number }
-            solar: { generated_mw: number; capacity_mw: number }
-            gas: { generated_mw: number; capacity_mw: number }
-            nuclear: { generated_mw: number; capacity_mw: number }
-            total_generated_mw: number
-            total_capacity_mw: number
-        }>
+        supply_gw_by_type: ValueByPowerType<number>
+        capacity_gw_by_type: ValueByPowerType<number>
+        generation_by_cell?: Record<string, GenerationByCell>
         demand_gw: number
         demand_by_h3r4: DemandByH3R4Cell
         h3r4_cell_to_xy: Map<string, XY>
