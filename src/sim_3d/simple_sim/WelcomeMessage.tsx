@@ -4,7 +4,7 @@ import { MailIcon } from "../../components/svgs"
 import { WarningAppUnderConstruction } from "../../components/WarningAppUnderConstruction"
 
 
-const should_show = true || document.location.hostname !== "localhost"
+const should_show = false || document.location.hostname !== "localhost"
 
 export function WelcomeMessage1()
 {
@@ -30,7 +30,6 @@ export function WelcomeMessage1()
                     Build power plants, storage, grid, and change government policies.  Good luck!
                 </p>
                 {/* And click on ℹ️ symbols to get more information */}
-
 
 
                 {/* <p>
