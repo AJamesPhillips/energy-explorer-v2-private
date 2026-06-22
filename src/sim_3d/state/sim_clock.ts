@@ -47,6 +47,10 @@ function loop()
     const delta_ms = (now - last_real)
     last_real = now
     current_timestamp += delta_ms * sim_seconds_per_real_second
+    if (current_timestamp > end_timestamp)
+    {
+        current_timestamp = start_timestamp
+    }
 
     publish_datetime()
     requestAnimationFrame(loop)
