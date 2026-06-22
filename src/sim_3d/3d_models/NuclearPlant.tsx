@@ -3,38 +3,40 @@ import { useEffect, useMemo } from "react"
 import * as THREE from "three"
 
 import { deg_to_rad } from "../../utils/angle"
+import { XY } from "../dev/projection"
 import { SmokePuffs } from "./SmokePuffs"
 
+
+const BASE_SIZE = 8
 
 interface NuclearPlantProps
 {
     x: number
     y: number
-    cell_size: number
 }
 
-export function NuclearPlant({ x, y, cell_size }: NuclearPlantProps)
+export function NuclearPlant({ x, y }: NuclearPlantProps)
 {
-    const s = cell_size
+    const size = BASE_SIZE
 
     // ── Containment base + dome ───────────────────────────────────────
-    const base_height = s * 0.08
-    const base_radius = s * 0.18
+    const base_height = size * 0.08
+    const base_radius = size * 0.18
     const base_geo = useMemo(() => new THREE.CylinderGeometry(base_radius, base_radius, base_height, 20), [base_radius, base_height])
     const base_mat = useMemo(() => new THREE.MeshStandardMaterial({ color: 0xdddddd }), [])
 
-    const dome_radius = s * 0.18
+    const dome_radius = size * 0.18
     const dome_geo = useMemo(() => new THREE.SphereGeometry(dome_radius, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.55), [dome_radius])
     const dome_mat = useMemo(() => new THREE.MeshStandardMaterial({ color: 0xdedede }), [])
 
     // ── Nuclear symbol (SVG texture on a plane) ────────────────────────
     const nuclear_tex = useTexture("./svgs/nuclear.svg") as THREE.Texture
-    const symbol_size = s * 0.18
+    const symbol_size = size * 0.18
     const symbol_geo = useMemo(() => new THREE.PlaneGeometry(symbol_size, symbol_size), [symbol_size])
     const nuclear_mat = useMemo(() => new THREE.MeshBasicMaterial({ map: nuclear_tex, transparent: true, alphaTest: 0.05 }), [nuclear_tex])
 
     // ── Turbine hall ──────────────────────────────────────────────────
-    const hall_geo = useMemo(() => new THREE.BoxGeometry(s * 0.45, s * 0.10, s * 0.18), [s])
+    const hall_geo = useMemo(() => new THREE.BoxGeometry(size * 0.45, size * 0.10, size * 0.18), [size])
     const hall_mat = useMemo(() => new THREE.MeshStandardMaterial({ color: 0x8899aa }), [])
 
     const geo_mat_tex = [
@@ -50,7 +52,7 @@ export function NuclearPlant({ x, y, cell_size }: NuclearPlantProps)
     // ── Layout / positions ────────────────────────────────────────────
     const base_center_y = base_height / 2
     const dome_center_y = base_height + dome_radius * 0.2
-    const dome_z = s * 0.15
+    const dome_z = size * 0.15
 
     const hall_y = base_center_y
 
@@ -60,19 +62,19 @@ export function NuclearPlant({ x, y, cell_size }: NuclearPlantProps)
     const symbol_pos_y = dome_center_y + dome_radius * 0.12
 
     return (
-        <group position={[x * s, 0, y * s]}>
+        <group position={[x, 0, y]}>
             {/* containment base + dome */}
-            <mesh geometry={base_geo} material={base_mat} position={[s * 0.15, base_center_y, dome_z]} />
-            <mesh geometry={dome_geo} material={dome_mat} position={[s * 0.15, dome_center_y, dome_z]} />
+            <mesh geometry={base_geo} material={base_mat} position={[size * 0.15, base_center_y, dome_z]} />
+            <mesh geometry={dome_geo} material={dome_mat} position={[size * 0.15, dome_center_y, dome_z]} />
 
             {/* nuclear symbol plane (facing +Z) */}
             <mesh geometry={symbol_geo} material={nuclear_mat} position={[symbol_pos_x, symbol_pos_y, symbol_pos_z]} rotation={[0, symbol_angle, 0]} />
 
             {/* turbine / auxiliary hall */}
-            <mesh geometry={hall_geo} material={hall_mat} position={[-s * 0.2, hall_y, s * 0.18]} />
+            <mesh geometry={hall_geo} material={hall_mat} position={[-size * 0.2, hall_y, size * 0.18]} />
 
-            <CoolingTower x={-1} cell_size={s} />
-            <CoolingTower x={1} cell_size={s} />
+            <CoolingTower x={-1} cell_size={size} />
+            <CoolingTower x={1} cell_size={size} />
         </group>
     )
 }
@@ -121,5 +123,15 @@ function CoolingTower({ x, cell_size }: { x: number, cell_size: number })
             active={true}
             num_puffs={7}
         />
+    </>
+}
+
+
+export function NuclearPlants({ tiles }: { tiles: (XY & { h3r4_id: string })[] })
+{
+    return <>
+        {tiles.map(tile => (
+            <NuclearPlant key={tile.h3r4_id} x={tile.x} y={tile.y} />
+        ))}
     </>
 }

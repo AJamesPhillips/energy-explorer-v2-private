@@ -11,10 +11,12 @@ import pub_sub from "../../state/pub_sub"
 // import pub_sub from "../../state/pub_sub"
 // import { CellDataV2, CellsData } from "../interface"
 // import { RenderSingleTile } from "./RenderSingleTile"
+import { is_on_localhost } from "../../../utils/is_on_localhost"
 import { to_sentence_case } from "../../../utils/string"
 import { promise_load_all_capacity_factor_data } from "../../data/wind_and_solar_capacity/load_data"
 import { MWGenCapStoreForH3R4, POWER_TYPES } from "../../model/interface"
 import { get_capacity_factor_mix } from "../../utils/capacity_factor_data"
+import { COLOURS } from "../constants"
 import "./CellInfo.css"
 
 
@@ -34,6 +36,9 @@ import "./CellInfo.css"
 //     }
 //     cells_data[i] = { [i]: cell_data }
 // })
+
+
+const show_H3_cell_id = true || is_on_localhost()
 
 
 export function CellInfo()
@@ -170,6 +175,16 @@ export function CellInfo()
                 <div><b>{to_sentence_case(map_capacity_factors_source + " capacity factor")}</b></div>
                 <div>{Math.round(capacity_factor * 100).toFixed(0)}%</div>
             </>}
+
+            {show_H3_cell_id && <span style={{
+                fontSize: "var(--font-small)",
+                color: COLOURS.text_muted,
+            }}>
+                {cell_info?.h3r4_id
+                    ? <>H3 cell ID: <span style={{ userSelect: "text" }}>{cell_info?.h3r4_id}</span></>
+                    : ""
+                }
+            </span>}
         </div>
     </div>
 }

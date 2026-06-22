@@ -135,6 +135,8 @@ export const COLOURS = {
         gas: "#2a7ae4",
         oil: "#e07020",
     },
+
+    text_muted: "#999",
 }
 
 export function tile_colour(subtype: LandOrSeaType | undefined): string

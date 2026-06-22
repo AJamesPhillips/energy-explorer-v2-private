@@ -1,6 +1,7 @@
 import { latLngToCell } from "h3-js"
 import { useEffect, useMemo, useState } from "react"
 
+import { NuclearPlants } from "../3d_models/NuclearPlant"
 import { SolarFarms } from "../3d_models/SolarFarm"
 import { WindTurbineFarms } from "../3d_models/WindTurbine"
 import { power_plants_data, promise_aggregated_power_plants_by_h3_cell } from "../data/power_plants"
@@ -17,15 +18,15 @@ export function PowerPlantsCurrent({ show_aggregated }: { show_aggregated: boole
         wind_farm_tiles,
         solar_farm_tiles,
         // gas_plant_tiles,
-        // nuclear_plant_tiles,
+        nuclear_plant_tiles,
     } = useMemo(() =>
     {
         const projection = get_projection()
 
         const wind_farm_tiles: (XY & { h3r4_id: string })[] = []
-        const solar_farm_tiles: XY[] = []
-        const gas_plant_tiles: XY[] = []
-        const nuclear_plant_tiles: XY[] = []
+        const solar_farm_tiles: (XY & { h3r4_id: string })[] = []
+        const gas_plant_tiles: (XY & { h3r4_id: string })[] = []
+        const nuclear_plant_tiles: (XY & { h3r4_id: string })[] = []
 
         power_plants_data.forEach(p =>
         {
@@ -33,9 +34,9 @@ export function PowerPlantsCurrent({ show_aggregated }: { show_aggregated: boole
             const xy = projection(p)
             if (!xy) return
             if (p.type === "wind_farm") wind_farm_tiles.push({ ...xy, h3r4_id })
-            else if (p.type === "solar_farm") solar_farm_tiles.push(xy)
-            else if (p.type === "gas") gas_plant_tiles.push(xy)
-            else if (p.type === "nuclear") nuclear_plant_tiles.push(xy)
+            else if (p.type === "solar_farm") solar_farm_tiles.push({ ...xy, h3r4_id })
+            else if (p.type === "gas") gas_plant_tiles.push({ ...xy, h3r4_id })
+            else if (p.type === "nuclear") nuclear_plant_tiles.push({ ...xy, h3r4_id })
         })
 
         return { wind_farm_tiles, solar_farm_tiles, gas_plant_tiles, nuclear_plant_tiles }
@@ -44,6 +45,7 @@ export function PowerPlantsCurrent({ show_aggregated }: { show_aggregated: boole
     return <>
         <WindTurbineFarms tiles={wind_farm_tiles} />
         <SolarFarms tiles={solar_farm_tiles} />
+        <NuclearPlants tiles={nuclear_plant_tiles} />
     </>
 }
 
@@ -77,6 +79,15 @@ export function PowerPlantsCurrentAggregated()
             opacity={0.4}
             min_area_ratio={0.003}
             RenderPlants={SolarFarms}
+        />
+        <AggregatedPowerPlantLayer
+            aggregated_data={aggregated_power_plants_by_h3_cell}
+            plant_key="nuclear_plant"
+            fill_color={0xf2b705}
+            outline_color={0xc78b00}
+            opacity={0.4}
+            min_area_ratio={undefined}
+            RenderPlants={NuclearPlants}
         />
     </>
 }

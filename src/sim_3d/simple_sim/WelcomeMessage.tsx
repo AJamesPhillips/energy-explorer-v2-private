@@ -2,9 +2,10 @@ import { OnceOffInfoBox } from "../../components/InfoBox"
 import { Link } from "../../components/Link"
 import { MailIcon } from "../../components/svgs"
 import { WarningAppUnderConstruction } from "../../components/WarningAppUnderConstruction"
+import { is_on_localhost } from "../../utils/is_on_localhost"
 
 
-const should_show = false || document.location.hostname !== "localhost"
+const should_show = false || !is_on_localhost()
 
 export function WelcomeMessage1()
 {

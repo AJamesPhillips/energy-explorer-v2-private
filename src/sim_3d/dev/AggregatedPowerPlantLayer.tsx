@@ -8,7 +8,7 @@ import { clamp } from "../utils/clamp"
 import { get_projection, points_to_geometries, XY } from "./projection"
 
 
-type AggregatedPlantKey = "wind_farm" | "solar_farm"
+type AggregatedPlantKey = "wind_farm" | "solar_farm" | "nuclear_plant"
 
 interface AggregatedPowerPlantLayerProps
 {
@@ -29,7 +29,7 @@ export function AggregatedPowerPlantLayer(props: AggregatedPowerPlantLayerProps)
         fill_color,
         outline_color,
         opacity,
-        min_area_ratio = 0,
+        min_area_ratio,
         RenderPlants,
     } = props
 
@@ -48,6 +48,7 @@ export function AggregatedPowerPlantLayer(props: AggregatedPowerPlantLayerProps)
         for (const [h3_id, data] of Object.entries(aggregated_data))
         {
             const aggregate = data[plant_key]
+            if (plant_key === "nuclear_plant" && h3_id === "8419557ffffffff") debugger
             if (aggregate.count === 0) continue
 
             const [lat, lon] = h3.cellToLatLng(h3_id)
@@ -57,7 +58,7 @@ export function AggregatedPowerPlantLayer(props: AggregatedPowerPlantLayerProps)
             const cell_area_km2 = h3.cellArea(h3_id, h3.UNITS.km2)
             const plant_area_km2 = aggregate.area_km2 ?? 0
             const area_ratio = clamp(plant_area_km2 / cell_area_km2)
-            if (area_ratio < min_area_ratio) continue
+            if (min_area_ratio !== undefined && area_ratio < min_area_ratio) continue
 
             tiles.push({ ...center, h3r4_id: h3_id })
 
