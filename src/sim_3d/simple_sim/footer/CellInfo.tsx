@@ -183,7 +183,7 @@ const EMPTY_GEN_CAP_STORE: MWGenCapStoreForH3R4 = {
     solar: { generated_MW: 0, capacity_MW: 0 },
     gas: { generated_MW: 0, capacity_MW: 0 },
     nuclear: { generated_MW: 0, capacity_MW: 0 },
-    hydro_RoR: { generated_MW: 0, capacity_MW: 0 },
+    hydro_river: { generated_MW: 0, capacity_MW: 0 },
     battery: { generated_MW: 0, capacity_MW: 0 },
     hydro_pumped_storage: { generated_MW: 0, capacity_MW: 0 },
 }

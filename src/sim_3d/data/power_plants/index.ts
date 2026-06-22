@@ -76,7 +76,7 @@ function aggregate_power_plants_by_h3_cell(
             nuclear_plant: { h3_id, lat_lon, xy, count: 0, capacity_MW: 0 },
             battery_plant: { h3_id, lat_lon, xy, count: 0, capacity_MW: 0, storage_MWH: 0 },
             hydro_pumped_plant: { h3_id, lat_lon, xy, count: 0, capacity_MW: 0, storage_MWH: 0 },
-            hydro_RoR_plant: { h3_id, lat_lon, xy, count: 0, capacity_MW: 0 },
+            hydro_river_plant: { h3_id, lat_lon, xy, count: 0, capacity_MW: 0 },
         }
 
         const active_plants = get_active_power_plants(plants, 2026)
@@ -123,8 +123,8 @@ function aggregate_power_plants_by_h3_cell(
                 }
                 else
                 {
-                    data.hydro_RoR_plant.count++
-                    data.hydro_RoR_plant.capacity_MW += capacity
+                    data.hydro_river_plant.count++
+                    data.hydro_river_plant.capacity_MW += capacity
                 }
             }
             // @ts-expect-error

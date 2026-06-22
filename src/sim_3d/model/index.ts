@@ -58,7 +58,7 @@ function get_gen_cap_store_MW_by_h3r4_cell(
         const wind_capacity_MW = data.wind_farm.capacity_MW ?? 0
         const solar_capacity_MW = data.solar_farm.capacity_MW ?? 0
         const gas_capacity_MW = data.gas_plant.capacity_MW ?? 0
-        const hydro_RoR_capacity_MW = data.hydro_RoR_plant.capacity_MW ?? 0
+        const hydro_river_capacity_MW = data.hydro_river_plant.capacity_MW ?? 0
         const nuclear_capacity_MW = data.nuclear_plant.capacity_MW ?? 0
         const battery_capacity_MW = data.battery_plant.capacity_MW ?? 0
         const hydro_pumped_storage_capacity_MW = data.hydro_pumped_plant.capacity_MW ?? 0
@@ -69,7 +69,7 @@ function get_gen_cap_store_MW_by_h3r4_cell(
         const wind_generated_MW = wind_capacity_MW * cf_wind
         const solar_generated_MW = solar_capacity_MW * cf_solar
         const nuclear_generated_MW = nuclear_capacity_MW * 0.75 // TODO: get data for this capacity factor value
-        const hydro_RoR_generated_MW = hydro_RoR_capacity_MW * 0.5 // TODO: get data for this capacity factor value
+        const hydro_river_generated_MW = hydro_river_capacity_MW * 0.5 // TODO: get data for this capacity factor value
         const gas_generated_MW = 0 // TODO: get from data
         const battery_generated_MW = 0 // TODO: get from data
         const hydro_pumped_storage_generated_MW = 0 // TODO: get from data
@@ -79,7 +79,7 @@ function get_gen_cap_store_MW_by_h3r4_cell(
             + solar_generated_MW
             + gas_generated_MW
             + nuclear_generated_MW
-            + hydro_RoR_generated_MW
+            + hydro_river_generated_MW
             + battery_generated_MW
             + hydro_pumped_storage_generated_MW
         )
@@ -88,7 +88,7 @@ function get_gen_cap_store_MW_by_h3r4_cell(
             + solar_capacity_MW
             + gas_capacity_MW
             + nuclear_capacity_MW
-            + hydro_RoR_capacity_MW
+            + hydro_river_capacity_MW
             + battery_capacity_MW
             + hydro_pumped_storage_capacity_MW
         )
@@ -99,7 +99,7 @@ function get_gen_cap_store_MW_by_h3r4_cell(
             solar: { generated_MW: solar_generated_MW, capacity_MW: solar_capacity_MW },
             gas: { generated_MW: gas_generated_MW, capacity_MW: gas_capacity_MW },
             nuclear: { generated_MW: nuclear_generated_MW, capacity_MW: nuclear_capacity_MW },
-            hydro_RoR: { generated_MW: hydro_RoR_generated_MW, capacity_MW: hydro_RoR_capacity_MW },
+            hydro_river: { generated_MW: hydro_river_generated_MW, capacity_MW: hydro_river_capacity_MW },
             battery: { generated_MW: battery_generated_MW, capacity_MW: battery_capacity_MW },
             hydro_pumped_storage: { generated_MW: hydro_pumped_storage_generated_MW, capacity_MW: hydro_pumped_storage_capacity_MW },
             total_generated_MW,
@@ -213,7 +213,7 @@ export function init_model_power_supply_updates(h3r5_land_cells: LandH3Cell[])
                     gas: 0,
                     nuclear: 0,
                     battery: 0,
-                    hydro_RoR: 0,
+                    hydro_river: 0,
                     hydro_pumped_storage: 0,
                 }
                 const capacity_gw_by_type: ValueByPowerType<number> = {
@@ -228,7 +228,7 @@ export function init_model_power_supply_updates(h3r5_land_cells: LandH3Cell[])
                     supply_gw_by_type.solar += c.solar.generated_MW / 1000
                     supply_gw_by_type.gas += c.gas.generated_MW / 1000
                     supply_gw_by_type.nuclear += c.nuclear.generated_MW / 1000
-                    supply_gw_by_type.hydro_RoR += c.hydro_RoR.generated_MW / 1000
+                    supply_gw_by_type.hydro_river += c.hydro_river.generated_MW / 1000
                     supply_gw_by_type.battery += c.battery.generated_MW / 1000
                     supply_gw_by_type.hydro_pumped_storage += c.hydro_pumped_storage.generated_MW / 1000
 
@@ -236,7 +236,7 @@ export function init_model_power_supply_updates(h3r5_land_cells: LandH3Cell[])
                     capacity_gw_by_type.solar += c.solar.capacity_MW / 1000
                     capacity_gw_by_type.gas += c.gas.capacity_MW / 1000
                     capacity_gw_by_type.nuclear += c.nuclear.capacity_MW / 1000
-                    capacity_gw_by_type.hydro_RoR += c.hydro_RoR.capacity_MW / 1000
+                    capacity_gw_by_type.hydro_river += c.hydro_river.capacity_MW / 1000
                     capacity_gw_by_type.battery += c.battery.capacity_MW / 1000
                     capacity_gw_by_type.hydro_pumped_storage += c.hydro_pumped_storage.capacity_MW / 1000
                 })

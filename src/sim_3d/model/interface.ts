@@ -15,7 +15,7 @@ export interface ValueByPowerType<V>
     solar: V
     gas: V
     nuclear: V
-    hydro_RoR: V
+    hydro_river: V
     battery: V
     hydro_pumped_storage: V
 }
@@ -25,7 +25,7 @@ export const POWER_TYPES = [
     "solar",
     "gas",
     "nuclear",
-    "hydro_RoR",
+    "hydro_river",
     "battery",
     "hydro_pumped_storage",
 ] as const

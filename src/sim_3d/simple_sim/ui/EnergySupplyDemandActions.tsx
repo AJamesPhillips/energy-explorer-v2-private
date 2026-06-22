@@ -88,7 +88,7 @@ export function EnergySupplyDemandActions(_props: {})
                         Hydro
                         {/* <span className="font_sm">(run of river)</span> */}
                     </td>
-                    <td>{power.supply_gw_by_type.hydro_RoR.toFixed(1)} / {power.capacity_gw_by_type.hydro_RoR.toFixed(1)}</td>
+                    <td>{power.supply_gw_by_type.hydro_river.toFixed(1)} / {power.capacity_gw_by_type.hydro_river.toFixed(1)}</td>
                 </tr>
                 <tr>
                     <td className="font_sm" style={{ borderTop: "1px solid var(--colour-border-gray)" }}>
@@ -170,7 +170,7 @@ function get_initial_power()
         gas: 0,
         nuclear: 0,
         battery: 0,
-        hydro_RoR: 0,
+        hydro_river: 0,
         hydro_pumped_storage: 0,
     }
     const capacity_gw_by_type: ValueByPowerType<number> = {

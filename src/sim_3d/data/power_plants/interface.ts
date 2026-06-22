@@ -73,5 +73,5 @@ export interface AggregatedPowerPlantData
     battery_plant: AggregatePowerPlantData
     hydro_pumped_plant: AggregatePowerPlantData
     // Run of river hydro plants (no storage)
-    hydro_RoR_plant: AggregatePowerPlantData
+    hydro_river_plant: AggregatePowerPlantData
 }
