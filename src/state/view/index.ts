@@ -16,14 +16,15 @@ export function initial_state(set_state: SetAppState): ViewState
         },
         map_capacity_factors_source: "wind",
         map_capacity_factors_aggregation: "hourly",
-        set_map_capacity_factors: (source: CapacityFactorsSource | undefined | false, aggregation?: CapacityFactorsAggregation) =>
+        map_capacity_factors_discrete: false,
+        set_map_capacity_factors: (source: CapacityFactorsSource | undefined | false, aggregation?: CapacityFactorsAggregation, discrete?: boolean) =>
         {
             set_state(state =>
             {
                 // If source is explicitly undefined then do nothing otherwise change it
                 if (source !== undefined) state.view.map_capacity_factors_source = source
-
-                if (aggregation) state.view.map_capacity_factors_aggregation = aggregation
+                if (aggregation !== undefined) state.view.map_capacity_factors_aggregation = aggregation
+                if (discrete !== undefined) state.view.map_capacity_factors_discrete = discrete
             })
         },
     }

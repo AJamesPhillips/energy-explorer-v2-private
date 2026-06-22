@@ -23,6 +23,7 @@ export function RenderCapacityFactorData(props: {
 
     const map_capacity_factors_source = get_app_state(state => state.view.map_capacity_factors_source)
     const map_capacity_factors_aggregation = get_app_state(state => state.view.map_capacity_factors_aggregation)
+    const map_capacity_factors_discrete = get_app_state(state => state.view.map_capacity_factors_discrete)
 
     const [wind_turbine_capacity_data, set_wind_turbine_capacity_data] = useState<CapacityFactorData | null>(null)
     const [annual_wind_turbine_capacity_data, set_annual_wind_turbine_capacity_data] = useState<CapacityFactorData | null>(null)
@@ -50,7 +51,7 @@ export function RenderCapacityFactorData(props: {
         const capacity_data: CapacityData = {
             data: wind_turbine_capacity_data,
             type: "wind",
-            display_type: "continuous",
+            display_type: map_capacity_factors_discrete ? "discrete" : "continuous",
         }
 
         if (map_capacity_factors_source === "wind")

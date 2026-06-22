@@ -23,6 +23,7 @@ export function ViewOptions()
             set_map_capacity_factors={set_map_capacity_factors}
             specific_source="solar"
         />
+        <SourceAggregationButton />
     </>
 }
 
@@ -48,6 +49,32 @@ function ButtonWithIcon(props: ButtonWithIconProps)
             }}
         >
             {to_sentence_case(specific_source)}<StackFrontIcon style={{ marginLeft: is_narrow_screen() ? 0 : 5 }} />
+        </button>
+    </div>
+}
+
+
+function SourceAggregationButton()
+{
+    const aggregation = get_app_state(s => s.view.map_capacity_factors_aggregation)
+    const set_aggregation = get_app_state(s => s.view.set_map_capacity_factors)
+
+    const new_aggregation = aggregation === "hourly" ? "annual_average" : "hourly"
+
+    return <div className="app_controls_row">
+        <button
+            className={"ui_button"}
+            style={{ padding: "6px 10px", zIndex: "var(--z-index-app-html-data_portal)" }}
+            onClick={() =>
+            {
+                set_aggregation(
+                    undefined,
+                    new_aggregation,
+                    new_aggregation === "annual_average",
+                )
+            }}
+        >
+            {to_sentence_case(aggregation)}
         </button>
     </div>
 }
