@@ -93,6 +93,7 @@ interface OnceOffInfoBoxProps
     on_close?: () => void
     confirmation_button_text?: string
     confirmation_button?: ((p: { close_info_box: (() => void) }) => JSX.Element)
+    hide_offer_to_not_show_again?: boolean
 }
 export function OnceOffInfoBox(props: OnceOffInfoBoxProps)
 {
@@ -108,16 +109,18 @@ export function OnceOffInfoBox(props: OnceOffInfoBoxProps)
                 {props.confirmation_button_text ?? "Got it!"}
             </button>
 
-            <input
-                type="checkbox"
-                id="info_box_checkbox"
-                onChange={() =>
-                {
-                    p.close_info_box()
-                    localStorage.setItem(props.id, new Date().toISOString())
-                }}
-            />
-            <label htmlFor="info_box_checkbox">Don't show this again</label>
+            {!props.hide_offer_to_not_show_again && <>
+                <input
+                    type="checkbox"
+                    id="info_box_checkbox"
+                    onChange={() =>
+                    {
+                        p.close_info_box()
+                        localStorage.setItem(props.id, new Date().toISOString())
+                    }}
+                />
+                <label htmlFor="info_box_checkbox">Don't show this again</label>
+            </>}
         </>
     }
 
