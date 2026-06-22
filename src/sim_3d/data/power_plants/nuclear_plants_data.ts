@@ -17,7 +17,7 @@ export const nuclear_plants: NuclearPlant[] = [
         type: "nuclear",
         name: "Torness",
         lat: 55.9680,
-        lon: 2.4091,
+        lon: -2.4091,
         nameplate_capacity_MW: 1290,
         // construction_start: 1980,
         operational_year: 1989,

@@ -5,7 +5,7 @@ import * as THREE from "three"
 // import uk_daily_power_demand_profiles from "../data/power_demand/uk/daily_profiles.json"
 // import { uk_month_hourly_and_location_average_capacity_factor_solar_generation_2018 } from "../data/power_generation/solar_pv"
 // import { uk_month_hourly_and_location_average_capacity_factor_wind_generation_2018 } from "../data/power_generation/wind_turbine"
-import { get_uk_land_coverage, LandH3Cell } from "../data/coverage_land/uk/data"
+import { get_uk_land_coverage_by_h3r5, LandH3Cell } from "../data/coverage_land/uk/data"
 import { UK_EEZ_COORDS } from "../data/eez/data"
 import { CountryMap } from "../dev/CountryMap"
 import { H3Grid } from "../dev/dgg/H3Grid"
@@ -127,27 +127,27 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
             .catch((e) => set_load_error(e.message))
     }, [])
 
-    const [h3_land_cells, set_h3_land_cells] = useState<LandH3Cell[]>([])
+    const [h3r5_land_cells, set_h3r5_land_cells] = useState<LandH3Cell[]>([])
     useEffect(() =>
     {
-        get_uk_land_coverage().then(h3_land_cells =>
+        get_uk_land_coverage_by_h3r5().then(h3r5_land_cells =>
         {
-            set_h3_land_cells(h3_land_cells)
+            set_h3r5_land_cells(h3r5_land_cells)
         })
     }, [])
 
 
     useEffect(() =>
     {
-        if (h3_land_cells.length === 0) return
+        if (h3r5_land_cells.length === 0) return
 
-        init_model_power_supply_updates(h3_land_cells)
+        init_model_power_supply_updates(h3r5_land_cells)
         sim_clock.init({
             start_timestamp: new Date("2026-06-01T00:00:00.000Z").getTime(),
             current_timestamp: new Date("2026-06-01T09:00:00.000Z").getTime(),
             end_timestamp: new Date("2026-06-15T00:00:00.000Z").getTime(),
         })
-    }, [h3_land_cells])
+    }, [h3r5_land_cells])
     useFrame((state, delta) =>
     {
         const elapsed_seconds = state.clock.getElapsedTime()
@@ -181,7 +181,7 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
         />}
 
         {show && <H3LandCells
-            h3_cells={h3_land_cells}
+            h3_cells={h3r5_land_cells}
         />}
 
         {show && <PowerPlantsCurrent

@@ -18,19 +18,17 @@ export function MapLightningBoltFlow()
 {
     const [flows, set_flows] = useState<FlowEntry[]>([])
 
-    useEffect(() => pub_sub.sub("power_supply_and_demand", ({ generation_by_cell, demand_by_h3r4, h3r4_cell_to_xy }) =>
+    useEffect(() => pub_sub.sub("power_supply_and_demand", ({ gen_cap_store_MW_by_h3r4, demand_GW_by_h3r4, h3r4_cell_to_xy }) =>
     {
-        if (!generation_by_cell) return
-
         const ids = new Set<string>()
-        Object.keys(generation_by_cell).forEach(k => ids.add(k))
-        Object.keys(demand_by_h3r4).forEach(k => ids.add(k))
+        Object.keys(gen_cap_store_MW_by_h3r4).forEach(k => ids.add(k))
+        Object.keys(demand_GW_by_h3r4).forEach(k => ids.add(k))
 
         const next: FlowEntry[] = []
         ids.forEach(h3_id =>
         {
-            const supply_gw = (generation_by_cell?.[h3_id]?.total_generated_mw ?? 0) / 1000
-            const demand_gw = demand_by_h3r4?.[h3_id]?.demand_gw ?? 0
+            const supply_gw = (gen_cap_store_MW_by_h3r4[h3_id]?.total_generated_MW ?? 0) / 1000
+            const demand_gw = demand_GW_by_h3r4[h3_id]?.demand_GW ?? 0
             if (!supply_gw && !demand_gw) return
             const xy = h3r4_cell_to_xy.get(h3_id)
             if (!xy) return

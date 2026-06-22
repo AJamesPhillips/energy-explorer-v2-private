@@ -10,7 +10,6 @@ import { CONSTANTS, DEFAULTS, tile_colour } from "../constants"
 import { CellDataV1 } from "../interface"
 import { IsoCamera } from "../IsoCamera"
 import { bevel_colours, box_geometry_for_cell_size } from "../IsoMetricTileConstants"
-import "./TileInfo.css"
 
 
 const { CELL_SIZE } = CONSTANTS

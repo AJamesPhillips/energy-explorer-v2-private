@@ -7,7 +7,7 @@ import { GitHubLogo, MagnifyingGlassIcon, MailIcon } from "../../../components/s
 import { get_country_by_code } from "../../../data/countries"
 import { is_narrow_screen } from "../../../utils/screen_type"
 import pub_sub from "../../state/pub_sub"
-import { ActionOptions } from "./ActionOptions"
+import { CellInfo } from "./CellInfo"
 import "./Footer.css"
 
 
@@ -16,11 +16,11 @@ export function Footer()
     const [view, set_view] = useState<false | "info" | "country_vote">(false)
 
     return <div id="app_footer">
-        {/* {false && <div className="footer_row">
-            <TileInfo />
-        </div>} */}
+        <div className="footer_row">
+            <CellInfo />
+        </div>
 
-        <ActionOptions />
+        {/* <ActionOptions /> */}
 
         <div className="footer_row">
             <div className="ui_button" onClick={() => set_view("info")}>

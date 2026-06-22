@@ -13,4 +13,7 @@ export interface ViewState
     map_capacity_factors_aggregation: CapacityFactorsAggregation
     map_capacity_factors_discrete: boolean
     set_map_capacity_factors: SetMapCapacityFactors
+
+    h3r4_cell_info_open: string | undefined
+    set_h3r4_cell_info_open: (h3r4_id: string | undefined) => void
 }

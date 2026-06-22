@@ -34,9 +34,13 @@ const default_icon_style: CSSProperties = {
     cursor: "pointer",
 }
 
-export function CloseIcon(props: { style?: CSSProperties })
+export function CloseIcon(props: { style?: CSSProperties, on_click?: () => void })
 {
-    return <img src={close_icon_url} style={{ ...default_icon_style, ...props.style }} />
+    return <img
+        src={close_icon_url}
+        style={{ ...default_icon_style, ...props.style }}
+        onClick={props.on_click}
+    />
 }
 
 export function GraphIcon(props: { style?: CSSProperties })

@@ -1,13 +1,13 @@
 
 
-export interface DemandForCell
+export interface DemandGWForH3R4
 {
     h3r4_id: string
     proportional_demand: number
-    demand_gw: number
+    demand_GW: number
 }
 
-export type DemandByH3R4Cell = Record<string, DemandForCell>
+export type DemandByH3R4Cell = Record<string, DemandGWForH3R4>
 
 export interface ValueByPowerType<V>
 {
@@ -20,9 +20,19 @@ export interface ValueByPowerType<V>
     hydro_pumped_storage: V
 }
 
-export type GenerationBySource = { generated_mw: number; capacity_mw: number }
-export type GenerationByCell = {
-    h3_id: string
-    total_generated_mw: number
-    total_capacity_mw: number
-} & ValueByPowerType<{ generated_mw: number; capacity_mw: number }>
+export const POWER_TYPES = [
+    "wind",
+    "solar",
+    "gas",
+    "nuclear",
+    "hydro_RoR",
+    "battery",
+    "hydro_pumped_storage",
+] as const
+
+export type MWGenCapStore = { generated_MW: number; capacity_MW: number }
+export type MWGenCapStoreForH3R4 = {
+    h3r4_id: string
+    total_generated_MW: number
+    total_capacity_MW: number
+} & ValueByPowerType<MWGenCapStore>

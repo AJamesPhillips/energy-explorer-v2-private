@@ -3,7 +3,7 @@
 // Copied from github.com/theWorldSim/world-sim-data/tree/master/data/land_coverage/uk/plot_dominant_land_coverage_h3_cells.py
 const THRESHOLD_DOMINANT_COVERAGE_TYPE_PERCENTAGE = 21411 / 2
 
-export async function get_uk_land_coverage()
+export async function get_uk_land_coverage_by_h3r5()
 {
     const gb = await process_land_coverage("data/land_coverage/gb_dominant_land_coverage_h3_r5.json")
     const ni = await process_land_coverage("data/land_coverage/ni_dominant_land_coverage_h3_r5.json")

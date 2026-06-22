@@ -1,6 +1,6 @@
 import type { BuildingActionTypeString } from "../../../state/building_action/interface"
 import type { XY } from "../../dev/projection"
-import type { DemandByH3R4Cell, GenerationByCell, ValueByPowerType } from "../../model/interface"
+import type { DemandByH3R4Cell, MWGenCapStoreForH3R4, ValueByPowerType } from "../../model/interface"
 import type { CellDataV2 } from "../../simple_sim/interface"
 
 
@@ -34,12 +34,12 @@ export interface PublishableEvents
         sim_seconds_per_real_second: number
     }
     power_supply_and_demand: {
-        supply_gw: number
-        supply_gw_by_type: ValueByPowerType<number>
-        capacity_gw_by_type: ValueByPowerType<number>
-        generation_by_cell?: Record<string, GenerationByCell>
-        demand_gw: number
-        demand_by_h3r4: DemandByH3R4Cell
+        supply_GW: number
+        supply_GW_by_type: ValueByPowerType<number>
+        capacity_GW_by_type: ValueByPowerType<number>
+        gen_cap_store_MW_by_h3r4: Record<string, MWGenCapStoreForH3R4>
+        demand_GW: number
+        demand_GW_by_h3r4: DemandByH3R4Cell
         h3r4_cell_to_xy: Map<string, XY>
         datetime_ms?: number
     }
@@ -56,7 +56,7 @@ export interface PublishableEvents
     show_select_country: undefined
 
     on_hover_tile: CellDataV2 | null
-    on_click_tile: CellDataV2 | null
+    on_click_tile: CellDataV2
     on_highlight_oil_reserves: CellDataV2 | null
     will_update_tile: CellDataV2 | null
     tile_changed: { tile: CellDataV2; change_gw: number }

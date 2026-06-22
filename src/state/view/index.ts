@@ -1,10 +1,25 @@
 
+import pub_sub from "../../sim_3d/state/pub_sub"
 import { SetAppState } from "../interface"
 import { CapacityFactorsAggregation, CapacityFactorsSource, ViewState } from "./interface"
 
 
 export function initial_state(set_state: SetAppState): ViewState
 {
+    const set_cell_info_open = (h3r4_id: string | undefined) =>
+    {
+        set_state(state =>
+        {
+            if (state.view.h3r4_cell_info_open === h3r4_id) h3r4_id = undefined
+            state.view.h3r4_cell_info_open = h3r4_id
+        })
+    }
+
+    pub_sub.sub("on_click_tile", payload =>
+    {
+        set_cell_info_open(payload.h3_id)
+    })
+
     return {
         angle: "isometric",
         set_angle: (new_angle: "top_down" | "isometric" | "partial") =>
@@ -27,5 +42,8 @@ export function initial_state(set_state: SetAppState): ViewState
                 if (discrete !== undefined) state.view.map_capacity_factors_discrete = discrete
             })
         },
+
+        h3r4_cell_info_open: undefined,
+        set_h3r4_cell_info_open: set_cell_info_open,
     }
 }

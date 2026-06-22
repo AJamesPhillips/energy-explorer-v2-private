@@ -19,10 +19,10 @@ export function EnergySupplyDemandActions(_props: {})
         return pub_sub.sub("power_supply_and_demand", payload =>
         {
             set_power({
-                supply_gw: payload.supply_gw,
-                supply_gw_by_type: payload.supply_gw_by_type,
-                capacity_gw_by_type: payload.capacity_gw_by_type,
-                demand_gw: payload.demand_gw,
+                supply_gw: payload.supply_GW,
+                supply_gw_by_type: payload.supply_GW_by_type,
+                capacity_gw_by_type: payload.capacity_GW_by_type,
+                demand_gw: payload.demand_GW,
             })
         }, "model-power")
     }, [])

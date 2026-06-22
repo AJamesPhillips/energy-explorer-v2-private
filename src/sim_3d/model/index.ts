@@ -9,7 +9,7 @@ import { AllCapacityFactorData, promise_load_all_capacity_factor_data } from "..
 import { cells_to_xy, XY } from "../dev/projection"
 import pub_sub from "../state/pub_sub"
 import { get_capacity_factor_mix } from "../utils/capacity_factor_data"
-import { DemandByH3R4Cell, DemandForCell, GenerationByCell, ValueByPowerType } from "./interface"
+import { DemandByH3R4Cell, DemandGWForH3R4, MWGenCapStoreForH3R4, ValueByPowerType } from "./interface"
 
 
 const promise_capacity_factor_data = promise_load_all_capacity_factor_data()
@@ -36,74 +36,74 @@ const promise_capacity_factor_data = promise_load_all_capacity_factor_data()
 
 
 /**
- * Compute instantaneous generation (MW) for each aggregated H3 cell.
+ * Compute instantaneous generation, capacity and storage (MW) for each aggregated H3 cell.
  * datetime indices should be the integer indices used by the capacity factor data.
  * A mix between two adjacent datetime indices can be provided to interpolate.
  */
-function get_generation_by_h3_cell(
+function get_gen_cap_store_MW_by_h3r4_cell(
     capacity_factor_data: AllCapacityFactorData,
     aggregated_power_plants_by_h3_cell: Record<string, AggregatedPowerPlantData>,
     datetime_index1: number,
     datetime_index2: number,
     mix: number
-): Record<string, GenerationByCell>
+): Record<string, MWGenCapStoreForH3R4>
 {
     const wind_cf = capacity_factor_data.wind
     const solar_cf = capacity_factor_data.solar
 
-    const out: Record<string, GenerationByCell> = {}
+    const out: Record<string, MWGenCapStoreForH3R4> = {}
 
     for (const [h3_id, data] of Object.entries(aggregated_power_plants_by_h3_cell))
     {
-        const wind_capacity_mw = data.wind_farm.capacity_MW ?? 0
-        const solar_capacity_mw = data.solar_farm.capacity_MW ?? 0
-        const gas_capacity_mw = data.gas_plant.capacity_MW ?? 0
-        const hydro_RoR_capacity_mw = data.hydro_RoR_plant.capacity_MW ?? 0
-        const nuclear_capacity_mw = data.nuclear_plant.capacity_MW ?? 0
-        const battery_capacity_mw = data.battery_plant.capacity_MW ?? 0
-        const hydro_pumped_storage_capacity_mw = data.hydro_pumped_plant.capacity_MW ?? 0
+        const wind_capacity_MW = data.wind_farm.capacity_MW ?? 0
+        const solar_capacity_MW = data.solar_farm.capacity_MW ?? 0
+        const gas_capacity_MW = data.gas_plant.capacity_MW ?? 0
+        const hydro_RoR_capacity_MW = data.hydro_RoR_plant.capacity_MW ?? 0
+        const nuclear_capacity_MW = data.nuclear_plant.capacity_MW ?? 0
+        const battery_capacity_MW = data.battery_plant.capacity_MW ?? 0
+        const hydro_pumped_storage_capacity_MW = data.hydro_pumped_plant.capacity_MW ?? 0
 
         const cf_wind = get_capacity_factor_mix(wind_cf, datetime_index1, datetime_index2, mix, h3_id) ?? 0
         const cf_solar = get_capacity_factor_mix(solar_cf, datetime_index1, datetime_index2, mix, h3_id) ?? 0
 
-        const wind_generated_mw = wind_capacity_mw * cf_wind
-        const solar_generated_mw = solar_capacity_mw * cf_solar
-        const nuclear_generated_mw = nuclear_capacity_mw * 0.75 // TODO: get data for this capacity factor value
-        const hydro_RoR_generated_mw = hydro_RoR_capacity_mw * 0.5 // TODO: get data for this capacity factor value
-        const gas_generated_mw = 0 // TODO: get from data
-        const battery_generated_mw = 0 // TODO: get from data
-        const hydro_pumped_storage_generated_mw = 0 // TODO: get from data
+        const wind_generated_MW = wind_capacity_MW * cf_wind
+        const solar_generated_MW = solar_capacity_MW * cf_solar
+        const nuclear_generated_MW = nuclear_capacity_MW * 0.75 // TODO: get data for this capacity factor value
+        const hydro_RoR_generated_MW = hydro_RoR_capacity_MW * 0.5 // TODO: get data for this capacity factor value
+        const gas_generated_MW = 0 // TODO: get from data
+        const battery_generated_MW = 0 // TODO: get from data
+        const hydro_pumped_storage_generated_MW = 0 // TODO: get from data
 
-        const total_generated_mw = (
-            wind_generated_mw
-            + solar_generated_mw
-            + gas_generated_mw
-            + nuclear_generated_mw
-            + hydro_RoR_generated_mw
-            + battery_generated_mw
-            + hydro_pumped_storage_generated_mw
+        const total_generated_MW = (
+            wind_generated_MW
+            + solar_generated_MW
+            + gas_generated_MW
+            + nuclear_generated_MW
+            + hydro_RoR_generated_MW
+            + battery_generated_MW
+            + hydro_pumped_storage_generated_MW
         )
-        const total_capacity_mw = (
-            wind_capacity_mw
-            + solar_capacity_mw
-            + gas_capacity_mw
-            + nuclear_capacity_mw
-            + hydro_RoR_capacity_mw
-            + battery_capacity_mw
-            + hydro_pumped_storage_capacity_mw
+        const total_capacity_MW = (
+            wind_capacity_MW
+            + solar_capacity_MW
+            + gas_capacity_MW
+            + nuclear_capacity_MW
+            + hydro_RoR_capacity_MW
+            + battery_capacity_MW
+            + hydro_pumped_storage_capacity_MW
         )
 
         out[h3_id] = {
-            h3_id,
-            wind: { generated_mw: wind_generated_mw, capacity_mw: wind_capacity_mw },
-            solar: { generated_mw: solar_generated_mw, capacity_mw: solar_capacity_mw },
-            gas: { generated_mw: gas_generated_mw, capacity_mw: gas_capacity_mw },
-            nuclear: { generated_mw: nuclear_generated_mw, capacity_mw: nuclear_capacity_mw },
-            hydro_RoR: { generated_mw: hydro_RoR_generated_mw, capacity_mw: hydro_RoR_capacity_mw },
-            battery: { generated_mw: battery_generated_mw, capacity_mw: battery_capacity_mw },
-            hydro_pumped_storage: { generated_mw: hydro_pumped_storage_generated_mw, capacity_mw: hydro_pumped_storage_capacity_mw },
-            total_generated_mw,
-            total_capacity_mw,
+            h3r4_id: h3_id,
+            wind: { generated_MW: wind_generated_MW, capacity_MW: wind_capacity_MW },
+            solar: { generated_MW: solar_generated_MW, capacity_MW: solar_capacity_MW },
+            gas: { generated_MW: gas_generated_MW, capacity_MW: gas_capacity_MW },
+            nuclear: { generated_MW: nuclear_generated_MW, capacity_MW: nuclear_capacity_MW },
+            hydro_RoR: { generated_MW: hydro_RoR_generated_MW, capacity_MW: hydro_RoR_capacity_MW },
+            battery: { generated_MW: battery_generated_MW, capacity_MW: battery_capacity_MW },
+            hydro_pumped_storage: { generated_MW: hydro_pumped_storage_generated_MW, capacity_MW: hydro_pumped_storage_capacity_MW },
+            total_generated_MW,
+            total_capacity_MW,
         }
     }
 
@@ -112,26 +112,26 @@ function get_generation_by_h3_cell(
 
 
 
-function get_initial_demand_by_h3_cell(h3_land_cells: LandH3Cell[]): DemandByH3R4Cell
+function get_initial_proportional_demand_by_h3r4_cell(h3r5_land_cells: LandH3Cell[]): DemandByH3R4Cell
 {
     const demand_by_h3r4: DemandByH3R4Cell = {}
     let total_h5_cells = 0
 
-    h3_land_cells.forEach(cell =>
+    h3r5_land_cells.forEach(cell =>
     {
         if (cell.type !== "suburban" && cell.type !== "urban") return
         total_h5_cells++
         const h3_res5_id = cell.h3h5_id
-        const h3_res4_id = cellToParent(h3_res5_id, 4)
+        const h3r4_id = cellToParent(h3_res5_id, 4)
 
-        const entry: DemandForCell = demand_by_h3r4[h3_res4_id] || {
-            h3r4_id: h3_res4_id,
+        const entry: DemandGWForH3R4 = demand_by_h3r4[h3r4_id] || {
+            h3r4_id,
             proportional_demand: 0,
-            demand_gw: 0,
+            demand_GW: 0,
         }
 
         entry.proportional_demand += cell.type === "suburban" ? SUBURBAN_DEMAND_MULTIPLIER : URBAN_DEMAND_MULTIPLIER
-        demand_by_h3r4[h3_res4_id] = entry
+        demand_by_h3r4[h3r4_id] = entry
     })
 
     Object.values(demand_by_h3r4).forEach(entry =>
@@ -143,7 +143,7 @@ function get_initial_demand_by_h3_cell(h3_land_cells: LandH3Cell[]): DemandByH3R
 }
 
 
-function mutate_demand_by_h3_cell(time_size: number, demand_by_h3r4: Record<string, DemandForCell>, datetime_index1: number, datetime_index2: number, mix: number): number
+function mutate_demand_by_h3_cell(time_size: number, demand_by_h3r4: Record<string, DemandGWForH3R4>, datetime_index1: number, datetime_index2: number, mix: number): number
 {
     // const year_demand = daily_profiles["2024"]
     // const summer_day_demand = year_demand.low_demand.data
@@ -159,7 +159,7 @@ function mutate_demand_by_h3_cell(time_size: number, demand_by_h3r4: Record<stri
 
     Object.values(demand_by_h3r4).forEach(entry =>
     {
-        entry.demand_gw = entry.proportional_demand * demand_gw
+        entry.demand_GW = entry.proportional_demand * demand_gw
     })
 
     return demand_gw
@@ -172,10 +172,10 @@ const last_updated_at =
     real_time: 0,
 }
 const max_update_frequency_ms = 1000
-export function init_model_power_supply_updates(h3_land_cells: LandH3Cell[])
+export function init_model_power_supply_updates(h3r5_land_cells: LandH3Cell[])
 {
     let h3r4_cell_to_xy: Map<string, XY> | undefined = undefined
-    const demand_by_h3r4 = get_initial_demand_by_h3_cell(h3_land_cells)
+    const demand_GW_by_h3r4 = get_initial_proportional_demand_by_h3r4_cell(h3r5_land_cells)
 
     const unsub = pub_sub.sub("simulation_datetime", (payload) =>
     {
@@ -200,7 +200,7 @@ export function init_model_power_supply_updates(h3_land_cells: LandH3Cell[])
                     h3r4_cell_to_xy = cells_to_xy([...capacity_factor_data.wind.h3_cell_id_to_index.keys()])
                 }
                 const aggregated_power_plants_by_h3_cell = await promise_aggregated_power_plants_by_h3_cell as Record<string, AggregatedPowerPlantData>
-                const by_cell = get_generation_by_h3_cell(
+                const gen_cap_store_MW_by_h3r4 = get_gen_cap_store_MW_by_h3r4_cell(
                     capacity_factor_data,
                     aggregated_power_plants_by_h3_cell,
                     payload.datetime_annual_hourly_index1,
@@ -220,44 +220,44 @@ export function init_model_power_supply_updates(h3_land_cells: LandH3Cell[])
                     ...supply_gw_by_type,
                 }
 
-                let total_mw = 0
-                Object.values(by_cell).forEach(c =>
+                let total_MW = 0
+                Object.values(gen_cap_store_MW_by_h3r4).forEach(c =>
                 {
-                    total_mw += c.total_generated_mw
-                    supply_gw_by_type.wind += c.wind.generated_mw / 1000
-                    supply_gw_by_type.solar += c.solar.generated_mw / 1000
-                    supply_gw_by_type.gas += c.gas.generated_mw / 1000
-                    supply_gw_by_type.nuclear += c.nuclear.generated_mw / 1000
-                    supply_gw_by_type.hydro_RoR += c.hydro_RoR.generated_mw / 1000
-                    supply_gw_by_type.battery += c.battery.generated_mw / 1000
-                    supply_gw_by_type.hydro_pumped_storage += c.hydro_pumped_storage.generated_mw / 1000
+                    total_MW += c.total_generated_MW
+                    supply_gw_by_type.wind += c.wind.generated_MW / 1000
+                    supply_gw_by_type.solar += c.solar.generated_MW / 1000
+                    supply_gw_by_type.gas += c.gas.generated_MW / 1000
+                    supply_gw_by_type.nuclear += c.nuclear.generated_MW / 1000
+                    supply_gw_by_type.hydro_RoR += c.hydro_RoR.generated_MW / 1000
+                    supply_gw_by_type.battery += c.battery.generated_MW / 1000
+                    supply_gw_by_type.hydro_pumped_storage += c.hydro_pumped_storage.generated_MW / 1000
 
-                    capacity_gw_by_type.wind += c.wind.capacity_mw / 1000
-                    capacity_gw_by_type.solar += c.solar.capacity_mw / 1000
-                    capacity_gw_by_type.gas += c.gas.capacity_mw / 1000
-                    capacity_gw_by_type.nuclear += c.nuclear.capacity_mw / 1000
-                    capacity_gw_by_type.hydro_RoR += c.hydro_RoR.capacity_mw / 1000
-                    capacity_gw_by_type.battery += c.battery.capacity_mw / 1000
-                    capacity_gw_by_type.hydro_pumped_storage += c.hydro_pumped_storage.capacity_mw / 1000
+                    capacity_gw_by_type.wind += c.wind.capacity_MW / 1000
+                    capacity_gw_by_type.solar += c.solar.capacity_MW / 1000
+                    capacity_gw_by_type.gas += c.gas.capacity_MW / 1000
+                    capacity_gw_by_type.nuclear += c.nuclear.capacity_MW / 1000
+                    capacity_gw_by_type.hydro_RoR += c.hydro_RoR.capacity_MW / 1000
+                    capacity_gw_by_type.battery += c.battery.capacity_MW / 1000
+                    capacity_gw_by_type.hydro_pumped_storage += c.hydro_pumped_storage.capacity_MW / 1000
                 })
 
-                const supply_gw = total_mw / 1000
+                const supply_gw = total_MW / 1000
 
                 const demand_gw = mutate_demand_by_h3_cell(
                     capacity_factor_data.wind.date_time_to_index.size,
-                    demand_by_h3r4,
+                    demand_GW_by_h3r4,
                     payload.datetime_annual_hourly_index1,
                     payload.datetime_annual_hourly_index2,
                     payload.datetime_annual_hourly_index_mix
                 )
 
                 pub_sub.pub("power_supply_and_demand", {
-                    supply_gw,
-                    supply_gw_by_type,
-                    capacity_gw_by_type,
-                    generation_by_cell: by_cell,
-                    demand_gw,
-                    demand_by_h3r4,
+                    supply_GW: supply_gw,
+                    supply_GW_by_type: supply_gw_by_type,
+                    capacity_GW_by_type: capacity_gw_by_type,
+                    gen_cap_store_MW_by_h3r4,
+                    demand_GW: demand_gw,
+                    demand_GW_by_h3r4,
                     h3r4_cell_to_xy,
                     datetime_ms: payload.datetime_ms,
                 })

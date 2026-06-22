@@ -3,7 +3,7 @@ import * as h3 from "h3-js"
 import { useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 
-import { get_uk_land_coverage, LandH3Cell } from "../data/coverage_land/uk/data"
+import { get_uk_land_coverage_by_h3r5, LandH3Cell } from "../data/coverage_land/uk/data"
 import { UK_EEZ_COORDS } from "../data/eez/data"
 import { H3_RESOLUTION } from "../data/power_plants"
 import { CONSTANTS, DEFAULTS } from "../simple_sim/constants"
@@ -43,7 +43,7 @@ export function GeoDataStack()
 
     useEffect(() =>
     {
-        get_uk_land_coverage().then(set_h3_land_cells)
+        get_uk_land_coverage_by_h3r5().then(set_h3_land_cells)
     }, [])
 
     const sun_ambient_ref = useRef<THREE.AmbientLight>(null)
