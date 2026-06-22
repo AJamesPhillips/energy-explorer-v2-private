@@ -5,6 +5,7 @@ import pub_sub from "../../state/pub_sub"
 
 
 const month_formatter = new Intl.DateTimeFormat("default", { month: "long" })
+const day_formatter = new Intl.DateTimeFormat("default", { weekday: "short" })
 
 export function GameDatetimeUI()
 {
@@ -21,7 +22,8 @@ export function GameDatetimeUI()
     }}>
         <div>
             <span style={{ fontSize: "var(--font-small)", fontWeight: "bold" }}>
-                {dt.getUTCFullYear()} {month_formatter.format(dt)} {dt.getUTCDate()}
+                {/* {dt.getUTCFullYear()}{" "} */}
+                {day_formatter.format(dt)} {month_formatter.format(dt)} {dt.getUTCDate()}
             </span>
             <br/>
             <span style={{ fontSize: "var(--font-medium)", fontWeight: "bold" }}>
