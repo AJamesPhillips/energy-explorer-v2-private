@@ -4,7 +4,7 @@ import { MailIcon } from "../../components/svgs"
 import { WarningAppUnderConstruction } from "../../components/WarningAppUnderConstruction"
 
 
-const should_show = document.location.hostname !== "localhost"
+const should_show = true || document.location.hostname !== "localhost"
 
 export function WelcomeMessage1()
 {
@@ -27,10 +27,9 @@ export function WelcomeMessage1()
                 </p>
 
                 <p style={{ textAlign: "center", backgroundColor: "#fffae6", padding: 8, borderRadius: 4, border: "1px solid #ffe58f" }}>
-                    Build power plants, and change government policies.  Good luck!
-                    {/* and set government policies <GovernmentPolicyIcon style={{ height: 20 }} /> */}
-                {/* And click on ℹ️ symbols to get more information */}
+                    Build power plants, storage, grid, and change government policies.  Good luck!
                 </p>
+                {/* And click on ℹ️ symbols to get more information */}
 
 
 
@@ -57,6 +56,7 @@ export function WelcomeMessage1()
             </>
         }
         confirmation_button_text="Let's go!"
+        hide_offer_to_not_show_again={true}
     />
 }
 
@@ -73,7 +73,7 @@ export function WelcomeMessage2()
 
                 <WarningAppUnderConstruction
                     custom_message={<>
-                        Whilst this simulation strives to be accurate, there may still be significant errors in it!
+                        Whilst this simulation strives to be accurate, there are still be significant over simplifications and inaccuracies.  Please do not yet use this simulation to make real-world decisions.
                     </>}
                 />
 
@@ -87,5 +87,6 @@ export function WelcomeMessage2()
                 </p>
             </>
         }
+        hide_offer_to_not_show_again={true}
     />
 }
