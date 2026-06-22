@@ -6,9 +6,14 @@ type AllSubscribers = { [K in keyof PublishableEvents]?: {
     callback: (data: PublishableEvents[K]) => void, subscriber_id: string
 }[] }
 const ALL_SUBSCRIBERS: AllSubscribers = {}
+
+const LAST_PUBLISHED_EVENTS: { [K in keyof PublishableEvents]?: PublishableEvents[K] } = {}
+
 const pub_sub = {
     pub: <K extends PublishableEventTypes>(event: K, data: PublishableEvents[K]) =>
     {
+        LAST_PUBLISHED_EVENTS[event] = data
+
         const subscribers = ALL_SUBSCRIBERS[event]
         if (!subscribers) return
         subscribers.forEach(subscriber =>
@@ -21,7 +26,7 @@ const pub_sub = {
             }
         })
     },
-    sub: <K extends PublishableEventTypes>(event: K, callback: (data: PublishableEvents[K]) => void, subscriber_id: string = "unknown") =>
+    sub: <K extends PublishableEventTypes>(event: K, callback: (data: PublishableEvents[K]) => void, subscriber_id: string = "unknown", echo_last_stale_event = false) =>
     {
         if (!ALL_SUBSCRIBERS[event])
         {
@@ -35,6 +40,11 @@ const pub_sub = {
             const subscribers = ALL_SUBSCRIBERS[event]!
             ALL_SUBSCRIBERS[event] = subscribers.filter(subscriber => subscriber.callback !== callback) as typeof subscribers
             // console .log(`Unsubscribed "${subscriber_id}" from event "${event}"`, ALL_SUBSCRIBERS[event])
+        }
+
+        if (echo_last_stale_event && LAST_PUBLISHED_EVENTS[event] !== undefined)
+        {
+            callback(LAST_PUBLISHED_EVENTS[event]!)
         }
 
         return unsubscribe
