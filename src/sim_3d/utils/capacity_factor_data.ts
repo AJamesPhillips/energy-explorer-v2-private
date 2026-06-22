@@ -111,6 +111,9 @@ export function aggregate_to_annual_average(capacity_factor_data: CapacityFactor
     const annual_date_time = "annual"
     annual_date_time_to_index.set(annual_date_time, 0)
 
+    let min_capacity_factor = Number.POSITIVE_INFINITY
+    let max_capacity_factor = Number.NEGATIVE_INFINITY
+
     for (let h3_cell_id_index = 0; h3_cell_id_index < number_of_h3_cell_ids; ++h3_cell_id_index)
     {
         for (let date_time_index = 0; date_time_index < date_time_to_index.size; ++date_time_index)
@@ -118,7 +121,18 @@ export function aggregate_to_annual_average(capacity_factor_data: CapacityFactor
             annual_data[h3_cell_id_index]! += get_capacity_factor(date_time_index, h3_cell_id_index) ?? 0
         }
         // Divide by the number of date times to get the average
-        annual_data[h3_cell_id_index] = annual_data[h3_cell_id_index]! / date_time_to_index.size
+        const annual_value = annual_data[h3_cell_id_index]! / date_time_to_index.size
+        annual_data[h3_cell_id_index] = annual_value
+
+        min_capacity_factor = Math.min(min_capacity_factor, annual_value)
+        max_capacity_factor = Math.max(max_capacity_factor, annual_value)
+    }
+
+    // Rescale the annual data to be between 0 and 1
+    const range = max_capacity_factor - min_capacity_factor
+    for (let h3_cell_id_index = 0; h3_cell_id_index < number_of_h3_cell_ids; ++h3_cell_id_index)
+    {
+        // annual_data[h3_cell_id_index]! = (annual_data[h3_cell_id_index]! - min_capacity_factor) / range
     }
 
     return {

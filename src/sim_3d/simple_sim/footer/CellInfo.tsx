@@ -12,7 +12,9 @@ import pub_sub from "../../state/pub_sub"
 // import { CellDataV2, CellsData } from "../interface"
 // import { RenderSingleTile } from "./RenderSingleTile"
 import { to_sentence_case } from "../../../utils/string"
+import { promise_load_all_capacity_factor_data } from "../../data/wind_and_solar_capacity/load_data"
 import { MWGenCapStoreForH3R4, POWER_TYPES } from "../../model/interface"
+import { get_capacity_factor_mix } from "../../utils/capacity_factor_data"
 import "./CellInfo.css"
 
 
@@ -38,27 +40,14 @@ export function CellInfo()
 {
     const h3r4_id = get_app_state(state => state.view.h3r4_cell_info_open)
     const set_cell_info_open = get_app_state(state => state.view.set_h3r4_cell_info_open)
+    const map_capacity_factors_source = get_app_state(state => state.view.map_capacity_factors_source)
+    const map_capacity_factors_aggregation = get_app_state(state => state.view.map_capacity_factors_aggregation)
 
     const [cell_info, set_cell_info] = useState<null | {
         h3r4_id: string
         demand_GW: number
         gen_cap_store: MWGenCapStoreForH3R4
     }>(null)
-//     const [hovered_tile, set_hovered_tile] = useState<CellDataV2 | null>(null)
-//     const hovered_tile_ref = useRef<CellDataV2 | null>(null)
-//     hovered_tile_ref.current = hovered_tile
-
-//     useEffect(() => pub_sub.sub("on_hover_tile", set_hovered_tile), [])
-
-//     useEffect(() => pub_sub.sub("will_update_tile", new_tile =>
-//         {
-//             const hovered_tile = hovered_tile_ref.current
-//             if (!new_tile || !hovered_tile) return
-//             if (new_tile.x !== hovered_tile.x || new_tile.y !== hovered_tile.y) return
-
-//             set_hovered_tile(new_tile)
-//         })
-//     , [])
 
     useEffect(() =>
     {
@@ -95,6 +84,60 @@ export function CellInfo()
         </div>
     }) : []
 
+
+    const [capacity_factor, set_capacity_factor] = useState(0)
+    useEffect(() =>
+    {
+        if (!cell_info?.h3r4_id) return
+        if (!map_capacity_factors_source) return
+
+        const unsub_ref = { current: undefined as undefined | (() => void) }
+
+        const show_hourly = map_capacity_factors_aggregation === "hourly"
+
+        promise_load_all_capacity_factor_data().then(({ wind, annual_wind, solar, annual_solar}) =>
+        {
+            if (map_capacity_factors_source === "wind")
+            {
+                return show_hourly ? wind : annual_wind
+            }
+            else if (map_capacity_factors_source === "solar")
+            {
+                return show_hourly ? solar : annual_solar
+            }
+        })
+        .then(data =>
+        {
+            if (!data) return
+
+            if (show_hourly)
+            {
+                unsub_ref.current = pub_sub.sub("simulation_datetime", payload =>
+                {
+                    const datetime_index1 = payload.datetime_annual_hourly_index1
+                    const datetime_index2 = payload.datetime_annual_hourly_index2
+                    const datetime_index_mix = payload.datetime_annual_hourly_index_mix
+                    const cell_id = cell_info.h3r4_id
+
+                    const capacity_factor = get_capacity_factor_mix(data, datetime_index1, datetime_index2, datetime_index_mix, cell_id) ?? 0
+                    set_capacity_factor(capacity_factor)
+                })
+            }
+            else
+            {
+                const cell_id = cell_info.h3r4_id
+                const capacity_factor = get_capacity_factor_mix(data, 1, 1, 1, cell_id) ?? 0
+                set_capacity_factor(capacity_factor)
+            }
+        })
+
+        return () =>
+        {
+            if (unsub_ref.current) unsub_ref.current()
+        }
+    }, [map_capacity_factors_source, cell_info])
+
+
     return <div
         id="tile_info_panel"
         className={"ui_info_box " + (h3r4_id ? "open" : "closed")}
@@ -117,10 +160,15 @@ export function CellInfo()
 
                 {gen_cap_els.length === 0 && <div><b>No power plants</b></div>}
 
-                {gen_cap_els.length > 0 && <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {gen_cap_els.length > 0 && <>
                     <div><b>Generation by:</b></div>
                     {gen_cap_els}
-                </div>}
+                </>}
+            </>}
+
+            {map_capacity_factors_source && <>
+                <div><b>{to_sentence_case(map_capacity_factors_source + " capacity factor")}</b></div>
+                <div>{Math.round(capacity_factor * 100).toFixed(0)}%</div>
             </>}
         </div>
     </div>
