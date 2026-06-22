@@ -5,6 +5,7 @@ import { SolarFarmsByYear } from "../../data/solar_pv_farms/process_data_compone
 import { WindFarmsByYear } from "../../data/wind_farms/process_data_component"
 import { DataPortal } from "./DataPortal"
 import { Info } from "./Info"
+import { ViewOptions } from "./ViewOptions"
 
 
 interface SimRightSideBarProps
@@ -41,5 +42,6 @@ export function SimRightSideBar(props: SimRightSideBarProps)
                 wind_farms_by_year={props.wind_farms_by_year}
             />
         </div>
+        <ViewOptions />
     </>
 }
