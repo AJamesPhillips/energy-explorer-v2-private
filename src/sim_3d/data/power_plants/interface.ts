@@ -54,12 +54,13 @@ export interface WindFarm extends PowerPlantBase
 export type PowerPlant = BatteryPlant | GasPlant | HydroPlant | NuclearPlant | SolarFarm | WindFarm
 
 
-interface AggregatePowerPlantData
+export interface AggregatePowerPlantData
 {
     h3_id: string
     h3_capacity_factor_index?: number
     lat_lon: ILatLon
     xy: XY
+    starting_count: number
     count: number
     starting_capacity_MW: number
     capacity_MW: number

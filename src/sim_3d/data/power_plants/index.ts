@@ -65,13 +65,13 @@ export function empty_aggregated_power_plant_data(
     const h3_index_solar = solar_pv_capacity_factor.h3_cell_id_to_index.get(h3r4_id)
 
     const data: AggregatedPowerPlantData = {
-        wind:     { h3_id: h3r4_id, lat_lon, xy, count: 0, starting_capacity_MW: 0, capacity_MW: 0, starting_area_km2: 0, area_km2: 0, h3_capacity_factor_index: h3_index_wind },
-        solar:    { h3_id: h3r4_id, lat_lon, xy, count: 0, starting_capacity_MW: 0, capacity_MW: 0, starting_area_km2: 0, area_km2: 0, h3_capacity_factor_index: h3_index_solar },
-        gas:     { h3_id: h3r4_id, lat_lon, xy, count: 0, starting_capacity_MW: 0, capacity_MW: 0 },
-        nuclear: { h3_id: h3r4_id, lat_lon, xy, count: 0, starting_capacity_MW: 0, capacity_MW: 0 },
-        battery: { h3_id: h3r4_id, lat_lon, xy, count: 0, starting_capacity_MW: 0, capacity_MW: 0, storage_MWH: 0 },
-        hydro_pumped_storage: { h3_id: h3r4_id, lat_lon, xy, count: 0, starting_capacity_MW: 0, capacity_MW: 0, storage_MWH: 0 },
-        hydro_river: { h3_id: h3r4_id, lat_lon, xy, count: 0, starting_capacity_MW: 0, capacity_MW: 0 },
+        wind:     { h3_id: h3r4_id, lat_lon, xy, starting_count: 0, count: 0, starting_capacity_MW: 0, capacity_MW: 0, starting_area_km2: 0, area_km2: 0, h3_capacity_factor_index: h3_index_wind },
+        solar:    { h3_id: h3r4_id, lat_lon, xy, starting_count: 0, count: 0, starting_capacity_MW: 0, capacity_MW: 0, starting_area_km2: 0, area_km2: 0, h3_capacity_factor_index: h3_index_solar },
+        gas:     { h3_id: h3r4_id, lat_lon, xy, starting_count: 0, count: 0, starting_capacity_MW: 0, capacity_MW: 0 },
+        nuclear: { h3_id: h3r4_id, lat_lon, xy, starting_count: 0, count: 0, starting_capacity_MW: 0, capacity_MW: 0 },
+        battery: { h3_id: h3r4_id, lat_lon, xy, starting_count: 0, count: 0, starting_capacity_MW: 0, capacity_MW: 0, storage_MWH: 0 },
+        hydro_pumped_storage: { h3_id: h3r4_id, lat_lon, xy, starting_count: 0, count: 0, starting_capacity_MW: 0, capacity_MW: 0, storage_MWH: 0 },
+        hydro_river: { h3_id: h3r4_id, lat_lon, xy, starting_count: 0, count: 0, starting_capacity_MW: 0, capacity_MW: 0 },
     }
 
     return data
@@ -98,6 +98,7 @@ export function aggregate_power_plants_by_h3_cell(
 
             if (plant.type === "wind_farm")
             {
+                data.wind.starting_count++
                 data.wind.count++
                 data.wind.starting_capacity_MW += capacity
                 data.wind.capacity_MW += capacity
@@ -106,6 +107,7 @@ export function aggregate_power_plants_by_h3_cell(
             }
             else if (plant.type === "solar_farm")
             {
+                data.solar.starting_count++
                 data.solar.count++
                 data.solar.starting_capacity_MW += capacity
                 data.solar.capacity_MW += capacity
@@ -114,18 +116,21 @@ export function aggregate_power_plants_by_h3_cell(
             }
             else if (plant.type === "gas")
             {
+                data.gas.starting_count++
                 data.gas.count++
                 data.gas.starting_capacity_MW += capacity
                 data.gas.capacity_MW += capacity
             }
             else if (plant.type === "nuclear")
             {
+                data.nuclear.starting_count++
                 data.nuclear.count++
                 data.nuclear.starting_capacity_MW += capacity
                 data.nuclear.capacity_MW += capacity
             }
             else if (plant.type === "battery")
             {
+                data.battery.starting_count++
                 data.battery.count++
                 data.battery.starting_capacity_MW += capacity
                 data.battery.capacity_MW += capacity
@@ -135,6 +140,7 @@ export function aggregate_power_plants_by_h3_cell(
             {
                 if (plant.storage_MWH && plant.storage_MWH > 0)
                 {
+                    data.hydro_pumped_storage.starting_count++
                     data.hydro_pumped_storage.count++
                     data.hydro_pumped_storage.starting_capacity_MW += capacity
                     data.hydro_pumped_storage.capacity_MW += capacity
@@ -142,6 +148,7 @@ export function aggregate_power_plants_by_h3_cell(
                 }
                 else
                 {
+                    data.hydro_river.starting_count++
                     data.hydro_river.count++
                     data.hydro_river.starting_capacity_MW += capacity
                     data.hydro_river.capacity_MW += capacity
