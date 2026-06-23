@@ -161,12 +161,12 @@ export function CellInfo()
             {cell_info && <>
 
                 {cell_info.demand_GW > 0 &&
-                <div><b>Demand:</b> {cell_info.demand_GW.toFixed(2)} GW</div>}
+                <div><b>Demand</b> {cell_info.demand_GW.toFixed(2)} GW</div>}
 
                 {gen_cap_els.length === 0 && <div><b>No power plants</b></div>}
 
                 {gen_cap_els.length > 0 && <>
-                    <div><b>Generation by:</b></div>
+                    <div><b>Generation by</b></div>
                     {gen_cap_els}
                 </>}
             </>}

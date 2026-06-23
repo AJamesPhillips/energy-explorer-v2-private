@@ -90,15 +90,15 @@ export function H3Cells(props: {
 
     // Build small palettes from the cached materials
     const palettes = useMemo(() => {
-        const fromMaterials = (arr: THREE.Material[]) => arr.map((m: any) => {
+        const from_materials = (arr: THREE.Material[]) => arr.map((m: any) => {
             const mb = m as THREE.MeshBasicMaterial
             const c = mb.color
             const o = mb.opacity ?? 1
             return new THREE.Vector4(c.r, c.g, c.b, o)
         })
         return {
-            wind: fromMaterials(WIND_BLUE_MATERIAL),
-            solar: fromMaterials(SOLAR_YELLOW_MATERIAL),
+            wind: from_materials(WIND_BLUE_MATERIAL),
+            solar: from_materials(SOLAR_YELLOW_MATERIAL),
         }
     }, [])
 
