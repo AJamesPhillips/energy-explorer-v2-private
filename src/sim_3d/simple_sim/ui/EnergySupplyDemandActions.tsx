@@ -239,6 +239,8 @@ function get_initial_power()
 
 function BuildButton(props: { type: PowerType })
 {
+    return null
+
     return <button
         className="ui_button"
         onClick={() =>
