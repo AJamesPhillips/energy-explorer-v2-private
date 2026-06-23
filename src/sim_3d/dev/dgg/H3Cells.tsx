@@ -154,7 +154,7 @@ export function H3Cells(props: {
     }, [coords.merged_fill])
 
     // Track current hover to avoid repeated publishes
-    const { handle_pointer_move, handle_pointer_leave, handle_click } = make_pointer_move_and_click_handlers(coords)
+    const { handle_pointer_move, handle_pointer_leave, handle_pointer_down, handle_click } = make_pointer_move_and_click_handlers(coords)
 
     return <>
         <group
@@ -169,6 +169,7 @@ export function H3Cells(props: {
                     onPointerMove={handle_pointer_move}
                     onPointerOut={handle_pointer_leave}
                     onPointerLeave={handle_pointer_leave}
+                    onPointerDown={handle_pointer_down}
                     onClick={handle_click}
                 />
             )}
@@ -232,8 +233,19 @@ function make_pointer_move_and_click_handlers(coords: { merged_fill: THREE.Buffe
         }
     }, [])
 
+    const pointer_down_screen_xy_ref = useRef<{ x: number, y: number } | null>(null)
+    const handle_pointer_down = useCallback((e: ThreeEvent<PointerEvent>) => {
+        e.stopPropagation()
+        // Record when on screen pointer down, so that we can distinguish between a click and a drag
+        pointer_down_screen_xy_ref.current = { x: e.clientX, y: e.clientY }
+    }, [])
+
     const handle_click = useCallback((e: ThreeEvent<MouseEvent>) => {
         e.stopPropagation()
+        const moved_significantly = has_pointer_moved_significantly(pointer_down_screen_xy_ref.current, { x: e.clientX, y: e.clientY })
+        pointer_down_screen_xy_ref.current = null
+        if (moved_significantly) return
+
         const face = (e as any).face
         const faceIndex = (e as any).faceIndex
         let vertexIndex: number | undefined
@@ -246,5 +258,19 @@ function make_pointer_move_and_click_handlers(coords: { merged_fill: THREE.Buffe
         const cell_id = coords.cell_ids[ci]!
         pub_sub.pub("on_click_tile", { h3r4_id: cell_id })
     }, [coords.cell_ids, find_cell_index_for_vertex])
-    return { handle_pointer_move, handle_pointer_leave, handle_click }
+    return {
+        handle_pointer_move,
+        handle_pointer_leave,
+        handle_pointer_down,
+        handle_click,
+    }
+}
+
+function has_pointer_moved_significantly(pointer_down_xy: { x: number, y: number } | null, current_xy: { x: number, y: number }): boolean
+{
+    if (!pointer_down_xy) return false
+    const dx = current_xy.x - pointer_down_xy.x
+    const dy = current_xy.y - pointer_down_xy.y
+    const distance_squared = dx * dx + dy * dy
+    return distance_squared > 5 * 5
 }
