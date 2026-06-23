@@ -1,5 +1,6 @@
 import { cellToParent } from "h3-js"
 
+import { DEFAULT_SPEED } from "../../state/game_datetime/constants"
 import { hacky_get_state } from "../../state/store"
 import { LandH3Cell } from "../data/coverage_land/uk/data"
 import { SUBURBAN_DEMAND_MULTIPLIER, URBAN_DEMAND_MULTIPLIER } from "../data/power_demand/relative_demand"
@@ -8,6 +9,7 @@ import type { AggregatedPowerPlantData } from "../data/power_plants/interface"
 import { AllCapacityFactorData, promise_load_all_capacity_factor_data } from "../data/wind_and_solar_capacity/load_data"
 import { cells_to_xy, XY } from "../dev/projection"
 import pub_sub from "../state/pub_sub"
+import { get_speed_factor } from "../state/sim_clock"
 import { get_capacity_factor_mix } from "../utils/capacity_factor_data"
 import { DemandByH3R4Cell, DemandGWForH3R4, MWGenCapStoreForH3R4, ValueByPowerType } from "./interface"
 
@@ -180,7 +182,8 @@ export function init_model_power_supply_updates(h3r5_land_cells: LandH3Cell[])
     const unsub = pub_sub.sub("simulation_datetime", (payload) =>
     {
         const current_time = performance.now()
-        if (last_updated_at.datetime_index1 === payload.datetime_annual_hourly_index1 && current_time - last_updated_at.real_time < max_update_frequency_ms)
+        const current_speed_factor = get_speed_factor(hacky_get_state()?.game_datetime.speed || DEFAULT_SPEED)
+        if (last_updated_at.datetime_index1 === payload.datetime_annual_hourly_index1 && current_time - last_updated_at.real_time < (max_update_frequency_ms * current_speed_factor))
         {
             // Don't update more than max_update_frequency_ms for the same datetime index
             return
