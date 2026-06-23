@@ -176,6 +176,7 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
         })
     })
 
+    const show_lightning_bolt_flow = get_app_state(state => state.game_datetime.speed.includes("fast") === false)
     const show = true
 
     return <>
@@ -207,7 +208,7 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
             show_aggregated={true}
         />}
 
-        {show && <MapLightningBoltFlow />}
+        {show_lightning_bolt_flow && <MapLightningBoltFlow />}
 
         {false && <H3ElectricalGrid />}
         {false && <H3GasGrid />}
