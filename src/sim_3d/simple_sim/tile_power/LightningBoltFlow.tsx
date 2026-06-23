@@ -46,14 +46,11 @@ interface BoltInstance
     target_y: number
     offset_x: number
     scale: number
-    convert_on_top: boolean
     group_ref: RefObject<THREE.Group | null>
     material: THREE.MeshStandardMaterial
-    colour_from?: THREE.Color
-    colour_to?: THREE.Color
+    colour?: THREE.Color
 }
 
-const ALLOW_CONVERSION_ON_TOP = false
 export function LightningBoltFlow({ x, y, supply_gw, demand_gw }: LightningBoltFlowProps)
 {
     const size = BASE_SIZE
@@ -79,7 +76,7 @@ export function LightningBoltFlow({ x, y, supply_gw, demand_gw }: LightningBoltF
         sim_datetime_ms.current = payload.datetime_ms
     }, "LightningBoltFlow"), [])
 
-    function spawn_supply(now: number, scale: number, convert_on_top: boolean)
+    function spawn_supply(now: number, scale: number)
     {
         const id = ++id_counter.current
         const material = create_material("supply")
@@ -96,10 +93,9 @@ export function LightningBoltFlow({ x, y, supply_gw, demand_gw }: LightningBoltF
             target_y,
             offset_x: (Math.random()) * size,
             scale,
-            convert_on_top,
             group_ref,
             material,
-            colour_from: new THREE.Color(0x44bbff),
+            colour: new THREE.Color(0x44bbff),
         }
 
         bolts_ref.current.push(instance)
@@ -124,10 +120,9 @@ export function LightningBoltFlow({ x, y, supply_gw, demand_gw }: LightningBoltF
             target_y: 0,
             offset_x: (-Math.random()) * size * 0.5,
             scale,
-            convert_on_top: false,
             group_ref,
             material,
-            colour_from: new THREE.Color(0xff4444),
+            colour: new THREE.Color(0xff4444),
         }
 
         bolts_ref.current.push(instance)
@@ -151,18 +146,15 @@ export function LightningBoltFlow({ x, y, supply_gw, demand_gw }: LightningBoltF
         while (supply_accum.current >= GW_HOUR_CHUNKS)
         {
             const scale = clamp(supply_accum.current / GW_HOUR_CHUNKS, MIN_LIGHTNING_BOLT_SCALE, 1)
-            const convert = demand_accum.current > 0 && ALLOW_CONVERSION_ON_TOP
-            spawn_supply(now_ms, scale, convert)
+            spawn_supply(now_ms, scale)
             supply_accum.current -= Math.min(GW_HOUR_CHUNKS, supply_accum.current)
-            if (convert) demand_accum.current = Math.max(0, demand_accum.current - GW_HOUR_CHUNKS)
         }
 
         // spawn due to timeout (ensure visibility even for tiny supply)
         if (supply_accum.current > 0 && (now_ms - last_supply_spawn.current) >= (MAX_INTERVAL_SIM_HOURS * 3600 * 1000))
         {
             const scale = clamp(supply_accum.current / GW_HOUR_CHUNKS, MIN_LIGHTNING_BOLT_SCALE, 1)
-            const convert = demand_accum.current > 0 && ALLOW_CONVERSION_ON_TOP
-            spawn_supply(now_ms, scale, convert)
+            spawn_supply(now_ms, scale)
             supply_accum.current = 0
         }
 
@@ -195,33 +187,15 @@ export function LightningBoltFlow({ x, y, supply_gw, demand_gw }: LightningBoltF
                 if (group) group.position.y = yPos
                 if (progress >= 1)
                 {
-                    if (b.convert_on_top)
-                    {
-                        b.phase = "falling"
-                        b.phase_start_sim_ms = now_ms
-                        b.phase_duration_sim_hours = DURATION_SIM_HOURS
-                        b.start_y = b.target_y
-                        b.target_y = 0
-                        b.colour_to = new THREE.Color(0xff4444)
-                    }
-                    else
-                    {
-                        b.phase = "fading"
-                        b.phase_start_sim_ms = now_ms
-                        b.phase_duration_sim_hours = DURATION_FADE_SIM_HOURS
-                    }
+                    b.phase = "fading"
+                    b.phase_start_sim_ms = now_ms
+                    b.phase_duration_sim_hours = DURATION_FADE_SIM_HOURS
                 }
             }
             else if (b.phase === "falling")
             {
                 const yPos = b.start_y * (1 - ease_in_quad(progress))
                 if (group) group.position.y = yPos
-                if (b.colour_from && b.colour_to)
-                {
-                    const col = b.colour_from.clone().lerp(b.colour_to, progress)
-                    b.material.color.copy(col)
-                    b.material.emissive.copy(col)
-                }
                 if (progress >= 1)
                 {
                     b.phase = "fading"
@@ -231,15 +205,15 @@ export function LightningBoltFlow({ x, y, supply_gw, demand_gw }: LightningBoltF
             }
             else if (b.phase === "fading")
             {
-                const new_opacity = Math.max(0, 1 - progress)
-                b.material.opacity = new_opacity
-                b.material.transparent = true
-                if (progress >= 1)
-                {
-                    try { b.material.dispose() } catch (e) { /* ignore */ }
-                    bolts_ref.current.splice(i, 1)
-                    set_tick(s => s + 1)
-                }
+                // const new_opacity = Math.max(0, 1 - progress)
+                // b.material.opacity = new_opacity
+                // b.material.transparent = true
+                // if (progress >= 1)
+                // {
+                try { b.material.dispose() } catch (e) { /* ignore */ }
+                bolts_ref.current.splice(i, 1)
+                set_tick(s => s + 1)
+                // }
             }
         }
 
