@@ -45,11 +45,11 @@ export const CONSTANTS = {
             DURATION_FADE_SIM_HOURS: 0.00,
             RISE_HEIGHT_FACTOR: 1.5,
             // The amount of GW hours to represent each lighting bolt.
-            GW_HOUR_CHUNKS: 0.2,
+            GW_HOUR_CHUNKS: 1,
             // Maximum time between lightning bolts, in simulation time
-            MAX_INTERVAL_SIM_HOURS: 1,
+            MAX_INTERVAL_SIM_HOURS: 4,
             // The smallest a lighting bolt can be scaled down to
-            MIN_LIGHTNING_BOLT_SCALE: 0.1,
+            MIN_LIGHTNING_BOLT_SCALE: 0.15,
         }
     },
 }

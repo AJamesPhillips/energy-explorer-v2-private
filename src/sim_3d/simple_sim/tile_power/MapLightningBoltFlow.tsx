@@ -45,7 +45,10 @@ export function MapLightningBoltFlow()
                 x={f.x}
                 y={f.y}
                 supply_gw={f.supply_gw}
-                demand_gw={f.demand_gw / 10}
+                // Do not show demand, instead we'll reserve the red lighting bolts
+                // for power shortage
+                // demand_gw={f.demand_gw}
+                demand_gw={0}
             />
         ))}
     </group>

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 // import { uk_month_hourly_and_location_average_capacity_factor_solar_generation_2018 } from "../data/power_generation/solar_pv"
 // import { uk_month_hourly_and_location_average_capacity_factor_wind_generation_2018 } from "../data/power_generation/wind_turbine"
 import { PerspectiveKnowledgeGraph } from "../../data/interface"
+import { get_app_state } from "../../state/store"
 import { Footer } from "./footer/Footer"
 import { InitialiseGeometriesEtc } from "./InitialiseGeometriesEtc"
 import { CellsData } from "./interface"
@@ -23,26 +24,27 @@ function convert_kwh_pd_pp_to_gw(args: { kwh_per_day_per_person: number, populat
 }
 
 
-export function SimpleSim(props: { persective: PerspectiveKnowledgeGraph | undefined, population: number | undefined })
+export function SimpleSim(props: { persective: PerspectiveKnowledgeGraph | undefined })
 {
     // const power_demand_series = useMemo(() => uk_daily_power_demand_profiles["2010"].average_demand.data, [])
 
     const [data, set_data] = useState<CellsData>(() => map_data_cells)
+    const population = get_app_state(state => state.data.population)
 
     useEffect(() =>
     {
-        if (!props.persective || !props.population) return
+        if (!props.persective || !population) return
 
         const { id, version } = props.persective.graph.apex_id
         const id_str = `${id}v${version}`
         const node = props.persective.graph.nodes[id_str]
         const computed_value = JSON.parse(node!.component.computed_value!)
         const kwh_per_day_per_person = computed_value.total_demand
-        const demand_gw = convert_kwh_pd_pp_to_gw({ kwh_per_day_per_person, population: props.population })
+        const demand_gw = convert_kwh_pd_pp_to_gw({ kwh_per_day_per_person, population })
 
         if (3 > Math.random()) return
         demand_gw
-    }, [props.persective?.graph, props.population])
+    }, [props.persective?.graph, population])
 
 
     return <>

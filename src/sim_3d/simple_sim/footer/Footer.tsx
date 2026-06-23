@@ -5,14 +5,18 @@ import { Link } from "../../../components/Link"
 import { InfoBoxSelectCountry } from "../../../components/SelectCountry"
 import { GitHubLogo, MagnifyingGlassIcon, MailIcon } from "../../../components/svgs"
 import { get_country_by_code } from "../../../data/countries"
+import { get_app_state } from "../../../state/store"
 import { is_narrow_screen } from "../../../utils/screen_type"
 import pub_sub from "../../state/pub_sub"
+import { DataPortal } from "../ui/DataPortal"
+import { Info } from "../ui/Info"
 import { CellInfo } from "./CellInfo"
 import "./Footer.css"
 
 
 export function Footer()
 {
+    const cell_info_will_render = get_app_state(state => !!state.view.h3r4_cell_info_open)
     const [view, set_view] = useState<false | "info" | "country_vote">(false)
 
     return <div id="app_footer">
@@ -22,7 +26,14 @@ export function Footer()
 
         {/* <ActionOptions /> */}
 
-        <div className="footer_row">
+        <div className={"footer_row " + (cell_info_will_render ? "closed" : "open")}>
+            <Info />
+        </div>
+        <div className={"footer_row " + (cell_info_will_render ? "closed" : "open")}>
+            <DataPortal />
+        </div>
+
+        <div className={"footer_row " + (cell_info_will_render ? "closed" : "open")}>
             <div className="ui_button" onClick={() => set_view("info")}>
                 {is_narrow_screen() ? <>❤️</> : <span>Subscribe <MailIcon style={{ height: 24 }} /> / Donate ❤️</span>}
             </div>

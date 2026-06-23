@@ -48,7 +48,6 @@ export function AggregatedPowerPlantLayer(props: AggregatedPowerPlantLayerProps)
         for (const [h3_id, data] of Object.entries(aggregated_data))
         {
             const aggregate = data[plant_key]
-            if (plant_key === "nuclear_plant" && h3_id === "8419557ffffffff") debugger
             if (aggregate.count === 0) continue
 
             const [lat, lon] = h3.cellToLatLng(h3_id)

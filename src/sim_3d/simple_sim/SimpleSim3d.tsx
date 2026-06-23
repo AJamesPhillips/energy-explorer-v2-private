@@ -5,6 +5,7 @@ import * as THREE from "three"
 // import uk_daily_power_demand_profiles from "../data/power_demand/uk/daily_profiles.json"
 // import { uk_month_hourly_and_location_average_capacity_factor_solar_generation_2018 } from "../data/power_generation/solar_pv"
 // import { uk_month_hourly_and_location_average_capacity_factor_wind_generation_2018 } from "../data/power_generation/wind_turbine"
+import { get_app_state } from "../../state/store"
 import { get_uk_land_coverage_by_h3r5, LandH3Cell } from "../data/coverage_land/uk/data"
 import { UK_EEZ_COORDS } from "../data/eez/data"
 import { CountryMap } from "../dev/CountryMap"
@@ -137,17 +138,20 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
     }, [])
 
 
+    const start_timestamp = get_app_state(state => state.game_datetime.start_timestamp)
+    const current_timestamp = get_app_state(state => state.game_datetime.initial_timestamp)
+    const end_timestamp = get_app_state(state => state.game_datetime.end_timestamp)
     useEffect(() =>
     {
         if (h3r5_land_cells.length === 0) return
 
         init_model_power_supply_updates(h3r5_land_cells)
         sim_clock.init({
-            start_timestamp: new Date("2026-06-01T00:00:00.000Z").getTime(),
-            current_timestamp: new Date("2026-06-01T09:00:00.000Z").getTime(),
-            end_timestamp: new Date("2026-06-15T00:00:00.000Z").getTime(),
+            start_timestamp,
+            current_timestamp,
+            end_timestamp,
         })
-    }, [h3r5_land_cells])
+    }, [h3r5_land_cells, start_timestamp, current_timestamp, end_timestamp])
     useFrame((state, delta) =>
     {
         const elapsed_seconds = state.clock.getElapsedTime()

@@ -21,3 +21,22 @@
     gap: 8px;
     justify-content: flex-end;
 }
+
+
+#app_footer .footer_row
+{
+    overflow-y: hidden;
+    transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out 0.4s, padding-top 0.4s ease-in-out, padding-bottom 0.4s ease-in-out;
+}
+#app_footer .footer_row.open
+{
+    max-height: 400px;
+    opacity: 1;
+}
+#app_footer .footer_row.closed
+{
+    max-height: 0px;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+}

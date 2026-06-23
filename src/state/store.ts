@@ -5,6 +5,7 @@ import { deep_copy } from "core/utils/deep_copy"
 import { deep_freeze } from "core/utils/deep_freeze"
 
 import * as building_action from "./building_action"
+import * as data from "./data"
 import * as game_datetime from "./game_datetime"
 import { AppState } from "./interface"
 import * as power_demand from "./power_demand"
@@ -20,11 +21,12 @@ export type AppStore = ReturnType<typeof get_new_app_store>
 // without affecting the global state.
 export const get_new_app_store = () =>
 {
-    const app_store = create<AppState>()(immer((set_state, _get_state) =>
+    const app_store = create<AppState>()(immer((set_state, get_state) =>
     {
         return {
-            game_datetime: game_datetime.initial_state(set_state),
             building_action: building_action.initial_state(set_state),
+            data: data.initial_state(set_state),
+            game_datetime: game_datetime.initial_state(set_state, get_state),
             power_demand: power_demand.initial_state(set_state),
             view: view.initial_state(set_state),
         }

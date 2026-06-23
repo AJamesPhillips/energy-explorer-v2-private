@@ -29,14 +29,15 @@ import { all_ids_to_fetch, oil_gas_id, population_id, solar_farms_id, wind_farms
 import { DataComponentExtended, PerspectiveKnowledgeGraph } from "./data/interface"
 import { GraphViewer } from "./graph/GraphViewer"
 import "./main.css"
-import { OilGasByYear, process_uk_oil_gas_data_component } from "./sim_3d/data/fossil_fuels/process_data_component"
-import { PopulationByYear, process_uk_population_data_component } from "./sim_3d/data/population/process_data_component"
-import { process_solar_farms_data_component, SolarFarmsByYear } from "./sim_3d/data/solar_pv_farms/process_data_component"
-import { process_wind_farms_data_component, WindFarmsByYear } from "./sim_3d/data/wind_farms/process_data_component"
+import { process_uk_oil_gas_data_component } from "./sim_3d/data/fossil_fuels/process_data_component"
+import { process_uk_population_data_component } from "./sim_3d/data/population/process_data_component"
+import { process_solar_farms_data_component } from "./sim_3d/data/solar_pv_farms/process_data_component"
+import { process_wind_farms_data_component } from "./sim_3d/data/wind_farms/process_data_component"
 import { DevView, show_dev_view } from "./sim_3d/dev/DevView"
 import { SimpleSim } from "./sim_3d/simple_sim/SimpleSim"
 import { SimLeftSideBar } from "./sim_3d/simple_sim/ui/SimLeftSideBar"
 import { SimRightSideBar } from "./sim_3d/simple_sim/ui/SimRightSideBar"
+import { get_app_state } from "./state/store"
 import { LilGui } from "./utils/LilGui"
 
 
@@ -88,40 +89,41 @@ function App ()
     const oil_gas_component = components_map_by_idv[oil_gas_id]
     const solar_farms_component = components_map_by_idv[solar_farms_id]
     const wind_farms_component = components_map_by_idv[wind_farms_id]
-    const { population_by_year, oil_gas_by_year, solar_farms_by_year, wind_farms_by_year } = useMemo(() =>
+    const set_data_blob1 = get_app_state(state => state.data.set_data)
+
+    useEffect(() =>
     {
-        let population_by_year: PopulationByYear | undefined = undefined
-        if (population_component)
-        {
-            population_by_year = process_uk_population_data_component(population_component)
-        }
+        if (!population_component) return
+        const population_by_year = process_uk_population_data_component(population_component)
+        set_data_blob1({ population_by_year })
+    }, [population_component, set_data_blob1])
 
-        let oil_gas_by_year: OilGasByYear | undefined = undefined
-        if (oil_gas_component)
-        {
-            oil_gas_by_year = process_uk_oil_gas_data_component(oil_gas_component)
-        }
+    useEffect(() =>
+    {
+        if (!oil_gas_component) return
+        const oil_gas_by_year = process_uk_oil_gas_data_component(oil_gas_component)
+        set_data_blob1({ oil_gas_by_year })
+    }, [oil_gas_component, set_data_blob1])
 
-        let solar_farms_by_year: SolarFarmsByYear | undefined = undefined
-        if (solar_farms_component)
-        {
-            solar_farms_by_year = process_solar_farms_data_component(solar_farms_component)
-        }
+    useEffect(() =>
+    {
+        if (!solar_farms_component) return
+        const solar_farms_by_year = process_solar_farms_data_component(solar_farms_component)
+        set_data_blob1({ solar_farms_by_year })
+    }, [solar_farms_component, set_data_blob1])
 
-        let wind_farms_by_year: WindFarmsByYear | undefined = undefined
-        if (wind_farms_component)
-        {
-            wind_farms_by_year = process_wind_farms_data_component(wind_farms_component)
-        }
+    useEffect(() =>
+    {
+        if (!wind_farms_component) return
+        const wind_farms_by_year = process_wind_farms_data_component(wind_farms_component)
+        set_data_blob1({ wind_farms_by_year })
+    }, [wind_farms_component, set_data_blob1])
 
-        return { population_by_year, oil_gas_by_year, solar_farms_by_year, wind_farms_by_year }
-    }, [population_component, oil_gas_component, solar_farms_component, wind_farms_component])
-
-
-    const [year, _set_year] = useState(2026)
-    const [population, set_population] = useState<number | undefined>(undefined)
 
     // Ensure population is set when population_by_year is loaded or year changes
+    const year = get_app_state(state => state.game_datetime.get_year())
+    const population_by_year = get_app_state(state => state.data.population_by_year)
+    const set_population = get_app_state(state => state.data.set_population)
     useEffect(() =>
     {
         if (!population_by_year) return
@@ -205,16 +207,7 @@ function App ()
                         {sim_or_dt && <SimLeftSideBar />}
                     </div>
                     <div id="app_top_bar_side">
-                        {sim_or_dt && <SimRightSideBar
-                            year={year}
-                            population_by_year={population_by_year}
-                            population={population}
-                            set_population={set_population}
-
-                            oil_gas_by_year={oil_gas_by_year}
-                            solar_farms_by_year={solar_farms_by_year}
-                            wind_farms_by_year={wind_farms_by_year}
-                        />}
+                        {sim_or_dt && <SimRightSideBar />}
                         {!sim_or_dt && <SelectPerspective
                             force_single={sim_or_dt}
                             selected_perspectives={selected_perspectives}
@@ -240,7 +233,7 @@ function App ()
         InfoBox(es) will not hide the footer buttons like Subscribe, Donate etc.
         Not sure how to fix this yet */}
         {/* {sim_or_dt && <Sim3d view={view} persective={persectives[0]} population={population} />} */}
-        {sim_or_dt && <SimpleSim persective={persectives[0]} population={population} />}
+        {sim_or_dt && <SimpleSim persective={persectives[0]} />}
     </>
 }
 

@@ -178,7 +178,7 @@ export function Info()
                     <p>
                         It's dedicated to the
                         memory of Professor David MacKay, who inspired so many of us.  And given
-                        with thanks to all our teachers, mentors and supporters.
+                        with thanks to all our teachers, friends and supporters.
                     </p>
                 </div>
                 </>

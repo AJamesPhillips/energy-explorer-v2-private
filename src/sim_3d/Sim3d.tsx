@@ -5,13 +5,12 @@ import { SimpleSim } from "./simple_sim/SimpleSim"
 
 
 
-export function Sim3d (props: { view: LimitedViewType, persective: PerspectiveKnowledgeGraph | undefined, population: number | undefined })
+export function Sim3d (props: { view: LimitedViewType, persective: PerspectiveKnowledgeGraph | undefined })
 {
     return <>
         {props.view === "digital_twin" && <DigitalTwin />}
         {props.view === "simulation" && <SimpleSim
             persective={props.persective}
-            population={props.population}
         />}
         {/* <GUI view={props.view} /> */}
     </>
