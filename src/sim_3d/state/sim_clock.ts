@@ -5,7 +5,14 @@ import pub_sub from "../state/pub_sub"
 
 const BASE_SPEED = 3600 / 5
 const NORMAL_SPEED_FACTOR = 1
-const FAST_SPEED_FACTOR = 50
+const FAST_SPEED_FACTOR = 10
+const VFAST_SPEED_FACTOR = 50
+export function get_speed_factor(speed: GameSpeed): number
+{
+    return speed === "paused" ? 0
+        : speed === "normal" ? NORMAL_SPEED_FACTOR
+        : speed === "fast" ? FAST_SPEED_FACTOR : VFAST_SPEED_FACTOR
+}
 
 let sim_seconds_per_real_second: number
 let last_real = 0
@@ -26,7 +33,7 @@ export function init(opts: { start_timestamp: number, current_timestamp: number,
 export function set_speed(new_speed: GameSpeed)
 {
     const original_sim_seconds_per_real_second = sim_seconds_per_real_second
-    const speed_factor = new_speed === "paused" ? 0 : new_speed === "normal" ? NORMAL_SPEED_FACTOR : FAST_SPEED_FACTOR
+    const speed_factor = get_speed_factor(new_speed)
     sim_seconds_per_real_second = BASE_SPEED * speed_factor
     if (new_speed !== "paused" && start_timestamp) loop()
 

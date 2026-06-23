@@ -1,3 +1,4 @@
+import { GameSpeed } from "../../../state/game_datetime/interface"
 import type { XY } from "../../dev/projection"
 import type { DemandByH3R4Cell, MWGenCapStoreForH3R4, ValueByPowerType } from "../../model/interface"
 import type { H3R4ID } from "../../simple_sim/interface"
@@ -28,7 +29,7 @@ export interface PublishableEvents
         datetime_annual_hourly_index_mix: number
     }
     simulation_speed_changed: {
-        speed: "paused" | "normal" | "fast"
+        speed: GameSpeed
         factor: number
         sim_seconds_per_real_second: number
     }

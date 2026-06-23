@@ -1,5 +1,5 @@
 
-export type GameSpeed = "paused" | "normal" | "fast"
+export type GameSpeed = "paused" | "normal" | "fast" | "vfast"
 
 export interface GameDatetimeState
 {

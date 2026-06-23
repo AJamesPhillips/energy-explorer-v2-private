@@ -58,28 +58,35 @@ function SpeedControl()
             {play_svg}
         </div>
         <div
-            className={"ui_button " + (speed === "fast" ? "active" : "")}
+            className={"ui_button " + ((speed === "fast" || speed === "vfast") ? "active" : "")}
             style={speed_button_style}
-            onClick={() => set_speed("fast")}
+            onClick={() => set_speed(speed === "fast" ? "vfast" : "fast")}
         >
-            {fast_play_svg}
+            {speed === "fast" ? vfast_play_svg : fast_play_svg}
         </div>
     </div>
 }
 
 const pause_svg = <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-	<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-	<path d="M9 4h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h2a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2z" />
-	<path d="M17 4h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h2a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2z" />
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M9 4h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h2a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2z" />
+    <path d="M17 4h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h2a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2z" />
 </svg>
 
 const play_svg = <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-	<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-	<path d="M6 4v16a1 1 0 0 0 1.524 .852l13 -8a1 1 0 0 0 0 -1.704l-13 -8a1 1 0 0 0 -1.524 .852z" />
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M6 4v16a1 1 0 0 0 1.524 .852l13 -8a1 1 0 0 0 0 -1.704l-13 -8a1 1 0 0 0 -1.524 .852z" />
 </svg>
 
 const fast_play_svg = <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-	<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-	<path d="M2 5v14c0 .86 1.012 1.318 1.659 .753l8 -7a1 1 0 0 0 0 -1.506l-8 -7c-.647 -.565 -1.659 -.106 -1.659 .753z" />
-	<path d="M13 5v14c0 .86 1.012 1.318 1.659 .753l8 -7a1 1 0 0 0 0 -1.506l-8 -7c-.647 -.565 -1.659 -.106 -1.659 .753z" />
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M2 5v14c0 .86 1.012 1.318 1.659 .753l8 -7a1 1 0 0 0 0 -1.506l-8 -7c-.647 -.565 -1.659 -.106 -1.659 .753z" />
+    <path d="M13 5v14c0 .86 1.012 1.318 1.659 .753l8 -7a1 1 0 0 0 0 -1.506l-8 -7c-.647 -.565 -1.659 -.106 -1.659 .753z" />
+</svg>
+
+const vfast_play_svg = <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M2 5v14c0 .86 .708 1.318 1.161 .753l5.6 -7a1 1 0 0 0 0 -1.506l-5.6 -7c-.453 -.565 -1.161 -.106 -1.161 .753z" />
+    <path d="M9 5v14c0 .86 .708 1.318 1.161 .753l5.6 -7a1 1 0 0 0 0 -1.506l-5.6 -7c-.453 -.565 -1.161 -.106 -1.161 .753z" />
+    <path d="M16 5v14c0 .86 .708 1.318 1.161 .753l5.6 -7a1 1 0 0 0 0 -1.506l-5.6 -7c-.453 -.565 -1.161 -.106 -1.161 .753z" />
 </svg>
