@@ -76,10 +76,10 @@ function OilAndGasPocket({ x, y, depth, ratio_remaining, cell_size }: OilAndGasP
 
     useEffect(() =>
     {
-        return pub_sub.sub("on_highlight_oil_reserves", _highlighted =>
-        {
-            // set_highlighted_pocket(highlighted)
-        })
+        // return pub_sub.sub("on_highlight_oil_reserves", _highlighted =>
+        // {
+        //     // set_highlighted_pocket(highlighted)
+        // })
     }, [])
 
 

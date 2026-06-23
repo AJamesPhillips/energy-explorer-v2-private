@@ -17,7 +17,7 @@ export function initial_state(set_state: SetAppState): ViewState
 
     pub_sub.sub("on_click_tile", payload =>
     {
-        set_cell_info_open(payload.h3_id)
+        set_cell_info_open(payload.h3r4_id)
     })
 
     return {

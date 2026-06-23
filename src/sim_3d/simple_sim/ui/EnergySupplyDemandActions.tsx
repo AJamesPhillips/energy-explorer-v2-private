@@ -239,15 +239,15 @@ function get_initial_power()
 
 function BuildButton(props: { type: PowerType })
 {
-    return null
+    const current_action = get_app_state(state => state.building_action.active)
+    const set_building_action = get_app_state(state => state.building_action.set_building_action)
+    const is_current_action = current_action && current_action?.type === props.type
 
     return <button
-        className="ui_button"
+        className={"ui_button " + (is_current_action ? "active" : "")}
         onClick={() =>
         {
-            get_app_state(s => s.building_action.set_building_action({
-                type: props.type
-            }))
+            set_building_action(is_current_action ? false : { type: props.type })
         }}
     >
         Build

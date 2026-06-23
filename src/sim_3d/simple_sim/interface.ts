@@ -1,9 +1,12 @@
 import { LandOrSea } from "../data/coverage_land/uk/data"
 
 
-export type CellDataV2 =
+export interface H3R4ID
 {
-    h3_id: string
+    h3r4_id: string
+}
+export interface CellDataV2 extends H3R4ID
+{
     // x: number
     // y: number
     // has_wind_turbine: boolean

@@ -29,7 +29,7 @@ function HighlightedCell()
         {
             if (!cell) return
 
-            const geometries = cell_to_geometries(cell.h3_id, CONSTANTS.Z_DGG_CELL_HIGHLIGHT_THICKNESS)
+            const geometries = cell_to_geometries(cell.h3r4_id, CONSTANTS.Z_DGG_CELL_HIGHLIGHT_THICKNESS)
             if (!geometries) return
             set_highlighted_cell(geometries.outline)
         })

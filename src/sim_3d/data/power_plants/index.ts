@@ -49,6 +49,35 @@ export function map_power_plants_by_h3_cell(plants: PowerPlant[]): Record<string
 }
 
 
+export function empty_aggregated_power_plant_data(
+    h3r4_id: string,
+    wind_capacity_factor: CapacityFactorData,
+    solar_pv_capacity_factor: CapacityFactorData,
+): AggregatedPowerPlantData
+{
+    const lat_lon = latlon_tuple_to_obj(cellToLatLng(h3r4_id))
+    const projection = get_projection()
+    const xy = projection(lat_lon)
+    if (!xy) throw new Error(`Failed to project lat/lon for h3_id ${h3r4_id}`)
+
+    const h3_index_wind = wind_capacity_factor.h3_cell_id_to_index.get(h3r4_id)
+    if (h3_index_wind === undefined) throw new Error(`H3 cell ID ${h3r4_id} not found in wind capacity factor data`)
+    const h3_index_solar = solar_pv_capacity_factor.h3_cell_id_to_index.get(h3r4_id)
+
+    const data: AggregatedPowerPlantData = {
+        wind:     { h3_id: h3r4_id, lat_lon, xy, count: 0, starting_capacity_MW: 0, capacity_MW: 0, starting_area_km2: 0, area_km2: 0, h3_capacity_factor_index: h3_index_wind },
+        solar:    { h3_id: h3r4_id, lat_lon, xy, count: 0, starting_capacity_MW: 0, capacity_MW: 0, starting_area_km2: 0, area_km2: 0, h3_capacity_factor_index: h3_index_solar },
+        gas:     { h3_id: h3r4_id, lat_lon, xy, count: 0, starting_capacity_MW: 0, capacity_MW: 0 },
+        nuclear: { h3_id: h3r4_id, lat_lon, xy, count: 0, starting_capacity_MW: 0, capacity_MW: 0 },
+        battery: { h3_id: h3r4_id, lat_lon, xy, count: 0, starting_capacity_MW: 0, capacity_MW: 0, storage_MWH: 0 },
+        hydro_pumped_storage: { h3_id: h3r4_id, lat_lon, xy, count: 0, starting_capacity_MW: 0, capacity_MW: 0, storage_MWH: 0 },
+        hydro_river: { h3_id: h3r4_id, lat_lon, xy, count: 0, starting_capacity_MW: 0, capacity_MW: 0 },
+    }
+
+    return data
+}
+
+
 export function aggregate_power_plants_by_h3_cell(
     plants_by_cell: Record<string, PowerPlant[]>,
     wind_capacity_factor: CapacityFactorData,
@@ -56,27 +85,10 @@ export function aggregate_power_plants_by_h3_cell(
 ): Record<string, AggregatedPowerPlantData>
 {
     const aggregated: Record<string, AggregatedPowerPlantData> = {}
-    const projection = get_projection()
 
-    for (const [h3_id, plants] of Object.entries(plants_by_cell))
+    for (const [h3r4_id, plants] of Object.entries(plants_by_cell))
     {
-        const h3_index_wind = wind_capacity_factor.h3_cell_id_to_index.get(h3_id)
-        if (h3_index_wind === undefined) throw new Error(`H3 cell ID ${h3_id} not found in wind capacity factor data`)
-        const h3_index_solar = solar_pv_capacity_factor.h3_cell_id_to_index.get(h3_id)
-
-        const lat_lon = latlon_tuple_to_obj(cellToLatLng(h3_id))
-        const xy = projection(lat_lon)
-        if (!xy) throw new Error(`Failed to project lat/lon for h3_id ${h3_id}`)
-
-        const data: AggregatedPowerPlantData = {
-            wind_farm:     { h3_id, lat_lon, xy, count: 0, capacity_MW: 0, area_km2: 0, h3_capacity_factor_index: h3_index_wind },
-            solar_farm:    { h3_id, lat_lon, xy, count: 0, capacity_MW: 0, area_km2: 0, h3_capacity_factor_index: h3_index_solar },
-            gas_plant:     { h3_id, lat_lon, xy, count: 0, capacity_MW: 0 },
-            nuclear_plant: { h3_id, lat_lon, xy, count: 0, capacity_MW: 0 },
-            battery_plant: { h3_id, lat_lon, xy, count: 0, capacity_MW: 0, storage_MWH: 0 },
-            hydro_pumped_plant: { h3_id, lat_lon, xy, count: 0, capacity_MW: 0, storage_MWH: 0 },
-            hydro_river_plant: { h3_id, lat_lon, xy, count: 0, capacity_MW: 0 },
-        }
+        const data = empty_aggregated_power_plant_data(h3r4_id, wind_capacity_factor, solar_pv_capacity_factor)
 
         const active_plants = get_active_power_plants(plants, 2026)
 
@@ -86,51 +98,60 @@ export function aggregate_power_plants_by_h3_cell(
 
             if (plant.type === "wind_farm")
             {
-                data.wind_farm.count++
-                data.wind_farm.capacity_MW += capacity
-                data.wind_farm.area_km2! += plant.area_km2
+                data.wind.count++
+                data.wind.starting_capacity_MW += capacity
+                data.wind.capacity_MW += capacity
+                data.wind.starting_area_km2! += plant.area_km2
+                data.wind.area_km2! += plant.area_km2
             }
             else if (plant.type === "solar_farm")
             {
-                data.solar_farm.count++
-                data.solar_farm.capacity_MW += capacity
-                data.solar_farm.area_km2! += plant.area_km2
+                data.solar.count++
+                data.solar.starting_capacity_MW += capacity
+                data.solar.capacity_MW += capacity
+                data.solar.starting_area_km2! += plant.area_km2
+                data.solar.area_km2! += plant.area_km2
             }
             else if (plant.type === "gas")
             {
-                data.gas_plant.count++
-                data.gas_plant.capacity_MW += capacity
+                data.gas.count++
+                data.gas.starting_capacity_MW += capacity
+                data.gas.capacity_MW += capacity
             }
             else if (plant.type === "nuclear")
             {
-                data.nuclear_plant.count++
-                data.nuclear_plant.capacity_MW += capacity
+                data.nuclear.count++
+                data.nuclear.starting_capacity_MW += capacity
+                data.nuclear.capacity_MW += capacity
             }
             else if (plant.type === "battery")
             {
-                data.battery_plant.count++
-                data.battery_plant.capacity_MW += capacity
-                data.battery_plant.storage_MWH! += plant.storage_MWH
+                data.battery.count++
+                data.battery.starting_capacity_MW += capacity
+                data.battery.capacity_MW += capacity
+                data.battery.storage_MWH! += plant.storage_MWH
             }
             else if (plant.type === "hydro")
             {
                 if (plant.storage_MWH && plant.storage_MWH > 0)
                 {
-                    data.hydro_pumped_plant.count++
-                    data.hydro_pumped_plant.capacity_MW += capacity
-                    data.hydro_pumped_plant.storage_MWH! += plant.storage_MWH
+                    data.hydro_pumped_storage.count++
+                    data.hydro_pumped_storage.starting_capacity_MW += capacity
+                    data.hydro_pumped_storage.capacity_MW += capacity
+                    data.hydro_pumped_storage.storage_MWH! += plant.storage_MWH
                 }
                 else
                 {
-                    data.hydro_river_plant.count++
-                    data.hydro_river_plant.capacity_MW += capacity
+                    data.hydro_river.count++
+                    data.hydro_river.starting_capacity_MW += capacity
+                    data.hydro_river.capacity_MW += capacity
                 }
             }
             // @ts-expect-error
             else console.error(`Unknown plant type: ${plant.type}`)
         })
 
-        aggregated[h3_id] = data
+        aggregated[h3r4_id] = data
     }
 
     return aggregated

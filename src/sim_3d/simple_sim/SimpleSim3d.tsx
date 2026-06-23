@@ -1,13 +1,19 @@
 import { useFrame, useThree } from "@react-three/fiber"
+import { cellArea, UNITS } from "h3-js"
 import { useEffect, useState } from "react"
 import * as THREE from "three"
 
 // import uk_daily_power_demand_profiles from "../data/power_demand/uk/daily_profiles.json"
 // import { uk_month_hourly_and_location_average_capacity_factor_solar_generation_2018 } from "../data/power_generation/solar_pv"
 // import { uk_month_hourly_and_location_average_capacity_factor_wind_generation_2018 } from "../data/power_generation/wind_turbine"
-import { get_app_state } from "../../state/store"
+import { BuildingActionType } from "../../state/building_action/interface"
+import { BuildAction } from "../../state/power_plants/interface"
+import { get_app_state, hacky_get_state } from "../../state/store"
 import { get_uk_land_coverage_by_h3r5, LandH3Cell } from "../data/coverage_land/uk/data"
 import { UK_EEZ_COORDS } from "../data/eez/data"
+import { empty_aggregated_power_plant_data } from "../data/power_plants"
+import { AggregatedPowerPlantData } from "../data/power_plants/interface"
+import { promise_load_all_capacity_factor_data } from "../data/wind_and_solar_capacity/load_data"
 import { CountryMap } from "../dev/CountryMap"
 import { H3Grid } from "../dev/dgg/H3Grid"
 import { H3LandCells } from "../dev/dgg/H3LandCells"
@@ -18,7 +24,7 @@ import { init_model_power_supply_updates } from "../model"
 import pub_sub from "../state/pub_sub"
 import { sim_clock } from "../state/sim_clock"
 import { CONSTANTS, DEFAULTS } from "./constants"
-import { CellsData } from "./interface"
+import { CellsData, H3R4ID } from "./interface"
 import { IsoCamera } from "./IsoCamera"
 import { H3ElectricalGrid } from "./map_components/H3ElectricalGrid"
 import { H3GasGrid } from "./map_components/H3GasGrid"
@@ -65,13 +71,26 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
     })
 
 
-    const current_action = get_app_state(state => state.building_action.active)
+    const request_build_type = get_app_state(state => state.building_action.active)
+    const update_build_action = get_app_state(state => state.power_plants.update_build_action)
 
     useEffect(() =>
     {
-        pub_sub.sub("on_click_tile", payload =>
+        if (!request_build_type) return
+
+        return pub_sub.sub("on_click_tile", async (payload) =>
         {
-            payload.h3_id
+            const cell_info = await get_cell_info_for_h3r4(payload.h3r4_id)
+            if (!cell_info) return
+            const build_action = make_build_action(request_build_type, cell_info)
+            if (!build_action) return
+            if (build_action.invalid_because)
+            {
+                console.warn(`Invalid action ${request_build_type.type} on cell ${payload.h3r4_id}: ${build_action.invalid_because}`)
+                return
+            }
+
+            update_build_action(build_action)
 
             // const new_candidate_tile = modify_cell_with_action(cell, current_action)
             // const cell_valid = is_cell_valid(new_candidate_tile)
@@ -103,7 +122,7 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
 
             // return new_cells
         })
-    }, [current_action])
+    }, [request_build_type])
 
     // const on_hover_tile = useCallback((tile: CellData | null) =>
     // {
@@ -233,72 +252,89 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
 // }
 
 
-// function is_cell_valid(cell: CellData): true | { invalid_because: "water" | "no_oilgas" }
-// {
-//     if (cell.has_wind_turbine)
-//     {
-//         if (cell.type === "sea")
-//         {
-//             if (cell.subtype === "deep") return { invalid_because: "water" }
-//         }
-//         else
-//         {
-//             if (cell.subtype === "wetland" || cell.subtype === "inland_water") return { invalid_because: "water" }
-//         }
-//     }
+interface CellInfo extends H3R4ID
+{
+    cell_area_km2: number
+    aggregated: AggregatedPowerPlantData
+}
 
-//     if (cell.has_solar_farm)
-//     {
-//         if (cell.type === "sea") return { invalid_because: "water" }
-//         else
-//         {
-//             if (cell.subtype === "wetland" || cell.subtype === "inland_water") return { invalid_because: "water" }
-//         }
-//     }
+async function get_cell_info_for_h3r4(h3r4_id: string): Promise<CellInfo | undefined>
+{
+    const aggregated_by_h3r4 = hacky_get_state()?.power_plants.aggregated_by_h3r4
+    if (!aggregated_by_h3r4)
+    {
+        console.error("No aggregated power plant data available")
+        return
+    }
 
-//     if (cell.has_oil_rig)
-//     {
-//         if (cell.type !== "sea" || !cell.has_oil_pocket) return { invalid_because: "no_oilgas" }
-//     }
+    const { wind: wind_capacity_factor, solar: solar_pv_capacity_factor } = await promise_load_all_capacity_factor_data()
 
-//     return true
-// }
+    const aggregated = aggregated_by_h3r4[h3r4_id] || empty_aggregated_power_plant_data(h3r4_id, wind_capacity_factor, solar_pv_capacity_factor)
+    if (!aggregated)
+    {
+        console.error(`No aggregated power plant data for h3r4_id ${h3r4_id}`)
+        return
+    }
+
+    const cell_area_km2 = cellArea(h3r4_id, UNITS.km2)
+
+    return {
+        h3r4_id,
+        cell_area_km2,
+        aggregated,
+    }
+}
 
 
-// function calculate_power_supply_from_data(data: CellsData): number
-// {
-//     let supply_gw = 0
+type BuildActionOrFail = (BuildAction & { invalid_because?: never }) | {
+    h3r4_id: string
+    area_addable_km2?: never
+    invalid_because: "water" | "no_oilgas"
+}
+function make_build_action(action: BuildingActionType, cell_info: CellInfo): BuildActionOrFail | undefined
+{
+    const power_type = action.type
+    const { h3r4_id } = cell_info
 
-//     Object.values(data).forEach(column =>
-//     {
-//         Object.values(column).forEach(cell_ =>
-//         {
-//             const cell = cell_ as CellDataV1
+    if (power_type === "wind" || power_type === "solar")
+    {
+        const current_area = cell_info.aggregated[power_type].area_km2
+        if (current_area === undefined) return undefined
+        return {
+            h3r4_id,
+            power_type,
+            area_addable_km2: cell_info.cell_area_km2 - current_area,
+            aggregated: cell_info.aggregated,
+        }
+    }
 
-//             if (cell.type === "sea" && cell.has_wind_turbine)
-//             {
-//                 supply_gw += w_per_m2_to_gw_per_cell(offshore_wind_turbines_w_per_m2)
-//             }
-//             else if (cell.type === "land")
-//             {
-//                 if (cell.has_wind_turbine)
-//                 {
-//                     supply_gw += w_per_m2_to_gw_per_cell(land_wind_turbines_w_per_m2)
-//                 }
-//                 if (cell.has_solar_farm)
-//                 {
-//                     if (cell.subtype === "suburban" || cell.subtype === "urban")
-//                     {
-//                         supply_gw += w_per_m2_to_gw_per_cell(solar_built_area_w_per_m2)
-//                     }
-//                     else
-//                     {
-//                         supply_gw += w_per_m2_to_gw_per_cell(solar_farm_w_per_m2)
-//                     }
-//                 }
-//             }
-//         })
-//     })
+    console.warn(`make_build_action not implemented for action type ${action.type}`)
 
-//     return supply_gw
-// }
+    // if (cell.h3r4_id)
+    // {
+    //     if (cell.type === "sea")
+    //     {
+    //         if (cell.subtype === "deep") return { invalid_because: "water" }
+    //     }
+    //     else
+    //     {
+    //         if (cell.subtype === "wetland" || cell.subtype === "inland_water") return { invalid_because: "water" }
+    //     }
+    // }
+
+    // if (cell.has_solar_farm)
+    // {
+    //     if (cell.type === "sea") return { invalid_because: "water" }
+    //     else
+    //     {
+    //         if (cell.subtype === "wetland" || cell.subtype === "inland_water") return { invalid_because: "water" }
+    //     }
+    // }
+
+    // if (cell.has_oil_rig)
+    // {
+    //     if (cell.type !== "sea" || !cell.has_oil_pocket) return { invalid_because: "no_oilgas" }
+    // }
+
+    return undefined
+}

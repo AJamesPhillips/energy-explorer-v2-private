@@ -5,6 +5,7 @@ import { get_app_state } from "../../state/store"
 import { NuclearPlants } from "../3d_models/NuclearPlant"
 import { SolarFarms } from "../3d_models/SolarFarm"
 import { WindTurbineFarms } from "../3d_models/WindTurbine"
+import { initial_power_plants_data } from "../data/power_plants"
 import { AggregatedPowerPlantLayer } from "./AggregatedPowerPlantLayer"
 import { get_projection, XY } from "./projection"
 
@@ -14,7 +15,7 @@ export function PowerPlantsCurrent({ show_aggregated }: { show_aggregated: boole
 {
     if (show_aggregated) return <PowerPlantsCurrentAggregated />
 
-    const power_plants_data = get_app_state(state => state.power_plants.all)
+    const power_plants_data = initial_power_plants_data // get_app_state(state => state.power_plants.all)
 
     const {
         wind_farm_tiles,
@@ -61,7 +62,7 @@ export function PowerPlantsCurrentAggregated()
     return <>
         <AggregatedPowerPlantLayer
             aggregated_data={aggregated_power_plants_by_h3r4_cell}
-            plant_key="wind_farm"
+            plant_key="wind"
             fill_color={0x1f6dff}
             outline_color={0x0f3fb2}
             opacity={0.45}
@@ -70,7 +71,7 @@ export function PowerPlantsCurrentAggregated()
         />
         <AggregatedPowerPlantLayer
             aggregated_data={aggregated_power_plants_by_h3r4_cell}
-            plant_key="solar_farm"
+            plant_key="solar"
             fill_color={0xf2b705}
             outline_color={0xc78b00}
             opacity={0.4}
@@ -79,7 +80,7 @@ export function PowerPlantsCurrentAggregated()
         />
         <AggregatedPowerPlantLayer
             aggregated_data={aggregated_power_plants_by_h3r4_cell}
-            plant_key="nuclear_plant"
+            plant_key="nuclear"
             fill_color={0xf2b705}
             outline_color={0xc78b00}
             opacity={0.4}

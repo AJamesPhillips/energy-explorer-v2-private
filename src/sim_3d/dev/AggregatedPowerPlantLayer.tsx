@@ -4,16 +4,16 @@ import * as THREE from "three"
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
 
 import { AggregatedPowerPlantData } from "../data/power_plants/interface"
+import { PowerType } from "../model/interface"
 import { clamp } from "../utils/clamp"
 import { get_projection, points_to_geometries, XY } from "./projection"
 
 
-type AggregatedPlantKey = "wind_farm" | "solar_farm" | "nuclear_plant"
 
 interface AggregatedPowerPlantLayerProps
 {
     aggregated_data: Record<string, AggregatedPowerPlantData>
-    plant_key: AggregatedPlantKey
+    plant_key: PowerType & ("wind" | "solar" | "nuclear")
     fill_color: number
     outline_color: number
     opacity: number
@@ -45,25 +45,25 @@ export function AggregatedPowerPlantLayer(props: AggregatedPowerPlantLayerProps)
         const fill_geometries: THREE.BufferGeometry[] = []
         const outline_geometries: THREE.BufferGeometry[] = []
 
-        for (const [h3_id, data] of Object.entries(aggregated_data))
+        for (const [h3r4_id, data] of Object.entries(aggregated_data))
         {
             const aggregate = data[plant_key]
             if (aggregate.count === 0) continue
 
-            const [lat, lon] = h3.cellToLatLng(h3_id)
+            const [lat, lon] = h3.cellToLatLng(h3r4_id)
             const center = projection({ lat, lon })
             if (!center) continue
 
-            const cell_area_km2 = h3.cellArea(h3_id, h3.UNITS.km2)
+            const cell_area_km2 = h3.cellArea(h3r4_id, h3.UNITS.km2)
             const plant_area_km2 = aggregate.area_km2 ?? 0
             const area_ratio = clamp(plant_area_km2 / cell_area_km2)
             if (min_area_ratio !== undefined && area_ratio < min_area_ratio) continue
 
-            tiles.push({ ...center, h3r4_id: h3_id })
+            tiles.push({ ...center, h3r4_id })
 
             if (area_ratio === 0) continue
 
-            const boundary = h3.cellToBoundary(h3_id, false)
+            const boundary = h3.cellToBoundary(h3r4_id, false)
             const boundary_points = boundary
                 .map(([boundary_lat, boundary_lon]) => projection({ lat: boundary_lat, lon: boundary_lon }))
                 .filter((point): point is XY => point !== null)

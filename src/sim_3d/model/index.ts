@@ -55,13 +55,13 @@ function get_gen_cap_store_MW_by_h3r4_cell(
 
     for (const [h3_id, data] of Object.entries(aggregated_power_plants_by_h3r4_cell))
     {
-        const wind_capacity_MW = data.wind_farm.capacity_MW ?? 0
-        const solar_capacity_MW = data.solar_farm.capacity_MW ?? 0
-        const gas_capacity_MW = data.gas_plant.capacity_MW ?? 0
-        const hydro_river_capacity_MW = data.hydro_river_plant.capacity_MW ?? 0
-        const nuclear_capacity_MW = data.nuclear_plant.capacity_MW ?? 0
-        const battery_capacity_MW = data.battery_plant.capacity_MW ?? 0
-        const hydro_pumped_storage_capacity_MW = data.hydro_pumped_plant.capacity_MW ?? 0
+        const wind_capacity_MW = data.wind.capacity_MW ?? 0
+        const solar_capacity_MW = data.solar.capacity_MW ?? 0
+        const gas_capacity_MW = data.gas.capacity_MW ?? 0
+        const hydro_river_capacity_MW = data.hydro_river.capacity_MW ?? 0
+        const nuclear_capacity_MW = data.nuclear.capacity_MW ?? 0
+        const battery_capacity_MW = data.battery.capacity_MW ?? 0
+        const hydro_pumped_storage_capacity_MW = data.hydro_pumped_storage.capacity_MW ?? 0
 
         const cf_wind = get_capacity_factor_mix(wind_cf, datetime_index1, datetime_index2, mix, h3_id) ?? 0
         const cf_solar = get_capacity_factor_mix(solar_cf, datetime_index1, datetime_index2, mix, h3_id) ?? 0

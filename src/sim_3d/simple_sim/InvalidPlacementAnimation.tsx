@@ -6,7 +6,7 @@ import { BuildingActionTypeString } from "../../state/building_action/interface"
 import { asset_url } from "../../utils/asset_url"
 import { SolarFarmPanels } from "../3d_models/SolarFarm"
 import { WindTurbine } from "../3d_models/WindTurbine"
-import pub_sub from "../state/pub_sub"
+// import pub_sub from "../state/pub_sub"
 import { CellDataV1 } from "./interface"
 
 const bubbles_audio_url = asset_url("/audio/bubbles.mp3")
@@ -25,11 +25,12 @@ export function InvalidPlacementAnimations({ cell_size }: { cell_size: number })
 {
     const [entries, set_entries] = useState<SinkingEntry[]>([])
 
-    useEffect(() => pub_sub.sub("invalid_placement", ({ tile: _tile, item_type: _item_type, invalid_because }) =>
-    {
-        // set_entries(prev => [...prev, { id: next_id++, tile, item_type }])
-        if (invalid_because === "water") play_bubbling_sound()
-    }), [])
+    // useEffect(() => pub_sub.sub("invalid_placement", ({ tile: _tile, item_type: _item_type, invalid_because }) =>
+    // {
+    //     // set_entries(prev => [...prev, { id: next_id++, tile, item_type }])
+    //     if (invalid_because === "water") play_bubbling_sound()
+    // }), [])
+    play_bubbling_sound
 
     // Preload the audio buffer on mount for Web Audio API
     useEffect(load_bubbling_sound, [])

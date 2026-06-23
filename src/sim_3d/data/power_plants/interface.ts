@@ -1,6 +1,7 @@
 import type { ILatLon } from "core/data/values/LatLon"
 
 import type { XY } from "../../dev/projection"
+import { ValueByPowerType } from "../../model/interface"
 
 
 export type RawBatteryPlantData = [number, number, number, number]
@@ -60,18 +61,21 @@ interface AggregatePowerPlantData
     lat_lon: ILatLon
     xy: XY
     count: number
+    starting_capacity_MW: number
     capacity_MW: number
     storage_MWH?: number
+    starting_area_km2?: number
     area_km2?: number
 }
-export interface AggregatedPowerPlantData
-{
-    wind_farm: AggregatePowerPlantData
-    solar_farm: AggregatePowerPlantData
-    gas_plant: AggregatePowerPlantData
-    nuclear_plant: AggregatePowerPlantData
-    battery_plant: AggregatePowerPlantData
-    hydro_pumped_plant: AggregatePowerPlantData
-    // Run of river hydro plants (no storage)
-    hydro_river_plant: AggregatePowerPlantData
-}
+export type AggregatedPowerPlantData = ValueByPowerType<AggregatePowerPlantData>
+//  & {
+// {
+//     wind_farm: AggregatePowerPlantData
+//     solar_farm: AggregatePowerPlantData
+//     gas_plant: AggregatePowerPlantData
+//     nuclear_plant: AggregatePowerPlantData
+//     battery_plant: AggregatePowerPlantData
+//     hydro_pumped_plant: AggregatePowerPlantData
+//     // Run of river hydro plants (no storage)
+//     hydro_river_plant: AggregatePowerPlantData
+// }

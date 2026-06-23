@@ -1,7 +1,6 @@
-import type { BuildingActionTypeString } from "../../../state/building_action/interface"
 import type { XY } from "../../dev/projection"
 import type { DemandByH3R4Cell, MWGenCapStoreForH3R4, ValueByPowerType } from "../../model/interface"
-import type { CellDataV2 } from "../../simple_sim/interface"
+import type { H3R4ID } from "../../simple_sim/interface"
 
 
 export type InfoSectionId =
@@ -55,14 +54,14 @@ export interface PublishableEvents
     show_info_and_data_sources: InfoSectionId | true
     show_select_country: undefined
 
-    on_hover_tile: CellDataV2 | null
-    on_click_tile: CellDataV2
-    on_highlight_oil_reserves: CellDataV2 | null
-    will_update_tile: CellDataV2 | null
-    tile_changed: { tile: CellDataV2; change_gw: number }
-    invalid_placement: {
-        tile: CellDataV2
-        item_type: BuildingActionTypeString
-        invalid_because: "water" | "no_oilgas"
-    }
+    on_hover_tile: H3R4ID | null
+    on_click_tile: H3R4ID
+    // on_highlight_oil_reserves: CellDataV2 | null
+    // will_update_tile: CellDataV2 | null
+    // tile_changed: { tile: CellDataV2; change_gw: number }
+    // invalid_placement: {
+    //     tile: CellDataV2
+    //     item_type: BuildingActionTypeString
+    //     invalid_because: "water" | "no_oilgas"
+    // }
 }

@@ -221,7 +221,7 @@ function make_pointer_move_and_click_handlers(coords: { merged_fill: THREE.Buffe
         const cell_id = coords.cell_ids[ci]!
         if (hover_ref.current !== cell_id) {
             hover_ref.current = cell_id
-            pub_sub.pub("on_hover_tile", { h3_id: cell_id })
+            pub_sub.pub("on_hover_tile", { h3r4_id: cell_id })
         }
     }, [coords.cell_ids, find_cell_index_for_vertex])
 
@@ -244,8 +244,7 @@ function make_pointer_move_and_click_handlers(coords: { merged_fill: THREE.Buffe
         const ci = find_cell_index_for_vertex(vertexIndex)
         if (ci === -1) return
         const cell_id = coords.cell_ids[ci]!
-        const cell = { h3_id: cell_id }
-        pub_sub.pub("on_click_tile", cell)
+        pub_sub.pub("on_click_tile", { h3r4_id: cell_id })
     }, [coords.cell_ids, find_cell_index_for_vertex])
     return { handle_pointer_move, handle_pointer_leave, handle_click }
 }
