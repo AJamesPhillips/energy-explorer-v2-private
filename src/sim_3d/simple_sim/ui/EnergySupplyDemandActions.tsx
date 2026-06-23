@@ -241,6 +241,7 @@ function BuildButton(props: { type: PowerType })
 {
     const current_action = get_app_state(state => state.building_action.active)
     const set_building_action = get_app_state(state => state.building_action.set_building_action)
+    const set_map_capacity_factors = get_app_state(state => state.view.set_map_capacity_factors)
     const is_current_action = current_action && current_action?.type === props.type
 
     return <button
@@ -248,6 +249,11 @@ function BuildButton(props: { type: PowerType })
         onClick={() =>
         {
             set_building_action(is_current_action ? false : { type: props.type })
+            if ((props.type === "wind" || props.type === "solar") && !is_current_action)
+            {
+                set_map_capacity_factors(props.type)
+            }
+            else set_map_capacity_factors(false)
         }}
     >
         Build
