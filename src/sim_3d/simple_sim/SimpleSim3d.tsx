@@ -65,49 +65,45 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
     })
 
 
-    // const state = get_app_state()
-    // const current_action = state.building_action.active
+    const current_action = get_app_state(state => state.building_action.active)
 
-    // const on_click_tile = useCallback(({ x, y }: { x: number; y: number }) =>
-    // {
-    //     props.set_data(prev =>
-    //     {
-    //         const cell = prev[x]?.[y]
-    //         if (!cell) return prev
+    useEffect(() =>
+    {
+        pub_sub.sub("on_click_tile", payload =>
+        {
+            payload.h3_id
 
-    //         if (!current_action) return prev
+            // const new_candidate_tile = modify_cell_with_action(cell, current_action)
+            // const cell_valid = is_cell_valid(new_candidate_tile)
+            // if (cell_valid !== true)
+            // {
+            //     pub_sub.pub("invalid_placement", {
+            //         tile: cell,
+            //         item_type: current_action.type,
+            //         invalid_because: cell_valid.invalid_because,
+            //     })
+            //     return prev
+            // }
 
-    //         const new_candidate_tile = modify_cell_with_action(cell, current_action)
-    //         const cell_valid = is_cell_valid(new_candidate_tile)
-    //         if (cell_valid !== true)
-    //         {
-    //             pub_sub.pub("invalid_placement", {
-    //                 tile: cell,
-    //                 item_type: current_action.type,
-    //                 invalid_because: cell_valid.invalid_because,
-    //             })
-    //             return prev
-    //         }
+            // const new_cell = new_candidate_tile
+            // const new_cells: CellsData = {
+            //     ...prev,
+            //     [x]: {
+            //         ...prev[x],
+            //         [y]: new_cell
+            //     },
+            // }
 
-    //         const new_cell = new_candidate_tile
-    //         const new_cells: CellsData = {
-    //             ...prev,
-    //             [x]: {
-    //                 ...prev[x],
-    //                 [y]: new_cell
-    //             },
-    //         }
+            // const prev_power_supply = calculate_power_supply_from_data(prev)
+            // const new_power_supply = calculate_power_supply_from_data(new_cells)
+            // const change_in_supply_gw = new_power_supply - prev_power_supply
 
-    //         const prev_power_supply = calculate_power_supply_from_data(prev)
-    //         const new_power_supply = calculate_power_supply_from_data(new_cells)
-    //         const change_in_supply_gw = new_power_supply - prev_power_supply
+            // pub_sub.pub("will_update_tile", new_cell)
+            // pub_sub.pub("tile_power_changed", { tile: new_cell, change_gw: change_in_supply_gw })
 
-    //         pub_sub.pub("will_update_tile", new_cell)
-    //         pub_sub.pub("tile_power_changed", { tile: new_cell, change_gw: change_in_supply_gw })
-
-    //         return new_cells
-    //     })
-    // }, [current_action])
+            // return new_cells
+        })
+    }, [current_action])
 
     // const on_hover_tile = useCallback((tile: CellData | null) =>
     // {

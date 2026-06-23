@@ -9,6 +9,7 @@ import * as data from "./data"
 import * as game_datetime from "./game_datetime"
 import { AppState } from "./interface"
 import * as power_demand from "./power_demand"
+import * as power_plants from "./power_plants"
 import * as view from "./view"
 
 
@@ -28,6 +29,7 @@ export const get_new_app_store = () =>
             data: data.initial_state(set_state),
             game_datetime: game_datetime.initial_state(set_state, get_state),
             power_demand: power_demand.initial_state(set_state),
+            power_plants: power_plants.initial_state(set_state, get_state),
             view: view.initial_state(set_state),
         }
     }))
@@ -44,6 +46,11 @@ export const get_new_app_store = () =>
     })
 
     return app_store
+}
+
+export function hacky_get_state(): AppState | undefined
+{
+    if ((window as any).debug_state) return (window as any).debug_state
 }
 
 

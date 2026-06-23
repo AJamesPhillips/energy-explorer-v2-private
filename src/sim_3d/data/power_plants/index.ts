@@ -2,7 +2,6 @@ import { cellToLatLng, latLngToCell } from "h3-js"
 
 import { get_projection, latlon_tuple_to_obj } from "../../dev/projection"
 import { CapacityFactorData } from "../../utils/capacity_factor_data"
-import { promise_load_all_capacity_factor_data } from "../wind_and_solar_capacity/load_data"
 import { battery_plants_data } from "./battery_plants_data"
 import { gas_plants_data } from "./gas_plant_data"
 import { hydro_plants_data } from "./hydro_plant_data"
@@ -20,7 +19,7 @@ import { offshore_wind_farms, onshore_wind_farms } from "./wind_farm_data"
 
 
 
-export const power_plants_data: PowerPlant[] = [
+export const initial_power_plants_data: PowerPlant[] = [
     ...offshore_wind_farms.map(parse_wind_farm_data),
     ...onshore_wind_farms.map(parse_wind_farm_data),
     ...solar_farms.map(parse_solar_farm_data),
@@ -34,7 +33,7 @@ export const power_plants_data: PowerPlant[] = [
 
 export const H3_RESOLUTION = 4
 
-function map_power_plants_by_h3_cell(plants: PowerPlant[]): Record<string, PowerPlant[]>
+export function map_power_plants_by_h3_cell(plants: PowerPlant[]): Record<string, PowerPlant[]>
 {
     const h3_cell_map: Record<string, PowerPlant[]> = {}
 
@@ -50,7 +49,7 @@ function map_power_plants_by_h3_cell(plants: PowerPlant[]): Record<string, Power
 }
 
 
-function aggregate_power_plants_by_h3_cell(
+export function aggregate_power_plants_by_h3_cell(
     plants_by_cell: Record<string, PowerPlant[]>,
     wind_capacity_factor: CapacityFactorData,
     solar_pv_capacity_factor: CapacityFactorData,
@@ -148,9 +147,4 @@ function get_active_power_plants(power_plants: PowerPlant[], year: number): Powe
 }
 
 
-const power_plants_by_h3_cell = map_power_plants_by_h3_cell(power_plants_data)
-
-export const promise_aggregated_power_plants_by_h3_cell = promise_load_all_capacity_factor_data().then(({ wind, solar }) =>
-{
-    return aggregate_power_plants_by_h3_cell(power_plants_by_h3_cell, wind, solar)
-})
+export const initial_power_plants_by_h3_cell = map_power_plants_by_h3_cell(initial_power_plants_data)

@@ -7,7 +7,7 @@ export type BuildingOilGasAction = {
     type: "oil_and_gas_rig"
 }
 export type BuildingElectricityAction = {
-    type: "gas" | "hydro" | "nuclear" | "solar" | "wind"
+    type: "gas" | "hydro_river" | "nuclear" | "solar" | "wind"
 }
 export type BuildingDestroyAction = {
     type: "bulldozer"

@@ -1,9 +1,9 @@
 import { cellToParent } from "h3-js"
 
+import { hacky_get_state } from "../../state/store"
 import { LandH3Cell } from "../data/coverage_land/uk/data"
 import { SUBURBAN_DEMAND_MULTIPLIER, URBAN_DEMAND_MULTIPLIER } from "../data/power_demand/relative_demand"
 import { uk_demand_gw_by_hour_2018 } from "../data/power_demand/uk"
-import { promise_aggregated_power_plants_by_h3_cell } from "../data/power_plants"
 import type { AggregatedPowerPlantData } from "../data/power_plants/interface"
 import { AllCapacityFactorData, promise_load_all_capacity_factor_data } from "../data/wind_and_solar_capacity/load_data"
 import { cells_to_xy, XY } from "../dev/projection"
@@ -42,7 +42,7 @@ const promise_capacity_factor_data = promise_load_all_capacity_factor_data()
  */
 function get_gen_cap_store_MW_by_h3r4_cell(
     capacity_factor_data: AllCapacityFactorData,
-    aggregated_power_plants_by_h3_cell: Record<string, AggregatedPowerPlantData>,
+    aggregated_power_plants_by_h3r4_cell: Record<string, AggregatedPowerPlantData>,
     datetime_index1: number,
     datetime_index2: number,
     mix: number
@@ -53,7 +53,7 @@ function get_gen_cap_store_MW_by_h3r4_cell(
 
     const out: Record<string, MWGenCapStoreForH3R4> = {}
 
-    for (const [h3_id, data] of Object.entries(aggregated_power_plants_by_h3_cell))
+    for (const [h3_id, data] of Object.entries(aggregated_power_plants_by_h3r4_cell))
     {
         const wind_capacity_MW = data.wind_farm.capacity_MW ?? 0
         const solar_capacity_MW = data.solar_farm.capacity_MW ?? 0
@@ -199,10 +199,12 @@ export function init_model_power_supply_updates(h3r5_land_cells: LandH3Cell[])
                 {
                     h3r4_cell_to_xy = cells_to_xy([...capacity_factor_data.wind.h3_cell_id_to_index.keys()])
                 }
-                const aggregated_power_plants_by_h3_cell = await promise_aggregated_power_plants_by_h3_cell as Record<string, AggregatedPowerPlantData>
+                const aggregated_power_plants_by_h3r4_cell = hacky_get_state()?.power_plants.aggregated_by_h3r4
+                if (!aggregated_power_plants_by_h3r4_cell) return
+
                 const gen_cap_store_MW_by_h3r4 = get_gen_cap_store_MW_by_h3r4_cell(
                     capacity_factor_data,
-                    aggregated_power_plants_by_h3_cell,
+                    aggregated_power_plants_by_h3r4_cell,
                     payload.datetime_annual_hourly_index1,
                     payload.datetime_annual_hourly_index2,
                     payload.datetime_annual_hourly_index_mix,

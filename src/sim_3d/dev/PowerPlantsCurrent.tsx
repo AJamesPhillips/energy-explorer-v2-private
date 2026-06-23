@@ -1,10 +1,10 @@
 import { latLngToCell } from "h3-js"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 
+import { get_app_state } from "../../state/store"
 import { NuclearPlants } from "../3d_models/NuclearPlant"
 import { SolarFarms } from "../3d_models/SolarFarm"
 import { WindTurbineFarms } from "../3d_models/WindTurbine"
-import { power_plants_data, promise_aggregated_power_plants_by_h3_cell } from "../data/power_plants"
 import { AggregatedPowerPlantLayer } from "./AggregatedPowerPlantLayer"
 import { get_projection, XY } from "./projection"
 
@@ -13,6 +13,8 @@ import { get_projection, XY } from "./projection"
 export function PowerPlantsCurrent({ show_aggregated }: { show_aggregated: boolean })
 {
     if (show_aggregated) return <PowerPlantsCurrentAggregated />
+
+    const power_plants_data = get_app_state(state => state.power_plants.all)
 
     const {
         wind_farm_tiles,
@@ -40,7 +42,7 @@ export function PowerPlantsCurrent({ show_aggregated }: { show_aggregated: boole
         })
 
         return { wind_farm_tiles, solar_farm_tiles, gas_plant_tiles, nuclear_plant_tiles }
-    }, [])
+    }, [power_plants_data])
 
     return <>
         <WindTurbineFarms tiles={wind_farm_tiles} />
@@ -52,18 +54,13 @@ export function PowerPlantsCurrent({ show_aggregated }: { show_aggregated: boole
 
 export function PowerPlantsCurrentAggregated()
 {
-    const [aggregated_power_plants_by_h3_cell, set_aggregated_power_plants_by_h3_cell] = useState<Record<string, any> | null>(null)
+    const aggregated_power_plants_by_h3r4_cell = get_app_state(state => state.power_plants.aggregated_by_h3r4)
 
-    useEffect(() =>
-    {
-        promise_aggregated_power_plants_by_h3_cell.then(set_aggregated_power_plants_by_h3_cell)
-    })
-
-    if (!aggregated_power_plants_by_h3_cell) return null
+    if (!aggregated_power_plants_by_h3r4_cell) return null
 
     return <>
         <AggregatedPowerPlantLayer
-            aggregated_data={aggregated_power_plants_by_h3_cell}
+            aggregated_data={aggregated_power_plants_by_h3r4_cell}
             plant_key="wind_farm"
             fill_color={0x1f6dff}
             outline_color={0x0f3fb2}
@@ -72,7 +69,7 @@ export function PowerPlantsCurrentAggregated()
             RenderPlants={WindTurbineFarms}
         />
         <AggregatedPowerPlantLayer
-            aggregated_data={aggregated_power_plants_by_h3_cell}
+            aggregated_data={aggregated_power_plants_by_h3r4_cell}
             plant_key="solar_farm"
             fill_color={0xf2b705}
             outline_color={0xc78b00}
@@ -81,7 +78,7 @@ export function PowerPlantsCurrentAggregated()
             RenderPlants={SolarFarms}
         />
         <AggregatedPowerPlantLayer
-            aggregated_data={aggregated_power_plants_by_h3_cell}
+            aggregated_data={aggregated_power_plants_by_h3r4_cell}
             plant_key="nuclear_plant"
             fill_color={0xf2b705}
             outline_color={0xc78b00}
