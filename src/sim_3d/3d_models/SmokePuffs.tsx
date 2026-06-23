@@ -13,6 +13,7 @@ interface SmokePuffsProps
     puff_radius: number
     /** Total height the puffs rise before fading out */
     rise_height: number
+    rise_speed?: number
     /** Number of simultaneous puff particles (default: 5) */
     num_puffs?: number
     /** When false the puffs disappear (default: true) */
@@ -25,6 +26,7 @@ export function SmokePuffs({
     color,
     puff_radius,
     rise_height,
+    rise_speed = 1,
     num_puffs = 5,
     active = true,
 }: SmokePuffsProps)
@@ -59,7 +61,7 @@ export function SmokePuffs({
         puff_refs.current.forEach((mesh, i) =>
         {
             if (!mesh) return
-            const phase           = (t * 0.32 + phases[i]!) % 1
+            const phase           = (t * 0.32 * rise_speed + phases[i]!) % 1
             mesh.position.y       = phase * rise_height
             mesh.position.x       = Math.sin(t * 1.1 + i) * drift_amp
             mesh.scale.setScalar((0.35 + phase * 1.3) * scale_o)

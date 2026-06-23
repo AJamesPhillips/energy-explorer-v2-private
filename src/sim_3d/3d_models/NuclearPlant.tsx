@@ -118,8 +118,9 @@ function CoolingTower({ x, cell_size }: { x: number, cell_size: number })
         <SmokePuffs
             position={[ tower_x, tower_top_y + s * -0.02, tower_z]}
             color={0xfafafa}
-            puff_radius={s * 0.06}
-            rise_height={s * 0.4}
+            puff_radius={s * 0.2}
+            rise_height={s * 0.5}
+            rise_speed={0.5}
             active={true}
             num_puffs={7}
         />
