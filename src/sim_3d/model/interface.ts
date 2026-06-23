@@ -9,17 +9,6 @@ export interface DemandGWForH3R4
 
 export type DemandByH3R4Cell = Record<string, DemandGWForH3R4>
 
-export interface ValueByPowerType<V>
-{
-    wind: V
-    solar: V
-    gas: V
-    nuclear: V
-    hydro_river: V
-    battery: V
-    hydro_pumped_storage: V
-}
-
 export const POWER_TYPES = [
     "wind",
     "solar",
@@ -29,6 +18,8 @@ export const POWER_TYPES = [
     "battery",
     "hydro_pumped_storage",
 ] as const
+export type PowerType = (typeof POWER_TYPES)[number]
+export type ValueByPowerType<V> = Record<PowerType, V>
 
 export type MWGenCapStore = { generated_MW: number; capacity_MW: number }
 export type MWGenCapStoreForH3R4 = {
