@@ -144,3 +144,11 @@ https://web.archive.org/web/20250818213809/https://www.bp.com/en_gb/united-kingd
 > Getting those right will matter at least as much as fixing retail.
 
 https://janrosenow.substack.com/p/do-renewables-make-electricity-cheaper
+
+
+# National Defence
+
+HLA
+DIS (Distrbiuted interactive simulation)
+RTI (real time intrastructure)
+Unreal weatherverse, ceasium
