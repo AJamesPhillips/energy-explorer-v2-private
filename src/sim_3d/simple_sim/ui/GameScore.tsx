@@ -11,15 +11,24 @@ export function GameScore()
 
     return <div className="ui_section">
         <div><b>Score</b> {Math.round(score.total_score)}</div>
-        <div>Building cost: {score.building_cost.toFixed(1)}</div>
+        <div>Building cost: {to_neg(score.building_cost)}</div>
+        <div>Shortfall: {to_neg(score.shortfall)}</div>
+        <div>Resilience: {to_neg(score.resilience_score)}</div>
+        <div>Running cost: {to_neg(score.running_cost)}</div>
     </div>
+}
+function to_neg(value: number)
+{
+    let value_str = value ? value.toFixed(1) : "0"
+    if (value > 0) value_str = "-" + value_str
+    return value_str
 }
 
 
 interface Score
 {
-    customer_satisfaction_score: number
     building_cost: number
+    shortfall: number
     running_cost: number
     resilience_score: number
     total_score: number
@@ -42,7 +51,7 @@ function calculate_score(aggregated_by_h3r4: Record<string, AggregatedPowerPlant
     const total_score = 100 - building_cost
 
     return {
-        customer_satisfaction_score: 0,
+        shortfall: 0,
         building_cost,
         running_cost: 0,
         resilience_score: 0,
