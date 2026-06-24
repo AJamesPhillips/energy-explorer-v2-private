@@ -93,7 +93,7 @@ export function EnergySupplyDemandActions(_props: {})
                     <td>Nuclear</td>
                     <td>{power.supply_gw_by_type.nuclear.toFixed(1)} / {power.capacity_gw_by_type.nuclear.toFixed(1)}</td>
                     <td/>
-                    <td><BuildButton type="nuclear" /></td>
+                    {/* <td><BuildButton type="nuclear" /></td> */}
                 </tr>
                 <tr>
                     <td/>
