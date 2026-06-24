@@ -5,13 +5,75 @@
 import { h3r4_cells_are_adjacent, paired_h3r4_cell_id, PairedId } from "../../utils/geo/h3_cell_pairs"
 
 
-const initial_connections: PairedId[] = [
-    paired_h3r4_cell_id("841941dffffffff", "8419419ffffffff"),
-    paired_h3r4_cell_id("8419419ffffffff", "84196a5ffffffff"),
-    paired_h3r4_cell_id("84196a5ffffffff", "84196a1ffffffff"),
-    // paired_h3r4_cell_id("841943bffffffff", "841941dffffffff"),
-    paired_h3r4_cell_id("8419415ffffffff", "841943bffffffff"),
+const pipelines: string[][] = [
+    [
+        "8419411ffffffff",
+        "8419419ffffffff",
+        "84196a5ffffffff",
+        "84196a1ffffffff",
+        "84196abffffffff",
+    ],
+    [
+        "84196a5ffffffff",
+        "84196a7ffffffff",
+        "84194c9ffffffff",
+        "84194cbffffffff",
+    ],
+    [
+        "8419407ffffffff",
+        "8419401ffffffff",
+        "8419409ffffffff",
+        "8419443ffffffff",
+        "841944bffffffff",
+        "8419635ffffffff",
+        "841963dffffffff",
+        "8419607ffffffff",
+        "8419601ffffffff",
+        "8419609ffffffff",
+        "8419643ffffffff",
+        "841964bffffffff",
+        "8409969ffffffff",
+    ],
+    [
+        "8419769ffffffff",
+        "8419293ffffffff",
+        "841974dffffffff",
+        "8419749ffffffff",
+        "8409b69ffffffff",
+        "8409b61ffffffff",
+        "8409b67ffffffff",
+        "8409b2dffffffff",
+        "8409b25ffffffff",
+        "841964dffffffff",
+        "8419649ffffffff",
+        "8409969ffffffff",
+    ],
+    [
+        "8419529ffffffff",
+        "8419563ffffffff",
+        "841950dffffffff",
+        "8419547ffffffff",
+    ],
+    [
+        "841950dffffffff",
+        "8419505ffffffff",
+        "841952bffffffff",
+        "8419523ffffffff",
+        "84182c9ffffffff",
+    ],
 ]
+
+const initial_connections: PairedId[] = []
+
+pipelines.forEach(pipeline =>
+{
+    for (let i = 0; i < pipeline.length - 1; ++i)
+    {
+        const h3r4_id_a = pipeline[i]!
+        const h3r4_id_b = pipeline[i + 1]!
+        initial_connections.push(paired_h3r4_cell_id(h3r4_id_a, h3r4_id_b))
+    }
+})
 
 
 interface ConnectionInfo

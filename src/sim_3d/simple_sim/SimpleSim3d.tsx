@@ -211,7 +211,7 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
         {show_lightning_bolt_flow && <MapLightningBoltFlow />}
 
         {false && <H3ElectricalGrid />}
-        {false && <H3GasGrid />}
+        {true && <H3GasGrid />}
     </>
 }
 
