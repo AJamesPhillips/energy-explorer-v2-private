@@ -1,4 +1,5 @@
 import { ILatLon } from "core/data/values/LatLon"
+import { cells_to_xy, XY } from "../../dev/projection"
 
 
 // copied from https://github.com/TheWorldSim/world-sim-data/blob/ed6d3ae/data/boundaries/eez/uk_eez.geojson
@@ -650,3 +651,5 @@ uk_eez_h3_res_4_csv.split("\n").slice(1).map(line =>
 
     UK_EEZ_H3_RES_4.set(h3r4_id!, { land: land === "L" ? true : land === "l" ? "some" : false })
 })
+
+export const H3R4_CELL_TO_XY: Map<string, XY> = cells_to_xy([...UK_EEZ_H3_RES_4.keys()])

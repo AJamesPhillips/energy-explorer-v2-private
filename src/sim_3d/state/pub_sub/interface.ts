@@ -1,5 +1,4 @@
 import { GameSpeed } from "../../../state/game_datetime/interface"
-import type { XY } from "../../dev/projection"
 import type { DemandByH3R4Cell, MWGenCapStoreForH3R4, ValueByPowerType } from "../../model/interface"
 import type { H3R4ID } from "../../simple_sim/interface"
 
@@ -40,7 +39,6 @@ export interface PublishableEvents
         gen_cap_store_MW_by_h3r4: Record<string, MWGenCapStoreForH3R4>
         demand_GW: number
         demand_GW_by_h3r4: DemandByH3R4Cell
-        h3r4_cell_to_xy: Map<string, XY>
         datetime_ms?: number
     }
     show_message: {
