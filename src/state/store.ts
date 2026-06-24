@@ -4,6 +4,7 @@ import { immer } from "zustand/middleware/immer"
 import { deep_copy } from "core/utils/deep_copy"
 import { deep_freeze } from "core/utils/deep_freeze"
 
+import { AggregatedPowerPlantData } from "../sim_3d/data/power_plants/interface"
 import * as building_action from "./building_action"
 import * as data from "./data"
 import * as game_datetime from "./game_datetime"
@@ -51,6 +52,23 @@ export const get_new_app_store = () =>
 export function hacky_get_state(): AppState | undefined
 {
     if ((window as any).debug_state) return (window as any).debug_state
+}
+export async function await_aggregated_by_h3r4(): Promise<Record<string, AggregatedPowerPlantData>>
+{
+    const aggregated_by_h3r4 = hacky_get_state()?.power_plants.aggregated_by_h3r4
+    if (aggregated_by_h3r4) return aggregated_by_h3r4
+
+    return new Promise((resolve, _reject) =>
+    {
+        const unsubscribe = get_app_store().subscribe((state) =>
+        {
+            if (state.power_plants.aggregated_by_h3r4)
+            {
+                resolve(state.power_plants.aggregated_by_h3r4)
+                unsubscribe()
+            }
+        })
+    })
 }
 
 

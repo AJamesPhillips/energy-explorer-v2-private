@@ -642,11 +642,11 @@ const uk_eez_h3_res_4_csv = `h3 cell id (minus ffffffff), lat, lon, is land (L) 
 8419ad9,58.16,-14.09,
 8419adb,57.82,-13.73,`
 
-export const uk_eez_h3_res_4: Map<string, { land: boolean | "some" }> = new Map()
+export const UK_EEZ_H3_RES_4: Map<string, { land: boolean | "some" }> = new Map()
 
 uk_eez_h3_res_4_csv.split("\n").slice(1).map(line =>
 {
     const [h3r4_id, _lat, _lng, land] = line.split(",")
 
-    uk_eez_h3_res_4.set(h3r4_id!, { land: land === "L" ? true : land === "l" ? "some" : false })
+    UK_EEZ_H3_RES_4.set(h3r4_id!, { land: land === "L" ? true : land === "l" ? "some" : false })
 })

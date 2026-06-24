@@ -1,8 +1,9 @@
 import { cellToParent } from "h3-js"
 
 import { DEFAULT_SPEED } from "../../state/game_datetime/constants"
-import { hacky_get_state } from "../../state/store"
+import { await_aggregated_by_h3r4, hacky_get_state } from "../../state/store"
 import { LandH3Cell } from "../data/coverage_land/uk/data"
+import { UK_EEZ_H3_RES_4 } from "../data/eez/data"
 import { SUBURBAN_DEMAND_MULTIPLIER, URBAN_DEMAND_MULTIPLIER } from "../data/power_demand/relative_demand"
 import { uk_demand_gw_by_hour_2018 } from "../data/power_demand/uk"
 import type { AggregatedPowerPlantData } from "../data/power_plants/interface"
@@ -168,6 +169,7 @@ function mutate_demand_by_h3_cell(time_size: number, demand_by_h3r4: Record<stri
 }
 
 
+const H3R4_CELL_TO_XY: Map<string, XY> = cells_to_xy([...UK_EEZ_H3_RES_4.keys()])
 const last_updated_at =
 {
     datetime_index1: null as number | null,
@@ -176,7 +178,6 @@ const last_updated_at =
 const max_update_frequency_ms = 1000
 export function init_model_power_supply_updates(h3r5_land_cells: LandH3Cell[])
 {
-    let h3r4_cell_to_xy: Map<string, XY> | undefined = undefined
     const demand_GW_by_h3r4 = get_initial_proportional_demand_by_h3r4_cell(h3r5_land_cells)
 
     const unsub = pub_sub.sub("simulation_datetime", async (payload) =>
@@ -191,66 +192,18 @@ export function init_model_power_supply_updates(h3r5_land_cells: LandH3Cell[])
         last_updated_at.datetime_index1 = payload.datetime_annual_hourly_index1
         last_updated_at.real_time = current_time
 
-        console.log("Updating model power supply for datetime index", payload.datetime_annual_hourly_index1)
-
-        const capacity_factor_data = await promise_capacity_factor_data
-        if (!h3r4_cell_to_xy)
-        {
-            h3r4_cell_to_xy = cells_to_xy([...capacity_factor_data.wind.h3_cell_id_to_index.keys()])
-        }
-        const aggregated_power_plants_by_h3r4_cell = hacky_get_state()?.power_plants.aggregated_by_h3r4
-        if (!aggregated_power_plants_by_h3r4_cell) return
-
-        const gen_cap_store_MW_by_h3r4 = get_gen_cap_store_MW_by_h3r4_cell(
-            capacity_factor_data,
-            aggregated_power_plants_by_h3r4_cell,
-            payload.datetime_annual_hourly_index1,
-            payload.datetime_annual_hourly_index2,
-            payload.datetime_annual_hourly_index_mix,
-        )
-        const supply_gw_by_type: ValueByPowerType<number> = {
-            wind: 0,
-            solar: 0,
-            gas: 0,
-            nuclear: 0,
-            battery: 0,
-            hydro_river: 0,
-            hydro_pumped_storage: 0,
-        }
-        const capacity_gw_by_type: ValueByPowerType<number> = {
-            ...supply_gw_by_type,
-        }
-
-        let total_MW = 0
-        Object.values(gen_cap_store_MW_by_h3r4).forEach(c =>
-        {
-            total_MW += c.total_generated_MW
-            supply_gw_by_type.wind += c.wind.generated_MW / 1000
-            supply_gw_by_type.solar += c.solar.generated_MW / 1000
-            supply_gw_by_type.gas += c.gas.generated_MW / 1000
-            supply_gw_by_type.nuclear += c.nuclear.generated_MW / 1000
-            supply_gw_by_type.hydro_river += c.hydro_river.generated_MW / 1000
-            supply_gw_by_type.battery += c.battery.generated_MW / 1000
-            supply_gw_by_type.hydro_pumped_storage += c.hydro_pumped_storage.generated_MW / 1000
-
-            capacity_gw_by_type.wind += c.wind.capacity_MW / 1000
-            capacity_gw_by_type.solar += c.solar.capacity_MW / 1000
-            capacity_gw_by_type.gas += c.gas.capacity_MW / 1000
-            capacity_gw_by_type.nuclear += c.nuclear.capacity_MW / 1000
-            capacity_gw_by_type.hydro_river += c.hydro_river.capacity_MW / 1000
-            capacity_gw_by_type.battery += c.battery.capacity_MW / 1000
-            capacity_gw_by_type.hydro_pumped_storage += c.hydro_pumped_storage.capacity_MW / 1000
-        })
-
-        const supply_gw = total_MW / 1000
-
-        const demand_gw = mutate_demand_by_h3_cell(
-            capacity_factor_data.wind.date_time_to_index.size,
+        const {
+            supply_gw,
+            demand_gw,
+            supply_gw_by_type,
+            capacity_gw_by_type,
+            gen_cap_store_MW_by_h3r4,
+        } = await calculate_model_state_at_timepoint({
             demand_GW_by_h3r4,
-            payload.datetime_annual_hourly_index1,
-            payload.datetime_annual_hourly_index2,
-            payload.datetime_annual_hourly_index_mix
-        )
+            datetime_annual_hourly_index1: payload.datetime_annual_hourly_index1,
+            datetime_annual_hourly_index2: payload.datetime_annual_hourly_index2,
+            datetime_annual_hourly_index_mix: payload.datetime_annual_hourly_index_mix,
+        })
 
         pub_sub.pub("power_supply_and_demand", {
             supply_GW: supply_gw,
@@ -259,10 +212,90 @@ export function init_model_power_supply_updates(h3r5_land_cells: LandH3Cell[])
             gen_cap_store_MW_by_h3r4,
             demand_GW: demand_gw,
             demand_GW_by_h3r4,
-            h3r4_cell_to_xy,
+            h3r4_cell_to_xy: H3R4_CELL_TO_XY,
             datetime_ms: payload.datetime_ms,
         })
     })
 
     return unsub
+}
+
+
+export async function calculate_model_state_at_timepoint(args: {
+    demand_GW_by_h3r4: Record<string, DemandGWForH3R4>
+    datetime_annual_hourly_index1: number
+    datetime_annual_hourly_index2: number
+    datetime_annual_hourly_index_mix: number
+})
+{
+    const {
+        demand_GW_by_h3r4,
+        datetime_annual_hourly_index1,
+        datetime_annual_hourly_index2,
+        datetime_annual_hourly_index_mix,
+    } = args
+
+    console.log("Updating model power supply for datetime index", datetime_annual_hourly_index1)
+
+    const capacity_factor_data = await promise_capacity_factor_data
+    const aggregated_by_h3r4 = await await_aggregated_by_h3r4()
+
+    const gen_cap_store_MW_by_h3r4 = get_gen_cap_store_MW_by_h3r4_cell(
+        capacity_factor_data,
+        aggregated_by_h3r4,
+        datetime_annual_hourly_index1,
+        datetime_annual_hourly_index2,
+        datetime_annual_hourly_index_mix,
+    )
+    const supply_gw_by_type: ValueByPowerType<number> = {
+        wind: 0,
+        solar: 0,
+        gas: 0,
+        nuclear: 0,
+        battery: 0,
+        hydro_river: 0,
+        hydro_pumped_storage: 0,
+    }
+    const capacity_gw_by_type: ValueByPowerType<number> = {
+        ...supply_gw_by_type,
+    }
+
+    let total_MW = 0
+    Object.values(gen_cap_store_MW_by_h3r4).forEach(c =>
+    {
+        total_MW += c.total_generated_MW
+        supply_gw_by_type.wind += c.wind.generated_MW / 1000
+        supply_gw_by_type.solar += c.solar.generated_MW / 1000
+        supply_gw_by_type.gas += c.gas.generated_MW / 1000
+        supply_gw_by_type.nuclear += c.nuclear.generated_MW / 1000
+        supply_gw_by_type.hydro_river += c.hydro_river.generated_MW / 1000
+        supply_gw_by_type.battery += c.battery.generated_MW / 1000
+        supply_gw_by_type.hydro_pumped_storage += c.hydro_pumped_storage.generated_MW / 1000
+
+        capacity_gw_by_type.wind += c.wind.capacity_MW / 1000
+        capacity_gw_by_type.solar += c.solar.capacity_MW / 1000
+        capacity_gw_by_type.gas += c.gas.capacity_MW / 1000
+        capacity_gw_by_type.nuclear += c.nuclear.capacity_MW / 1000
+        capacity_gw_by_type.hydro_river += c.hydro_river.capacity_MW / 1000
+        capacity_gw_by_type.battery += c.battery.capacity_MW / 1000
+        capacity_gw_by_type.hydro_pumped_storage += c.hydro_pumped_storage.capacity_MW / 1000
+    })
+
+    const supply_gw = total_MW / 1000
+
+    const demand_gw = mutate_demand_by_h3_cell(
+        capacity_factor_data.wind.date_time_to_index.size,
+        demand_GW_by_h3r4,
+        datetime_annual_hourly_index1,
+        datetime_annual_hourly_index2,
+        datetime_annual_hourly_index_mix
+    )
+
+    return {
+        supply_gw,
+        demand_gw,
+        supply_gw_by_type,
+        capacity_gw_by_type,
+        gen_cap_store_MW_by_h3r4,
+    }
 }
