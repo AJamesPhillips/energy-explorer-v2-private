@@ -304,7 +304,7 @@ function make_build_action(action: BuildingActionType, cell_info: CellInfo): Bui
         return {
             h3r4_id,
             power_type,
-            area_addable_km2: cell_info.cell_area_km2 - current_area,
+            area_addable_km2: Math.min(cell_info.cell_area_km2 - current_area, 370),
             aggregated: cell_info.aggregated,
         }
     }
