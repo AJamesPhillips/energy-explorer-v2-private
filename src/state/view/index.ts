@@ -10,7 +10,13 @@ export function initial_state(set_state: SetAppState): ViewState
     {
         set_state(state =>
         {
-            if (state.view.h3r4_cell_info_open === h3r4_id) h3r4_id = undefined
+            if (state.view.h3r4_cell_info_open === h3r4_id
+                // Do not close the cell info when building - multiple clicks on
+                // the same cell is fine for incremental building of solar & wind
+                && !state.building_action.active)
+            {
+                h3r4_id = undefined
+            }
             state.view.h3r4_cell_info_open = h3r4_id
         })
     }
