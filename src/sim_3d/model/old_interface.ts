@@ -11,8 +11,8 @@ import type { ILatLon, ILatLonWithIsOnshore } from "core/data/values/LatLon"
 export interface PowerStats
 {
     demand_gw: number
-    supply_gw: number
-    supply_gw_by_type: SupplyGWByType
+    generated_gw: number
+    generated_gw_by_type: SupplyGWByType
 }
 /**
  * @deprecated use ValueByPowerType<number> instead
@@ -84,5 +84,5 @@ export interface ModelRunOutput
      * It is the total supply available to the grid (excluding storage when they
      * are charging, i.e. are sinks of electricity).
      */
-    hourly_net_supply_mw: number[]
+    hourly_net_generated_mw: number[]
 }

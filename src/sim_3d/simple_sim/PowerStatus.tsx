@@ -8,12 +8,12 @@ import "./PowerStatus.css"
 
 
 const open_power_demand_source = () => pub_sub.pub("show_info_and_data_sources", "power_demand")
-const open_power_supply_source = () => pub_sub.pub("show_info_and_data_sources", "power_supply")
+const open_power_generated_source = () => pub_sub.pub("show_info_and_data_sources", "power_supply")
 
 
 export function PowerStatus ({ power, datetime }: { view: LimitedViewType, power: PowerStats, datetime?: number })
 {
-    const [current_supply_gw, set_current_supply_gw] = useState(power.supply_gw)
+    const [current_generated_gw, set_current_generated_gw] = useState(power.generated_gw)
     const [current_demand_gw, set_current_demand_gw] = useState(power.demand_gw)
 
     useEffect(() =>
@@ -21,30 +21,30 @@ export function PowerStatus ({ power, datetime }: { view: LimitedViewType, power
         return pub_sub.sub("animation_tick", ({ delta_seconds }) =>
         {
             // Smoothly animate changes in supply and demand
-            const supply_diff = power.supply_gw - current_supply_gw
+            const generated_diff = power.generated_gw - current_generated_gw
             const demand_diff = power.demand_gw - current_demand_gw
 
-            const new_current_supply_gw = current_supply_gw + smooth_change(supply_diff, delta_seconds)
+            const new_current_generated_gw = current_generated_gw + smooth_change(generated_diff, delta_seconds)
             const new_current_demand_gw = current_demand_gw + smooth_change(demand_diff, delta_seconds)
 
-            set_current_supply_gw(new_current_supply_gw)
+            set_current_generated_gw(new_current_generated_gw)
             set_current_demand_gw(new_current_demand_gw)
         })
     })
 
-    const diff = Math.round(current_supply_gw - current_demand_gw)
+    const diff = Math.round(current_generated_gw - current_demand_gw)
     const is_surplus = diff >= 0
     const demand_status_text = `Demand of ${Math.round(current_demand_gw)} GW`
-    const supply_status_text = is_surplus ? `${diff} GW surplus` : `${-diff} GW deficit. More power needed!`
+    const generated_status_text = is_surplus ? `${diff} GW surplus` : `${-diff} GW deficit. More power needed!`
     const status_color = is_surplus ? "green" : "red"
 
     return <>
         <div id="power_status_container">
             <table style={{ margin: "0 auto" }}>
                 <tbody>
-                    <tr className="supply_demand_labels">
+                    <tr className="generated_demand_labels">
                         <td
-                            className="supply_demand_label"
+                            className="generated_demand_label"
                             title={demand_status_text}
                             onClick={open_power_demand_source}
                         >
@@ -52,10 +52,10 @@ export function PowerStatus ({ power, datetime }: { view: LimitedViewType, power
                         </td>
                         <td />
                         <td
-                            className="supply_demand_label"
+                            className="generated_demand_label"
                             style={{ textAlign: "left", color: status_color }}
-                            title={supply_status_text}
-                            onClick={open_power_supply_source}
+                            title={generated_status_text}
+                            onClick={open_power_generated_source}
                         >
                             {is_surplus ? "Surpluse" : "Shortage"}
                         </td>
@@ -74,10 +74,10 @@ export function PowerStatus ({ power, datetime }: { view: LimitedViewType, power
                         </td>
                         <td
                             style={{ color: status_color, textAlign: "left", fontSize: "var(--font-huge)" }}
-                            title={supply_status_text}
-                            onClick={open_power_supply_source}
+                            title={generated_status_text}
+                            onClick={open_power_generated_source}
                         >
-                            {is_surplus ? "+" : ""}{current_supply_gw.toFixed(1)}
+                            {is_surplus ? "+" : ""}{current_generated_gw.toFixed(1)}
                         </td>
                     </tr>
 
@@ -91,7 +91,7 @@ export function PowerStatus ({ power, datetime }: { view: LimitedViewType, power
                         <td />
                         <td
                             style={{ textAlign: "left" }}
-                            onClick={open_power_supply_source}
+                            onClick={open_power_generated_source}
                         >
                             (source)
                         </td>
@@ -101,7 +101,7 @@ export function PowerStatus ({ power, datetime }: { view: LimitedViewType, power
 
             <div
                 className={"text_shortage" + (is_surplus ? " surplus" : " shortage")}
-                title={supply_status_text}
+                title={generated_status_text}
             >
                 SHORTAGE
             </div>

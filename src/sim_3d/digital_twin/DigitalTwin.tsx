@@ -32,8 +32,8 @@ export const DigitalTwin = () =>
     // const power_demand_series = useMemo(() => uk_daily_power_demand_profiles["2010"].average_demand.data, [])
     // const [power, set_power] = useState<PowerStats>({
     //     demand_gw: 0,
-    //     supply_gw: 0,
-    //     supply_gw_by_type: {},
+    //     generated_gw: 0,
+    //     generated_gw_by_type: {},
     // })
 
     useEffect(() =>
@@ -186,12 +186,12 @@ function exponential_zoom_speed(distance_from_earth_surface: number)
 //     const model_run_output = run_model(model_data, scenario, user_choices)
 
 //     console.log("Model Run Output:", model_run_output)
-//     const hours_lacking_power = model_run_output.hourly_net_supply_mw.filter(v => v < 0).length
+//     const hours_lacking_power = model_run_output.hourly_net_generated_mw.filter(v => v < 0).length
 //     const total_hours = model_run_output.model_datetime_steps.length
-//     const time_without_sufficient_power_supply_percentage = (hours_lacking_power / total_hours) * 100
-//     console.log(`% time without sufficient power supply: ${time_without_sufficient_power_supply_percentage.toFixed(2)}% (${hours_lacking_power} hours out of ${total_hours} total hours)`)
+//     const time_without_sufficient_power_generated_percentage = (hours_lacking_power / total_hours) * 100
+//     console.log(`% time without sufficient power supply: ${time_without_sufficient_power_generated_percentage.toFixed(2)}% (${hours_lacking_power} hours out of ${total_hours} total hours)`)
 //     console.log(`Total generated TWh: ${(model_run_output.hourly_total_generation_mw.reduce((sum, v) => sum + v, 0)/1e6).toFixed(2)} TWh`)
-//     console.log(`Net supplied TWh: ${(model_run_output.hourly_net_supply_mw.reduce((sum, v) => sum + v, 0)/1e6).toFixed(2)} TWh`)
+//     console.log(`Net supplied TWh: ${(model_run_output.hourly_net_generated_mw.reduce((sum, v) => sum + v, 0)/1e6).toFixed(2)} TWh`)
 // }
 
 

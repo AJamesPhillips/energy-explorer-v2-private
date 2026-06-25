@@ -17,23 +17,23 @@ export function EnergySupplyDemandActions(_props: {})
 
     useEffect(() =>
     {
-        return pub_sub.sub("power_supply_and_demand", payload =>
+        return pub_sub.sub("power_gen_cap_store_and_demand", payload =>
         {
             set_power({
-                supply_gw: payload.supply_GW,
-                supply_gw_by_type: payload.supply_GW_by_type,
+                generated_gw: payload.generated_GW,
+                generated_gw_by_type: payload.generated_GW_by_type,
                 capacity_gw_by_type: payload.capacity_GW_by_type,
                 demand_gw: payload.demand_GW,
             })
         }, "model-power")
     }, [])
 
-    const diff = power.supply_gw - power.demand_gw
+    const diff = power.generated_gw - power.demand_gw
     const sufficient_power = diff >= 0
     const diff_color = diff >= 0 ? (diff === 0 ? "grey" : "green") : "red"
 
     return <div
-        id="energy_supply_demand_actions"
+        id="energy_generated_demand_actions"
         // className="ui_section"
     >
         <table>
@@ -77,28 +77,28 @@ export function EnergySupplyDemandActions(_props: {})
                 <tr>
                     <td/>
                     <td>Wind</td>
-                    <td>{power.supply_gw_by_type.wind.toFixed(1)} / {power.capacity_gw_by_type.wind.toFixed(1)}</td>
+                    <td>{power.generated_gw_by_type.wind.toFixed(1)} / {power.capacity_gw_by_type.wind.toFixed(1)}</td>
                     <td/>
                     <td><BuildButton type="wind" /></td>
                 </tr>
                 <tr>
                     <td/>
                     <td>Solar</td>
-                    <td>{power.supply_gw_by_type.solar.toFixed(1)} / {power.capacity_gw_by_type.solar.toFixed(1)}</td>
+                    <td>{power.generated_gw_by_type.solar.toFixed(1)} / {power.capacity_gw_by_type.solar.toFixed(1)}</td>
                     <td/>
                     <td><BuildButton type="solar" /></td>
                 </tr>
                 <tr>
                     <td/>
                     <td>Nuclear</td>
-                    <td>{power.supply_gw_by_type.nuclear.toFixed(1)} / {power.capacity_gw_by_type.nuclear.toFixed(1)}</td>
+                    <td>{power.generated_gw_by_type.nuclear.toFixed(1)} / {power.capacity_gw_by_type.nuclear.toFixed(1)}</td>
                     <td/>
                     {/* <td><BuildButton type="nuclear" /></td> */}
                 </tr>
                 <tr>
                     <td/>
                     <td>Gas</td>
-                    <td>{power.supply_gw_by_type.gas.toFixed(1)} / {power.capacity_gw_by_type.gas.toFixed(1)}</td>
+                    <td>{power.generated_gw_by_type.gas.toFixed(1)} / {power.capacity_gw_by_type.gas.toFixed(1)}</td>
                     <td/>
                     {/* <td>Build</td> */}
                 </tr>
@@ -108,7 +108,7 @@ export function EnergySupplyDemandActions(_props: {})
                         Hydro
                         {/* <span className="font_sm">(run of river)</span> */}
                     </td>
-                    <td>{power.supply_gw_by_type.hydro_river.toFixed(1)} / {power.capacity_gw_by_type.hydro_river.toFixed(1)}</td>
+                    <td>{power.generated_gw_by_type.hydro_river.toFixed(1)} / {power.capacity_gw_by_type.hydro_river.toFixed(1)}</td>
                     <td/>
                     {/* <td>Build</td> */}
                 </tr>
@@ -127,14 +127,14 @@ export function EnergySupplyDemandActions(_props: {})
                         Hydro
                         {/* <span className="font_sm">(pumped)</span> */}
                     </td>
-                    <td>{power.supply_gw_by_type.hydro_pumped_storage.toFixed(1)} / {power.capacity_gw_by_type.hydro_pumped_storage.toFixed(1)}</td>
+                    <td>{power.generated_gw_by_type.hydro_pumped_storage.toFixed(1)} / {power.capacity_gw_by_type.hydro_pumped_storage.toFixed(1)}</td>
                     <td/>
                     {/* <td>Build</td> */}
                 </tr>
                 <tr>
                     <td/>
                     <td>Battery</td>
-                    <td>{power.supply_gw_by_type.battery.toFixed(1)} / {power.capacity_gw_by_type.battery.toFixed(1)}</td>
+                    <td>{power.generated_gw_by_type.battery.toFixed(1)} / {power.capacity_gw_by_type.battery.toFixed(1)}</td>
                     <td/>
                     {/* <td>Build</td> */}
                 </tr>
@@ -215,7 +215,7 @@ export function EnergySupplyDemandActions(_props: {})
 
 function get_initial_power()
 {
-    const supply_gw_by_type: ValueByPowerType<number> = {
+    const generated_gw_by_type: ValueByPowerType<number> = {
         wind: 0,
         solar: 0,
         gas: 0,
@@ -225,12 +225,12 @@ function get_initial_power()
         hydro_pumped_storage: 0,
     }
     const capacity_gw_by_type: ValueByPowerType<number> = {
-        ...supply_gw_by_type,
+        ...generated_gw_by_type,
     }
 
     return {
-        supply_gw: 0,
-        supply_gw_by_type,
+        generated_gw: 0,
+        generated_gw_by_type,
         capacity_gw_by_type,
         demand_gw: 0,
     }

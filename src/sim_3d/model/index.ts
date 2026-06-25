@@ -173,7 +173,7 @@ const last_updated_at =
     real_time: 0,
 }
 const max_update_frequency_ms = 1000
-export function init_model_power_supply_updates(h3r5_land_cells: LandH3Cell[])
+export function init_model_power_generated_updates(h3r5_land_cells: LandH3Cell[])
 {
     const demand_GW_by_h3r4 = get_initial_proportional_demand_by_h3r4_cell(h3r5_land_cells)
 
@@ -196,7 +196,7 @@ export function init_model_power_supply_updates(h3r5_land_cells: LandH3Cell[])
             datetime_annual_hourly_index_mix: payload.datetime_annual_hourly_index_mix,
         })
 
-        pub_sub.pub("power_supply_and_demand", {
+        pub_sub.pub("power_gen_cap_store_and_demand", {
             ...model_state,
             demand_GW_by_h3r4,
             datetime_ms: payload.datetime_ms,
@@ -233,7 +233,7 @@ export async function calculate_model_state_at_timepoint(args: {
         datetime_annual_hourly_index2,
         datetime_annual_hourly_index_mix,
     )
-    const supply_GW_by_type: ValueByPowerType<number> = {
+    const generated_GW_by_type: ValueByPowerType<number> = {
         wind: 0,
         solar: 0,
         gas: 0,
@@ -243,20 +243,20 @@ export async function calculate_model_state_at_timepoint(args: {
         hydro_pumped_storage: 0,
     }
     const capacity_GW_by_type: ValueByPowerType<number> = {
-        ...supply_GW_by_type,
+        ...generated_GW_by_type,
     }
 
     let total_MW = 0
     Object.values(gen_cap_store_MW_by_h3r4).forEach(c =>
     {
         total_MW += c.total_generated_MW
-        supply_GW_by_type.wind += c.wind.generated_MW / 1000
-        supply_GW_by_type.solar += c.solar.generated_MW / 1000
-        supply_GW_by_type.gas += c.gas.generated_MW / 1000
-        supply_GW_by_type.nuclear += c.nuclear.generated_MW / 1000
-        supply_GW_by_type.hydro_river += c.hydro_river.generated_MW / 1000
-        supply_GW_by_type.battery += c.battery.generated_MW / 1000
-        supply_GW_by_type.hydro_pumped_storage += c.hydro_pumped_storage.generated_MW / 1000
+        generated_GW_by_type.wind += c.wind.generated_MW / 1000
+        generated_GW_by_type.solar += c.solar.generated_MW / 1000
+        generated_GW_by_type.gas += c.gas.generated_MW / 1000
+        generated_GW_by_type.nuclear += c.nuclear.generated_MW / 1000
+        generated_GW_by_type.hydro_river += c.hydro_river.generated_MW / 1000
+        generated_GW_by_type.battery += c.battery.generated_MW / 1000
+        generated_GW_by_type.hydro_pumped_storage += c.hydro_pumped_storage.generated_MW / 1000
 
         capacity_GW_by_type.wind += c.wind.capacity_MW / 1000
         capacity_GW_by_type.solar += c.solar.capacity_MW / 1000
@@ -267,7 +267,7 @@ export async function calculate_model_state_at_timepoint(args: {
         capacity_GW_by_type.hydro_pumped_storage += c.hydro_pumped_storage.capacity_MW / 1000
     })
 
-    const supply_GW = total_MW / 1000
+    const generated_GW = total_MW / 1000
 
     const demand_GW = mutate_demand_by_h3_cell(
         capacity_factor_data.wind.date_time_to_index.size,
@@ -278,9 +278,9 @@ export async function calculate_model_state_at_timepoint(args: {
     )
 
     return {
-        supply_GW,
+        generated_GW,
         demand_GW,
-        supply_GW_by_type,
+        generated_GW_by_type,
         capacity_GW_by_type,
         gen_cap_store_MW_by_h3r4,
     }

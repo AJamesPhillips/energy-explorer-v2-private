@@ -28,7 +28,7 @@ interface LightningBoltFlowProps
     x: number
     y: number
     // size?: number
-    supply_gw: number
+    generated_gw: number
     demand_gw: number
 }
 
@@ -51,14 +51,14 @@ interface BoltInstance
     colour?: THREE.Color
 }
 
-export function LightningBoltFlow({ x, y, supply_gw, demand_gw }: LightningBoltFlowProps)
+export function LightningBoltFlow({ x, y, generated_gw, demand_gw }: LightningBoltFlowProps)
 {
     const size = BASE_SIZE
     // local accumulators (GW-hours)
-    const supply_accum = useRef<number>(0)
+    const generated_accum = useRef<number>(0)
     const demand_accum = useRef<number>(0)
     // times are stored in simulation milliseconds
-    const last_supply_spawn = useRef<number>(0)
+    const last_generated_spawn = useRef<number>(0)
     const last_demand_spawn = useRef<number>(0)
     const id_counter = useRef<number>(0)
     const bolts_ref = useRef<BoltInstance[]>([])
@@ -100,7 +100,7 @@ export function LightningBoltFlow({ x, y, supply_gw, demand_gw }: LightningBoltF
 
         bolts_ref.current.push(instance)
         set_tick(t => t + 1)
-        last_supply_spawn.current = now
+        last_generated_spawn.current = now
     }
 
     function spawn_demand(now: number, scale: number)
@@ -139,23 +139,23 @@ export function LightningBoltFlow({ x, y, supply_gw, demand_gw }: LightningBoltF
         const delta_hours = Math.max(0, (now_ms - last_sim) / 3600000)
 
         // advance accumulators using simulation time delta
-        supply_accum.current += supply_gw * delta_hours
+        generated_accum.current += generated_gw * delta_hours
         demand_accum.current += demand_gw * delta_hours
 
         // supply chunk spawns
-        while (supply_accum.current >= GW_HOUR_CHUNKS)
+        while (generated_accum.current >= GW_HOUR_CHUNKS)
         {
-            const scale = clamp(supply_accum.current / GW_HOUR_CHUNKS, MIN_LIGHTNING_BOLT_SCALE, 1)
+            const scale = clamp(generated_accum.current / GW_HOUR_CHUNKS, MIN_LIGHTNING_BOLT_SCALE, 1)
             spawn_supply(now_ms, scale)
-            supply_accum.current -= Math.min(GW_HOUR_CHUNKS, supply_accum.current)
+            generated_accum.current -= Math.min(GW_HOUR_CHUNKS, generated_accum.current)
         }
 
         // spawn due to timeout (ensure visibility even for tiny supply)
-        if (supply_accum.current > 0 && (now_ms - last_supply_spawn.current) >= (MAX_INTERVAL_SIM_HOURS * 3600 * 1000))
+        if (generated_accum.current > 0 && (now_ms - last_generated_spawn.current) >= (MAX_INTERVAL_SIM_HOURS * 3600 * 1000))
         {
-            const scale = clamp(supply_accum.current / GW_HOUR_CHUNKS, MIN_LIGHTNING_BOLT_SCALE, 1)
+            const scale = clamp(generated_accum.current / GW_HOUR_CHUNKS, MIN_LIGHTNING_BOLT_SCALE, 1)
             spawn_supply(now_ms, scale)
-            supply_accum.current = 0
+            generated_accum.current = 0
         }
 
         // demand chunk spawns
@@ -235,8 +235,8 @@ function create_material(type: BoltType)
     if (type === "supply")
     {
         return new THREE.MeshStandardMaterial({
-            color: new THREE.Color(COLOURS.supply_electricity),
-            emissive: new THREE.Color(COLOURS.supply_electricity_emissive),
+            color: new THREE.Color(COLOURS.generated_electricity),
+            emissive: new THREE.Color(COLOURS.generated_electricity_emissive),
             emissiveIntensity: 1.2,
             transparent: true,
             opacity: 1,

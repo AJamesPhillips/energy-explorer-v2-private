@@ -90,11 +90,11 @@ export function WindTurbine({ size = BASE_SIZE, index, transparent, h3r4_id }: {
     {
         if (!h3r4_id) return
 
-        return pub_sub.sub("power_supply_and_demand", ({ gen_cap_store_MW_by_h3r4 }) =>
+        return pub_sub.sub("power_gen_cap_store_and_demand", ({ gen_cap_store_MW_by_h3r4 }) =>
         {
-            const generation = gen_cap_store_MW_by_h3r4[h3r4_id]
-            if (!generation) return
-            const new_speed = (generation.wind.generated_MW / generation.wind.capacity_MW) * BASE_SPEED
+            const cell_gen_cap_store = gen_cap_store_MW_by_h3r4[h3r4_id]
+            if (!cell_gen_cap_store) return
+            const new_speed = (cell_gen_cap_store.wind.generated_MW / cell_gen_cap_store.wind.capacity_MW) * BASE_SPEED
             speed.current = new_speed
         })
     }, [])

@@ -32,9 +32,9 @@ export interface PublishableEvents
         factor: number
         sim_seconds_per_real_second: number
     }
-    power_supply_and_demand: {
-        supply_GW: number
-        supply_GW_by_type: ValueByPowerType<number>
+    power_gen_cap_store_and_demand: {
+        generated_GW: number
+        generated_GW_by_type: ValueByPowerType<number>
         capacity_GW_by_type: ValueByPowerType<number>
         gen_cap_store_MW_by_h3r4: Record<string, MWGenCapStoreForH3R4>
         demand_GW: number

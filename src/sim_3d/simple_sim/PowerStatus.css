@@ -38,17 +38,17 @@
     color: red;
 }
 
-.supply_demand_labels
+.generated_demand_labels
 {
     line-height: 0.9;
     opacity: 0;
     transition: opacity 0.2s ease;
 }
-#power_status_container:hover .supply_demand_labels
+#power_status_container:hover .generated_demand_labels
 {
     opacity: 1;
 }
-.supply_demand_label
+.generated_demand_label
 {
     font-size: var(--font-small);
     font-weight: bold;

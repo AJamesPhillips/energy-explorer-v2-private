@@ -25,7 +25,7 @@ export function run_model(model_data: ModelData, model_scenario: ModelScenario, 
     const hourly_solar_generation_mw: number[] = []
     const hourly_total_generation_mw: number[] = []
     const hourly_net_generation_mw: number[] = []
-    const hourly_net_supply_mw: number[] = []
+    const hourly_net_generated_mw: number[] = []
 
     const {
         hourly_capacity_factor_wind_generation: {
@@ -71,7 +71,7 @@ export function run_model(model_data: ModelData, model_scenario: ModelScenario, 
         const time_step_seconds = (next_date.getTime() - current_datetime_ms) / 1000
         const storage_provided_mw = calc_storage_provided_mw(user_actions.storage_mw_power_plants, net_generation_mw, time_step_seconds)
         const net_supply = net_generation_mw + storage_provided_mw
-        hourly_net_supply_mw.push(net_supply)
+        hourly_net_generated_mw.push(net_supply)
 
         ++current_datetime_index
     }
@@ -84,7 +84,7 @@ export function run_model(model_data: ModelData, model_scenario: ModelScenario, 
         hourly_solar_generation_mw,
         hourly_total_generation_mw,
         hourly_net_generation_mw,
-        hourly_net_supply_mw,
+        hourly_net_generated_mw,
     }
 }
 

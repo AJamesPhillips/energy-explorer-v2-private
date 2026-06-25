@@ -62,7 +62,7 @@ export function CellInfo()
             return
         }
 
-        return pub_sub.sub("power_supply_and_demand", payload =>
+        return pub_sub.sub("power_gen_cap_store_and_demand", payload =>
         {
             const demand_GW = payload.demand_GW_by_h3r4[h3r4_id]?.demand_GW ?? 0
             const gen_cap_store = payload.gen_cap_store_MW_by_h3r4[h3r4_id] ?? EMPTY_GEN_CAP_STORE

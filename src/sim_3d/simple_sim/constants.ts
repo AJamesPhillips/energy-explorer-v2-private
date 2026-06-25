@@ -117,8 +117,8 @@ export const COLOURS = {
     suburban: "#ab5154",
     urban: "#8899aa",
 
-    supply_electricity: "#44bbff",
-    supply_electricity_emissive: "#0055ff",
+    generated_electricity: "#44bbff",
+    generated_electricity_emissive: "#0055ff",
     demand_electricity: "#ff4444",
     demand_electricity_emissive: "#550000",
 

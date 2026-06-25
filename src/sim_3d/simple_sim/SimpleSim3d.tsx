@@ -20,7 +20,7 @@ import { H3LandCells } from "../dev/dgg/H3LandCells"
 import { WorldAtlas } from "../dev/interface"
 import { NEARBY_COUNTRY_IDS, UK_ID } from "../dev/map_data"
 import { PowerPlantsCurrent } from "../dev/PowerPlantsCurrent"
-import { init_model_power_supply_updates } from "../model"
+import { init_model_power_generated_updates } from "../model"
 import pub_sub from "../state/pub_sub"
 import { sim_clock } from "../state/sim_clock"
 import { CONSTANTS, DEFAULTS } from "./constants"
@@ -113,12 +113,12 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
             //     },
             // }
 
-            // const prev_power_supply = calculate_power_supply_from_data(prev)
-            // const new_power_supply = calculate_power_supply_from_data(new_cells)
-            // const change_in_supply_gw = new_power_supply - prev_power_supply
+            // const prev_power_supply = calculate_power_generated_from_data(prev)
+            // const new_power_supply = calculate_power_generated_from_data(new_cells)
+            // const change_in_generated_gw = new_power_supply - prev_power_supply
 
             // pub_sub.pub("will_update_tile", new_cell)
-            // pub_sub.pub("tile_power_changed", { tile: new_cell, change_gw: change_in_supply_gw })
+            // pub_sub.pub("tile_power_changed", { tile: new_cell, change_gw: change_in_generated_gw })
 
             // return new_cells
         })
@@ -160,7 +160,7 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
     {
         if (h3r5_land_cells.length === 0) return
 
-        init_model_power_supply_updates(h3r5_land_cells)
+        init_model_power_generated_updates(h3r5_land_cells)
         sim_clock.init({
             start_timestamp,
             current_timestamp,

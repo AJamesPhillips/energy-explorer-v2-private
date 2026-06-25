@@ -1,27 +1,27 @@
 /*
-#energy_supply_demand_actions
+#energy_generated_demand_actions
 {
     /* border: 1px solid var(--colour-border-gray); * /
 } */
 
-#energy_supply_demand_actions table
+#energy_generated_demand_actions table
 {
     border-collapse: collapse;
     border-spacing: 0;
 }
 
-#energy_supply_demand_actions table td
+#energy_generated_demand_actions table td
 {
     padding: 2px 5px;
 }
 
-#energy_supply_demand_actions table td:nth-child(1)
+#energy_generated_demand_actions table td:nth-child(1)
 {
     padding: 2px 0px 2px 8px;
 }
-#energy_supply_demand_actions table td:nth-child(1),
-#energy_supply_demand_actions table td:nth-child(2),
-#energy_supply_demand_actions table td:nth-child(3)
+#energy_generated_demand_actions table td:nth-child(1),
+#energy_generated_demand_actions table td:nth-child(2),
+#energy_generated_demand_actions table td:nth-child(3)
 {
     background-color: rgba(255, 255, 255, 0.8);
 }
