@@ -168,8 +168,15 @@ export function aggregate_power_plants_by_h3_cell(
 function get_active_power_plants(power_plants: PowerPlant[], year: number): PowerPlant[]
 {
     return power_plants.filter(plant =>
-        plant.operational_year &&
-        plant.operational_year <= year &&
+        (
+            plant.status === "under_construction"
+            ||
+            (
+                plant.operational_year &&
+                plant.operational_year <= year
+            )
+        )
+        &&
         (plant.decommissioned_year === undefined || plant.decommissioned_year > year)
     )
 }

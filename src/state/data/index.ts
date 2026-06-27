@@ -1,8 +1,7 @@
 
 import { OilGasByYear } from "../../sim_3d/data/fossil_fuels/process_data_component"
 import { PopulationByYear } from "../../sim_3d/data/population/process_data_component"
-import { SolarFarmsByYear } from "../../sim_3d/data/solar_pv_farms/process_data_component"
-import { WindFarmsByYear } from "../../sim_3d/data/wind_farms/process_data_component"
+import { SolarFarmsByYear, WindFarmsByYear } from "../../sim_3d/data/power_plants/parse_data"
 import { SetAppState } from "../interface"
 import { DataBlob1, DataState } from "./interface"
 

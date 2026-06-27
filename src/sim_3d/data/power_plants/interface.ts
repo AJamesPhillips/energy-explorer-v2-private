@@ -7,8 +7,8 @@ import { ValueByPowerType } from "../../model/interface"
 export type RawBatteryPlantData = [number, number, number, number]
 export type RawGasPowerPlantData = [number, number, number]
 export type RawHydroPowerPlantData = [number, number, number, number | undefined]
-export type RawSolarFarmData = [number, number, number | undefined, number, number, number]
-export type RawWindFarmData = [number, number, number | undefined, number | undefined, number, undefined | number, number, number]
+export type RawSolarFarmData = [number, number, number | undefined, number, number, number, "o" | "uc"]
+export type RawWindFarmData = [number, number, number | undefined, number | undefined, number, undefined | number, number, number, "o" | "uc"]
 
 
 interface PowerPlantBase
@@ -19,6 +19,7 @@ interface PowerPlantBase
     storage_MWH?: number
     // When was it commissioned
     operational_year: number | undefined
+    status?: "operational" | "under_construction"
     decommissioned_year?: number
     name?: string
 }
