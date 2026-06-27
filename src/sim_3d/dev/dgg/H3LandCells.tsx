@@ -1,4 +1,4 @@
-import * as h3 from "h3-js"
+import { cellToBoundary } from "h3-js"
 import { useMemo, useRef } from "react"
 import * as THREE from "three"
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
@@ -88,7 +88,7 @@ function calculate_cell_fills_and_models_to_render(h3_cells: LandH3Cell[], extru
         }, {} as Record<SimplifiedLandAreaType, { x: number; y: number; h3h5_id: string }[]>)
 
         h3_cells.forEach(h3_cell => {
-            const latlon_tuple_boundary = h3.cellToBoundary(h3_cell.h3h5_id)
+            const latlon_tuple_boundary = cellToBoundary(h3_cell.h3h5_id)
             // h3 gives lat,lon tuple
             const latlon_boundary = latlon_tuples_to_objs(latlon_tuple_boundary)
 

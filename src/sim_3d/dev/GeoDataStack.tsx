@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber"
-import * as h3 from "h3-js"
+import { getHexagonAreaAvg } from "h3-js"
 import { useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 
@@ -178,7 +178,7 @@ function resolution_label(res: number): string
 
 function StatsRow(props: { resolution: number, cell_count: number })
 {
-    const avg_area = h3.getHexagonAreaAvg(props.resolution, "km2")
+    const avg_area = getHexagonAreaAvg(props.resolution, "km2")
 
     return <div className="grid grid-cols-3 gap-3">
         <div className="bg-[#0d1e35] border border-[#1e3d5a] rounded-lg px-4 py-3">

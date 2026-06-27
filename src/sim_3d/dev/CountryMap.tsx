@@ -1,4 +1,4 @@
-import * as h3 from "h3-js"
+import { polygonToCells } from "h3-js"
 import { useMemo } from "react"
 import * as THREE from "three"
 import { Arc } from "topojson-specification"
@@ -170,7 +170,7 @@ function CountryH3Map(props: CountryH3MapProps)
     const h3_cell_ids = useMemo(() => {
         const country_of_interest_land_latlons = country_of_interest_land.map(latlon_objs_to_latlon_tuples)
         const cell_ids = country_of_interest_land_latlons
-            .map(outline => h3.polygonToCells(outline, resolution))
+            .map(outline => polygonToCells(outline, resolution))
             .flat()
         // console.log(cells.join("\n"))
 

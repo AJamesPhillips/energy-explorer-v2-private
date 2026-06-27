@@ -1,4 +1,9 @@
-import * as h3 from "h3-js"
+import {
+    cellArea,
+    cellToBoundary,
+    cellToLatLng,
+    UNITS,
+} from "h3-js"
 import { ComponentType, useMemo } from "react"
 import * as THREE from "three"
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
@@ -50,11 +55,11 @@ export function AggregatedPowerPlantLayer(props: AggregatedPowerPlantLayerProps)
             const aggregate = data[plant_key]
             if (aggregate.count === 0) continue
 
-            const [lat, lon] = h3.cellToLatLng(h3r4_id)
+            const [lat, lon] = cellToLatLng(h3r4_id)
             const center = projection({ lat, lon })
             if (!center) continue
 
-            const cell_area_km2 = h3.cellArea(h3r4_id, h3.UNITS.km2)
+            const cell_area_km2 = cellArea(h3r4_id, UNITS.km2)
             const plant_area_km2 = aggregate.area_km2 ?? 0
             const area_ratio = clamp(plant_area_km2 / cell_area_km2)
             if (min_area_ratio !== undefined && area_ratio < min_area_ratio) continue
@@ -63,7 +68,7 @@ export function AggregatedPowerPlantLayer(props: AggregatedPowerPlantLayerProps)
 
             if (area_ratio === 0) continue
 
-            const boundary = h3.cellToBoundary(h3r4_id, false)
+            const boundary = cellToBoundary(h3r4_id, false)
             const boundary_points = boundary
                 .map(([boundary_lat, boundary_lon]) => projection({ lat: boundary_lat, lon: boundary_lon }))
                 .filter((point): point is XY => point !== null)

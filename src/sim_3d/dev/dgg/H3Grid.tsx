@@ -1,4 +1,4 @@
-import * as h3 from "h3-js"
+import { polygonToCells } from "h3-js"
 import { useMemo } from "react"
 
 import { ILatLon } from "core/data/values/LatLon"
@@ -23,7 +23,7 @@ export function H3Grid(props: {
 
     const h3_cell_ids = useMemo(() => {
         const EEZ_coords_latlon = latlon_objs_to_latlon_tuples(EEZ_coords_lonlat)
-        const cell_ids = h3.polygonToCells(EEZ_coords_latlon, resolution)
+        const cell_ids = polygonToCells(EEZ_coords_latlon, resolution)
         // console.log("H3Grid: cell_ids.length", cell_ids.length)
         props.set_cell_count?.(cell_ids.length)
 

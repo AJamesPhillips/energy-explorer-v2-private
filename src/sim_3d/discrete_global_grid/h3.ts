@@ -1,19 +1,19 @@
-import * as H3 from "h3-js"
-import * as THREE from "three"
-
-import { convert_lat_lon_to_array_sphere } from "../utils/geo/convert_lat_lon_to_sphere"
-import { H3GridConfig } from "./interface"
-import { log_dgg_stats } from "./stats"
-const {
+import {
     cellArea,
     cellToBoundary,
     cellToChildren,
     getRes0Cells,
     isPentagon,
-} = H3
+} from "h3-js"
+import * as THREE from "three"
 
-//
-;(window as any).H3 = H3 // Expose H3 globally for debugging
+import { convert_lat_lon_to_array_sphere } from "../utils/geo/convert_lat_lon_to_sphere"
+import { H3GridConfig } from "./interface"
+import { log_dgg_stats } from "./stats"
+
+// Expose H3 globally for debugging
+import * as H3 from "h3-js"
+(window as any).H3 = H3
 
 
 export function draw_h3_grid(earth_mesh: THREE.Mesh, config: H3GridConfig)
