@@ -1,41 +1,16 @@
-// import { useEffect, useRef, useState } from "react"
-
+import { cellArea, UNITS } from "h3-js"
 import { useEffect, useState } from "react"
+
 import { CloseIcon } from "../../../components/svgs"
 import { get_app_state } from "../../../state/store"
-import pub_sub from "../../state/pub_sub"
-
-// import { CloseIcon } from "../../../components/svgs"
-// import { is_touch_screen } from "../../../utils/screen_type"
-// import { land_or_sea_types } from "../../data/coverage_land/uk/data"
-// import pub_sub from "../../state/pub_sub"
-// import { CellDataV2, CellsData } from "../interface"
-// import { RenderSingleTile } from "./RenderSingleTile"
 import { is_on_localhost } from "../../../utils/is_on_localhost"
 import { to_sentence_case } from "../../../utils/string"
 import { promise_load_all_capacity_factor_data } from "../../data/wind_and_solar_capacity/load_data"
 import { MWGenCapStoreForH3R4, POWER_TYPES } from "../../model/interface"
+import pub_sub from "../../state/pub_sub"
 import { get_capacity_factor_mix } from "../../utils/capacity_factor_data"
 import { COLOURS } from "../constants"
 import "./CellInfo.css"
-
-
-
-// const cells_data: CellsData<CellDataV2 & { human_readable: string }> = {}
-// Object.values(land_or_sea_types).forEach((entry, i) =>
-// {
-//     const cell_data: CellDataV2 & { human_readable: string } = {
-//         ...entry,
-//         id: i,
-//         x: i,
-//         y: i,
-//         has_wind_turbine: false,
-//         has_solar_farm: false,
-//         has_oil_rig: undefined,
-//         has_oil_pocket: undefined,
-//     }
-//     cells_data[i] = { [i]: cell_data }
-// })
 
 
 const show_H3_cell_id = true || is_on_localhost()
@@ -179,9 +154,18 @@ export function CellInfo()
             {show_H3_cell_id && <span style={{
                 fontSize: "var(--font-small)",
                 color: COLOURS.text_muted,
+                display: "flex",
+                gap: 4,
             }}>
                 {cell_info?.h3r4_id
-                    ? <>H3 cell ID: <span style={{ userSelect: "text" }}>{cell_info?.h3r4_id}</span></>
+                    ? <>
+                        <div>
+                            H3 cell ID: <span style={{ userSelect: "text" }}>{cell_info.h3r4_id}</span>
+                        </div>
+                        <div>
+                            Area: <span style={{ userSelect: "text" }}>{cellArea(cell_info.h3r4_id, UNITS.km2).toFixed(0)} km²</span>
+                        </div>
+                    </>
                     : ""
                 }
             </span>}
