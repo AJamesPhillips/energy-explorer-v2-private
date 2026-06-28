@@ -70,10 +70,16 @@ export function jump_to(new_datetime_ms: number)
 }
 
 
+export function timestamp_to_index(timestamp: number): number
+{
+    return Math.floor((timestamp - year_start_timestamp) / (1000 * 3600)) % 8760
+}
+
+
 function publish_datetime()
 {
     const datetime = new Date(current_timestamp)
-    const datetime_annual_hourly_index1 = Math.floor((current_timestamp - year_start_timestamp) / (1000 * 3600)) % 8760
+    const datetime_annual_hourly_index1 = timestamp_to_index(current_timestamp)
     const datetime_annual_hourly_index2 = (datetime_annual_hourly_index1 + 1) % 8760
     // The mix is the number of minutes into the hour, divided by 60, so it is a number between 0 and 1
     const datetime_annual_hourly_index_mix = datetime.getUTCMinutes() / 60
