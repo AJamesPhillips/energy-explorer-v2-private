@@ -7,7 +7,10 @@ import { cost_per_km2_solar, cost_per_km2_wind, cost_per_nuclear_plant } from ".
 import { AggregatedPowerPlantData, AggregatePowerPlantData } from "../../data/power_plants/interface"
 import { calculate_model_state_over_time_range } from "../../model"
 import { ModelStateAtTimepoint } from "../../model/interface"
+import { COLOURS } from "../constants"
 
+
+const SHORTAGE_MULTIPLIER = 10
 
 export function GameScore()
 {
@@ -48,18 +51,21 @@ export function GameScore()
 
         {score && <div className="ui_section">
             <div><b>Score</b> {Math.round(score.total_score)}</div>
-            <div>Building cost: {to_neg(score.building_cost)}</div>
-            <div>Shortage: {to_neg(score.shortage_GWh)}</div>
-            <div>Excess: {to_neg(score.excess_GWh)}</div>
-            <div>Resilience: {to_neg(score.resilience_score)}</div>
-            <div>Running cost: {to_neg(score.running_cost)}</div>
+            <div>Building cost: {to("neg", score.building_cost)}</div>
+            <div>
+                Shortage: {to("neg", score.shortage_TWh, 2)} TWh
+                <span style={{ fontSize: "var(--font-small)", color: COLOURS.text_muted }}> x{SHORTAGE_MULTIPLIER}</span>
+            </div>
+            <div>Excess: {to("pos", score.excess_TWh, 2)} TWh</div>
+            <div>Resilience: {to("neg", score.resilience_score)}</div>
+            <div>Running cost: {to("neg", score.running_cost)}</div>
         </div>}
     </div>
 }
-function to_neg(value: number)
+function to(neg_pos: "neg" | "pos", value: number, decimal_places = 1)
 {
-    let value_str = value ? value.toFixed(1) : "0"
-    if (value > 0) value_str = "-" + value_str
+    let value_str = value ? value.toFixed(decimal_places) : "0"
+    if (value > 0) value_str = (neg_pos === "neg" ? "-" : "+") + value_str
     return value_str
 }
 
@@ -67,8 +73,8 @@ function to_neg(value: number)
 interface Score
 {
     building_cost: number
-    shortage_GWh: number
-    excess_GWh: number
+    shortage_TWh: number
+    excess_TWh: number
     running_cost: number
     resilience_score: number
     total_score: number
@@ -89,24 +95,28 @@ function calculate_score(model_state_over_time: ModelStateAtTimepoint[], aggrega
     })
 
     // Shortage & excess
-    let shortage_GWh = 0
-    let excess_GWh = 0
+    let shortage_TWh = 0
+    let excess_TWh = 0
     model_state_over_time.forEach(model_state =>
     {
         // Each timepoint is one hour so the shortfall in GWh is the same as the
         // shortfall in GW
         // Also the demand factors in demand from storage like pumped hydro,
         // batteries, compressed air, etc.
-        const diff_GWh = model_state.generated_GW - model_state.demand_GW
-        shortage_GWh += Math.max(0, -diff_GWh)
-        excess_GWh += Math.max(0, diff_GWh)
+        const diff_GWh = (model_state.generated_GW - model_state.demand_GW)
+        const diff_TWh = diff_GWh / 1000
+        shortage_TWh += Math.max(0, -diff_TWh)
+        excess_TWh += Math.max(0, diff_TWh)
     })
 
-    const total_score = 100 - building_cost
+    const total_score = 100
+        - building_cost
+        - (shortage_TWh * SHORTAGE_MULTIPLIER)
+        - excess_TWh
 
     return {
-        shortage_GWh,
-        excess_GWh,
+        shortage_TWh,
+        excess_TWh,
         building_cost,
         running_cost: 0,
         resilience_score: 0,
