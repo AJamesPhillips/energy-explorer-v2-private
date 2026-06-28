@@ -8,7 +8,7 @@ import { AggregatedPowerPlantData } from "../sim_3d/data/power_plants/interface"
 import * as building_action from "./building_action"
 import * as data from "./data"
 import * as game_datetime from "./game_datetime"
-import { AppState } from "./interface"
+import { AppState, Subscribe } from "./interface"
 import * as power_demand from "./power_demand"
 import * as power_plants from "./power_plants"
 import * as view from "./view"
@@ -23,6 +23,17 @@ export type AppStore = ReturnType<typeof get_new_app_store>
 // without affecting the global state.
 export const get_new_app_store = () =>
 {
+    const subscribers: ((state: AppState, previous_state: AppState) => void)[] = []
+    const subscribe: Subscribe = (subscriber: (state: AppState, previous_state: AppState) => void) =>
+    {
+        subscribers.push(subscriber)
+        return () =>
+        {
+            const index = subscribers.indexOf(subscriber)
+            if (index !== -1) subscribers.splice(index, 1)
+        }
+    }
+
     const app_store = create<AppState>()(immer((set_state, get_state) =>
     {
         return {
@@ -34,6 +45,8 @@ export const get_new_app_store = () =>
             view: view.initial_state(set_state),
         }
     }))
+
+    subscribers.forEach(subscriber => app_store.subscribe(subscriber))
 
     // Expose the store state for easier debugging
     app_store.subscribe((state, _previous_state) =>
