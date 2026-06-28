@@ -1,5 +1,7 @@
 import { cellToParent } from "h3-js"
 
+import { deep_freeze } from "core/utils/deep_freeze"
+
 import { DEFAULT_SPEED } from "../../state/game_datetime/constants"
 import { await_aggregated_by_h3r4, hacky_get_state } from "../../state/store"
 import { LandH3Cell } from "../data/coverage_land/uk/data"
@@ -8,9 +10,9 @@ import { uk_demand_gw_by_hour_2018 } from "../data/power_demand/uk"
 import type { AggregatedPowerPlantData } from "../data/power_plants/interface"
 import { AllCapacityFactorData, promise_load_all_capacity_factor_data } from "../data/wind_and_solar_capacity/load_data"
 import pub_sub from "../state/pub_sub"
-import { get_speed_factor } from "../state/sim_clock"
+import { get_speed_factor, timestamp_to_index } from "../state/sim_clock"
 import { get_capacity_factor_mix } from "../utils/capacity_factor_data"
-import { DemandByH3R4Cell, DemandGWForH3R4, MWGenCapStoreForH3R4, ValueByPowerType } from "./interface"
+import { DemandByH3R4Cell, DemandGWForH3R4, MWGenCapStoreForH3R4, ValueByPowerType, ValueByStorageType } from "./interface"
 
 
 const promise_capacity_factor_data = promise_load_all_capacity_factor_data()
@@ -207,18 +209,26 @@ export function init_model_power_generated_updates(h3r5_land_cells: LandH3Cell[]
 }
 
 
-export async function calculate_model_state_at_timepoint(args: {
+type CalculateModelStateAtTimepoint = {
     demand_GW_by_h3r4: Record<string, DemandGWForH3R4>
     datetime_annual_hourly_index1: number
+} & ({
     datetime_annual_hourly_index2: number
     datetime_annual_hourly_index_mix: number
+} | {
+    datetime_annual_hourly_index2?: undefined
+    datetime_annual_hourly_index_mix?: undefined
 })
+export async function calculate_model_state_at_timepoint(args: CalculateModelStateAtTimepoint)
 {
     const {
         demand_GW_by_h3r4,
         datetime_annual_hourly_index1,
-        datetime_annual_hourly_index2,
-        datetime_annual_hourly_index_mix,
+    } = args
+
+    const {
+        datetime_annual_hourly_index2 = datetime_annual_hourly_index1,
+        datetime_annual_hourly_index_mix = 0,
     } = args
 
     console.log("Updating model power supply for datetime index", datetime_annual_hourly_index1)
@@ -245,6 +255,13 @@ export async function calculate_model_state_at_timepoint(args: {
     const capacity_GW_by_type: ValueByPowerType<number> = {
         ...generated_GW_by_type,
     }
+    const stored_GWh_by_type: ValueByStorageType<number> = {
+        battery: 0,
+        hydro_pumped_storage: 0,
+    }
+    const store_capacity_by_type: ValueByStorageType<number> = {
+        ...stored_GWh_by_type,
+    }
 
     let total_MW = 0
     Object.values(gen_cap_store_MW_by_h3r4).forEach(c =>
@@ -265,6 +282,12 @@ export async function calculate_model_state_at_timepoint(args: {
         capacity_GW_by_type.hydro_river += c.hydro_river.capacity_MW / 1000
         capacity_GW_by_type.battery += c.battery.capacity_MW / 1000
         capacity_GW_by_type.hydro_pumped_storage += c.hydro_pumped_storage.capacity_MW / 1000
+
+        stored_GWh_by_type.battery += (c.battery.stored_MWh ?? 0) / 1000
+        stored_GWh_by_type.hydro_pumped_storage += (c.hydro_pumped_storage.stored_MWh ?? 0) / 1000
+
+        store_capacity_by_type.battery += (c.battery.store_capacity_MWh ?? 0) / 1000
+        store_capacity_by_type.hydro_pumped_storage += (c.hydro_pumped_storage.store_capacity_MWh ?? 0) / 1000
     })
 
     const generated_GW = total_MW / 1000
@@ -282,6 +305,55 @@ export async function calculate_model_state_at_timepoint(args: {
         demand_GW,
         generated_GW_by_type,
         capacity_GW_by_type,
+        stored_GWh_by_type,
+        store_capacity_by_type,
         gen_cap_store_MW_by_h3r4,
     }
+}
+
+
+interface ModelStateAtTimepoint
+{
+    timestamp_ms: number
+    timestamp_index: number
+    demand_GW: number
+    generated_GW_by_type: ValueByPowerType<number>
+    capacity_GW_by_type: ValueByPowerType<number>
+    stored_GWh_by_type: ValueByStorageType<number>
+    store_capacity_by_type: ValueByStorageType<number>
+}
+export async function calculate_model_state_over_time_range(args: {
+    demand_GW_by_h3r4: Record<string, DemandGWForH3R4>
+    start_timestamp: number
+    end_timestamp: number
+}): Promise<ModelStateAtTimepoint[]>
+{
+    let index = timestamp_to_index(args.start_timestamp)
+    const end_index = timestamp_to_index(args.end_timestamp)
+
+    const model_states: ModelStateAtTimepoint[] = []
+    while (index <= end_index)
+    {
+        const timestamp_ms = args.start_timestamp + index * 1000 * 3600
+        const model_state = await calculate_model_state_at_timepoint({
+            demand_GW_by_h3r4: args.demand_GW_by_h3r4,
+            datetime_annual_hourly_index1: index,
+            datetime_annual_hourly_index2: index, // not rele
+            datetime_annual_hourly_index_mix: 0,
+        })
+
+        model_states.push(deep_freeze({
+            timestamp_ms: timestamp_ms,
+            timestamp_index: index,
+            demand_GW: model_state.demand_GW,
+            generated_GW_by_type: model_state.generated_GW_by_type,
+            capacity_GW_by_type: model_state.capacity_GW_by_type,
+            stored_GWh_by_type: model_state.stored_GWh_by_type,
+            store_capacity_by_type: model_state.store_capacity_by_type,
+        }))
+
+        ++index
+    }
+
+    return model_states
 }
