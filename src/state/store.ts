@@ -9,6 +9,7 @@ import * as building_action from "./building_action"
 import * as data from "./data"
 import * as game_datetime from "./game_datetime"
 import { AppState, Subscribe } from "./interface"
+import * as land_coverage from "./land_coverage"
 import * as power_demand from "./power_demand"
 import * as power_plants from "./power_plants"
 import * as view from "./view"
@@ -39,8 +40,9 @@ export const get_new_app_store = () =>
         return {
             building_action: building_action.initial_state(set_state),
             data: data.initial_state(set_state),
+            land_coverage: land_coverage.initial_state(set_state),
             game_datetime: game_datetime.initial_state(set_state, get_state),
-            power_demand: power_demand.initial_state(set_state),
+            power_demand: power_demand.initial_state(set_state, subscribe),
             power_plants: power_plants.initial_state(set_state, get_state),
             view: view.initial_state(set_state),
         }
