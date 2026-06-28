@@ -1,3 +1,5 @@
+
+// Data from https://github.com/TheWorldSim/world-sim/blob/main/sims/energy-explorer/Assets/Data/power_demand/PowerDemandUK2018Data.cs#L40
 export const uk_demand_gw_by_hour_2018 = [
 26.35
 ,26.76
