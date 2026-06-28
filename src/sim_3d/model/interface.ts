@@ -37,3 +37,16 @@ export type MWGenCapStoreForH3R4 = {
     total_generated_MW: number
     total_capacity_MW: number
 } & ValueByPowerType<MWGenCapStore>
+
+
+export interface ModelStateAtTimepoint
+{
+    timestamp_ms: number
+    timestamp_index: number
+    demand_GW: number
+    generated_GW: number
+    generated_GW_by_type: ValueByPowerType<number>
+    capacity_GW_by_type: ValueByPowerType<number>
+    stored_GWh_by_type: ValueByStorageType<number>
+    store_capacity_by_type: ValueByStorageType<number>
+}

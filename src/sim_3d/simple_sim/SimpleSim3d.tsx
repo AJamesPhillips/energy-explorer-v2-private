@@ -9,7 +9,6 @@ import * as THREE from "three"
 import { BuildingActionType } from "../../state/building_action/interface"
 import { BuildAction } from "../../state/power_plants/interface"
 import { get_app_state, hacky_get_state } from "../../state/store"
-import { get_uk_land_coverage_by_h3r5, LandH3Cell } from "../data/coverage_land/uk/data"
 import { UK_EEZ_COORDS } from "../data/eez/data"
 import { empty_aggregated_power_plant_data } from "../data/power_plants"
 import { AggregatedPowerPlantData } from "../data/power_plants/interface"
@@ -20,7 +19,7 @@ import { H3LandCells } from "../dev/dgg/H3LandCells"
 import { WorldAtlas } from "../dev/interface"
 import { NEARBY_COUNTRY_IDS, UK_ID } from "../dev/map_data"
 import { PowerPlantsCurrent } from "../dev/PowerPlantsCurrent"
-import { init_model_power_generated_updates } from "../model"
+import { init_model_updates } from "../model"
 import pub_sub from "../state/pub_sub"
 import { sim_clock } from "../state/sim_clock"
 import { CONSTANTS, DEFAULTS } from "./constants"
@@ -143,30 +142,22 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
             .catch((e) => set_load_error(e.message))
     }, [])
 
-    const [h3r5_land_cells, set_h3r5_land_cells] = useState<LandH3Cell[]>([])
-    useEffect(() =>
-    {
-        get_uk_land_coverage_by_h3r5().then(h3r5_land_cells =>
-        {
-            set_h3r5_land_cells(h3r5_land_cells)
-        })
-    }, [])
-
+    const initial_electricity_demand_GW_by_h3r4 = get_app_state(state => state.power_demand.initial_electricity_demand_GW_by_h3r4)
 
     const start_timestamp = get_app_state(state => state.game_datetime.start_timestamp)
     const current_timestamp = get_app_state(state => state.game_datetime.initial_timestamp)
     const end_timestamp = get_app_state(state => state.game_datetime.end_timestamp)
     useEffect(() =>
     {
-        if (h3r5_land_cells.length === 0) return
+        if (!initial_electricity_demand_GW_by_h3r4) return
 
-        init_model_power_generated_updates(h3r5_land_cells)
+        init_model_updates(initial_electricity_demand_GW_by_h3r4)
         sim_clock.init({
             start_timestamp,
             current_timestamp,
             end_timestamp,
         })
-    }, [h3r5_land_cells, start_timestamp, current_timestamp, end_timestamp])
+    }, [initial_electricity_demand_GW_by_h3r4, start_timestamp, current_timestamp, end_timestamp])
     useFrame((state, delta) =>
     {
         const elapsed_seconds = state.clock.getElapsedTime()
@@ -176,6 +167,7 @@ export function SimpleSim3d(_props: SimpleSim3dProps)
         })
     })
 
+    const h3r5_land_cells = get_app_state(state => state.land_coverage.h3r5_land_cells)
     const show_lightning_bolt_flow = get_app_state(state => state.game_datetime.speed.includes("fast") === false)
     const show = true
 

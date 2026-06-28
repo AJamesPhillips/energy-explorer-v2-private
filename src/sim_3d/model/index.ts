@@ -1,18 +1,16 @@
-import { cellToParent } from "h3-js"
 
+import { deep_copy } from "core/utils/deep_copy"
 import { deep_freeze } from "core/utils/deep_freeze"
 
 import { DEFAULT_SPEED } from "../../state/game_datetime/constants"
 import { await_aggregated_by_h3r4, hacky_get_state } from "../../state/store"
-import { LandH3Cell } from "../data/coverage_land/uk/data"
-import { SUBURBAN_DEMAND_MULTIPLIER, URBAN_DEMAND_MULTIPLIER } from "../data/power_demand/relative_demand"
 import { uk_demand_gw_by_hour_2018 } from "../data/power_demand/uk"
 import type { AggregatedPowerPlantData } from "../data/power_plants/interface"
 import { AllCapacityFactorData, promise_load_all_capacity_factor_data } from "../data/wind_and_solar_capacity/load_data"
 import pub_sub from "../state/pub_sub"
 import { get_speed_factor, timestamp_to_index } from "../state/sim_clock"
 import { get_capacity_factor_mix } from "../utils/capacity_factor_data"
-import { DemandByH3R4Cell, DemandGWForH3R4, MWGenCapStoreForH3R4, ValueByPowerType, ValueByStorageType } from "./interface"
+import { DemandGWForH3R4, ModelStateAtTimepoint, MWGenCapStoreForH3R4, ValueByPowerType, ValueByStorageType } from "./interface"
 
 
 const promise_capacity_factor_data = promise_load_all_capacity_factor_data()
@@ -114,38 +112,6 @@ function get_gen_cap_store_MW_by_h3r4_cell(
 }
 
 
-
-function get_initial_proportional_demand_by_h3r4_cell(h3r5_land_cells: LandH3Cell[]): DemandByH3R4Cell
-{
-    const demand_by_h3r4: DemandByH3R4Cell = {}
-    let total_h5_cells = 0
-
-    h3r5_land_cells.forEach(cell =>
-    {
-        if (cell.type !== "suburban" && cell.type !== "urban") return
-        total_h5_cells++
-        const h3_res5_id = cell.h3h5_id
-        const h3r4_id = cellToParent(h3_res5_id, 4)
-
-        const entry: DemandGWForH3R4 = demand_by_h3r4[h3r4_id] || {
-            h3r4_id,
-            proportional_demand: 0,
-            demand_GW: 0,
-        }
-
-        entry.proportional_demand += cell.type === "suburban" ? SUBURBAN_DEMAND_MULTIPLIER : URBAN_DEMAND_MULTIPLIER
-        demand_by_h3r4[h3r4_id] = entry
-    })
-
-    Object.values(demand_by_h3r4).forEach(entry =>
-    {
-        entry.proportional_demand /= total_h5_cells
-    })
-
-    return demand_by_h3r4
-}
-
-
 function mutate_demand_by_h3_cell(time_size: number, demand_by_h3r4: Record<string, DemandGWForH3R4>, datetime_index1: number, datetime_index2: number, mix: number): number
 {
     // const year_demand = daily_profiles["2024"]
@@ -175,9 +141,9 @@ const last_updated_at =
     real_time: 0,
 }
 const max_update_frequency_ms = 1000
-export function init_model_power_generated_updates(h3r5_land_cells: LandH3Cell[])
+export function init_model_updates(initial_electricity_demand_GW_by_h3r4: Record<string, DemandGWForH3R4>)
 {
-    const demand_GW_by_h3r4 = get_initial_proportional_demand_by_h3r4_cell(h3r5_land_cells)
+    const demand_GW_by_h3r4 = deep_copy(initial_electricity_demand_GW_by_h3r4)
 
     const unsub = pub_sub.sub("simulation_datetime", async (payload) =>
     {
@@ -200,8 +166,8 @@ export function init_model_power_generated_updates(h3r5_land_cells: LandH3Cell[]
 
         pub_sub.pub("power_gen_cap_store_and_demand", {
             ...model_state,
-            demand_GW_by_h3r4,
             datetime_ms: payload.datetime_ms,
+            demand_GW_by_h3r4,
         })
     })
 
@@ -312,16 +278,6 @@ export async function calculate_model_state_at_timepoint(args: CalculateModelSta
 }
 
 
-interface ModelStateAtTimepoint
-{
-    timestamp_ms: number
-    timestamp_index: number
-    demand_GW: number
-    generated_GW_by_type: ValueByPowerType<number>
-    capacity_GW_by_type: ValueByPowerType<number>
-    stored_GWh_by_type: ValueByStorageType<number>
-    store_capacity_by_type: ValueByStorageType<number>
-}
 export async function calculate_model_state_over_time_range(args: {
     demand_GW_by_h3r4: Record<string, DemandGWForH3R4>
     start_timestamp: number
@@ -346,6 +302,7 @@ export async function calculate_model_state_over_time_range(args: {
             timestamp_ms: timestamp_ms,
             timestamp_index: index,
             demand_GW: model_state.demand_GW,
+            generated_GW: model_state.generated_GW,
             generated_GW_by_type: model_state.generated_GW_by_type,
             capacity_GW_by_type: model_state.capacity_GW_by_type,
             stored_GWh_by_type: model_state.stored_GWh_by_type,
