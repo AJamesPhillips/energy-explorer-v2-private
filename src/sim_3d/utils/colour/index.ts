@@ -3,15 +3,22 @@ import { Color, MeshBasicMaterial } from "three"
 
 
 const DEFAULT_OPACITY = 0.6
+let blue_opacity = 0.0
+function get_blue_opacity(): number
+{
+    const op = blue_opacity
+    blue_opacity += 0.1
+    return op
+}
 const WIND_BLUE: [Color, number][] = [
-    [new Color(0.85, 0.92, 1.00), DEFAULT_OPACITY],
-    [new Color(0.72, 0.82, 1.00), DEFAULT_OPACITY],
-    [new Color(0.60, 0.70, 1.00), DEFAULT_OPACITY],
-    [new Color(0.49, 0.59, 1.00), DEFAULT_OPACITY],
-    [new Color(0.38, 0.48, 1.00), DEFAULT_OPACITY],
-    [new Color(0.27, 0.37, 1.00), DEFAULT_OPACITY],
-    [new Color(0.18, 0.26, 0.96), DEFAULT_OPACITY],
-    [new Color(0.06, 0.14, 0.88), DEFAULT_OPACITY],
+    [new Color(0.85, 0.92, 1.00), get_blue_opacity()],
+    [new Color(0.72, 0.82, 1.00), get_blue_opacity()],
+    [new Color(0.60, 0.70, 1.00), get_blue_opacity()],
+    [new Color(0.49, 0.59, 1.00), get_blue_opacity()],
+    [new Color(0.38, 0.48, 1.00), get_blue_opacity()],
+    [new Color(0.27, 0.37, 1.00), get_blue_opacity()],
+    [new Color(0.18, 0.26, 0.96), get_blue_opacity()],
+    [new Color(0.06, 0.14, 0.88), get_blue_opacity()],
 ]
 
 const WIND_BLUE_NUMBER_OF_BUCKETS = WIND_BLUE.length - 1 // -1 makes math easier
