@@ -42,13 +42,6 @@ export function GameScore()
 
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-        <button
-            className="ui_button"
-            onClick={() => recalculate_score()}
-        >
-            {score ? "Recalculate Score" : "Calculate Score"}
-        </button>
-
         {score && <div className="ui_section">
             <div><b>Score</b> {Math.round(score.total_score)}</div>
             <div>Building cost: {to("neg", score.building_cost)}</div>
@@ -60,6 +53,13 @@ export function GameScore()
             <div>Resilience: {to("neg", score.resilience_score)}</div>
             <div>Running cost: {to("neg", score.running_cost)}</div>
         </div>}
+
+        <button
+            className="ui_button"
+            onClick={() => recalculate_score()}
+        >
+            {score ? "Recalculate Score" : "Calculate Score"}
+        </button>
     </div>
 }
 function to(neg_pos: "neg" | "pos", value: number, decimal_places = 1)

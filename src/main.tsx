@@ -34,8 +34,7 @@ import { process_uk_population_data_component } from "./sim_3d/data/population/p
 import { process_solar_farms_data_component, process_wind_farms_data_component } from "./sim_3d/data/power_plants/parse_data"
 import { DevView, show_dev_view } from "./sim_3d/dev/DevView"
 import { SimpleSim } from "./sim_3d/simple_sim/SimpleSim"
-import { SimLeftSideBar } from "./sim_3d/simple_sim/ui/SimLeftSideBar"
-import { SimRightSideBar } from "./sim_3d/simple_sim/ui/SimRightSideBar"
+import { SimLeftSideBar, SimRightSideBar } from "./sim_3d/simple_sim/ui/SideBars"
 import { get_app_state } from "./state/store"
 import { LilGui } from "./utils/LilGui"
 

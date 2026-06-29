@@ -1,5 +1,38 @@
 import { is_on_wikisim } from "../../../utils/is_on_wikisim"
+import { EnergySupplyDemandActions } from "./EnergySupplyDemandActions"
+import { EnergySupplyDemandGraph } from "./EnergySupplyDemandGraph"
+import { GameDatetimeUI } from "./GameDatetimeUI"
+import { GameScore } from "./GameScore"
 import { ViewOptions } from "./ViewOptions"
+
+
+interface SimLeftSideBarProps
+{
+}
+
+export function SimLeftSideBar(_props: SimLeftSideBarProps)
+{
+    return <>
+        {/* <div className="app_controls_row justify_left" />
+        <div className="app_controls_row justify_left" />
+        <div className="app_controls_row justify_left">
+            <GameScore />
+        </div> */}
+
+        <div className="app_controls_row justify_left">
+            <EnergySupplyDemandGraph />
+        </div>
+
+        <div className="app_controls_row justify_left">
+            <GameDatetimeUI />
+        </div>
+
+        <div className="app_controls_row justify_left">
+            <EnergySupplyDemandActions />
+        </div>
+
+    </>
+}
 
 
 // interface SimRightSideBarProps
@@ -36,6 +69,7 @@ export function SimRightSideBar()
                 wind_farms_by_year={props.wind_farms_by_year}
             />
         </div> */}
+        <GameScore />
         <ViewOptions />
     </>
 }
