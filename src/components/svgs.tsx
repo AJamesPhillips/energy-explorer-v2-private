@@ -83,6 +83,32 @@ export function MailIcon(props: { style?: CSSProperties })
     return <img src={mail_icon_url} style={{ ...default_icon_style, ...props.style }} />
 }
 
+export function Refresh1Icon(props: { style?: CSSProperties })
+{
+    return <svg
+        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+        style={{ ...default_icon_style, ...props.style }}
+    >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+        <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+        <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+    </svg>
+}
+
+export function Refresh2Icon(props: { style?: CSSProperties })
+{
+    return <svg
+        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+        style={{ ...default_icon_style, ...props.style }}
+    >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+        <path d="M4 11a8.1 8.1 0 0 1 15.5 -2m0.5 -4v4h-4" />
+        <path d="M20 13a8.1 8.1 0 0 1 -15.5 2m-0.5 4v-4h4" />
+    </svg>
+}
+
 export function StackFrontIcon(props: { style?: CSSProperties })
 {
     return <svg

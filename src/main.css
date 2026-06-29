@@ -18,6 +18,9 @@
     --z-index-app-html-data_portal: 2;
     --z-index-app-html: 3;
 
+    --padding-small: 2px 8px;
+    --padding-medium: 6px 12px;
+
     --font-small: 12px;
     --font-medium: 18px;
     --font-large: 30px;
@@ -281,7 +284,7 @@ option {
 .ui_info_box
 {
     background-color: white;
-    padding: 6px 12px;
+    padding: var(--padding-small);
     border: 1px solid var(--colour-border-gray);
     border-radius: 4px;
 }

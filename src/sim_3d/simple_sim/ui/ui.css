@@ -30,6 +30,10 @@
 {
     border: 1px solid var(--colour-border-gray);
     border-radius: 4px;
-    padding: 2px 8px;
+    padding: var(--padding-small);
     background-color: rgba(255, 255, 255, 0.8);
+    /** We re-enable pointer events so that it's easier to debug HTML.  See
+    #app_html for justification for disabling pointer events in the first place
+    (so that for the 3d views, the pointer events can pass through to them) */
+    pointer-events: initial;
 }

@@ -70,6 +70,7 @@ export function SimRightSideBar()
             />
         </div> */}
         <GameScore />
+        <div className="app_controls_row"></div>
         <ViewOptions />
     </>
 }

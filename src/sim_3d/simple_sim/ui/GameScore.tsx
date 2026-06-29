@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react"
 
 import { deep_copy } from "core/utils/deep_copy"
 
+import { Refresh2Icon } from "../../../components/svgs"
 import { get_app_state } from "../../../state/store"
 import { cost_per_km2_solar, cost_per_km2_wind, cost_per_nuclear_plant } from "../../data/cost"
 import { AggregatedPowerPlantData, AggregatePowerPlantData } from "../../data/power_plants/interface"
@@ -42,8 +43,28 @@ export function GameScore()
 
 
     return <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        {!score && <div>
+            <button
+                className="ui_button"
+                onClick={() => recalculate_score()}
+                title="Recalculate score"
+            >
+                Calculate Score &nbsp;<Refresh2Icon />
+            </button>
+        </div>}
         {score && <div className="ui_section">
-            <div><b>Score</b> {Math.round(score.total_score)}</div>
+            <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                <div><b>Score</b> {Math.round(score.total_score)}</div>
+                <button
+                    className="ui_button"
+                    onClick={() => recalculate_score()}
+                    title="Recalculate score"
+                    style={{ minHeight: 0, padding: "4px 6px" }}
+                >
+                    <Refresh2Icon />
+                </button>
+            </div>
+
             <div>Building cost: {to("neg", score.building_cost)}</div>
             <div>
                 Shortage: {to("neg", score.shortage_TWh, 2)} TWh
@@ -53,13 +74,6 @@ export function GameScore()
             <div>Resilience: {to("neg", score.resilience_score)}</div>
             <div>Running cost: {to("neg", score.running_cost)}</div>
         </div>}
-
-        <button
-            className="ui_button"
-            onClick={() => recalculate_score()}
-        >
-            {score ? "Recalculate Score" : "Calculate Score"}
-        </button>
     </div>
 }
 function to(neg_pos: "neg" | "pos", value: number, decimal_places = 1)
