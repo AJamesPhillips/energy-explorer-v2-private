@@ -2,7 +2,6 @@ import * as THREE from "three"
 import { Color, MeshBasicMaterial } from "three"
 
 
-const DEFAULT_OPACITY = 0.6
 let blue_opacity = 0.0
 function get_blue_opacity(): number
 {
@@ -10,16 +9,20 @@ function get_blue_opacity(): number
     blue_opacity += 0.1
     return op
 }
-const WIND_BLUE: [Color, number][] = [
-    [new Color(0.85, 0.92, 1.00), get_blue_opacity()],
-    [new Color(0.72, 0.82, 1.00), get_blue_opacity()],
-    [new Color(0.60, 0.70, 1.00), get_blue_opacity()],
-    [new Color(0.49, 0.59, 1.00), get_blue_opacity()],
-    [new Color(0.38, 0.48, 1.00), get_blue_opacity()],
-    [new Color(0.27, 0.37, 1.00), get_blue_opacity()],
-    [new Color(0.18, 0.26, 0.96), get_blue_opacity()],
-    [new Color(0.06, 0.14, 0.88), get_blue_opacity()],
-]
+const WIND_BLUE_BASE: Color[] = [
+    new Color(0.85, 0.92, 1.00),
+    new Color(0.72, 0.82, 1.00),
+    new Color(0.60, 0.70, 1.00),
+    new Color(0.49, 0.59, 1.00),
+    new Color(0.38, 0.48, 1.00),
+    new Color(0.27, 0.37, 1.00),
+    new Color(0.18, 0.26, 0.96),
+    new Color(0.06, 0.14, 0.88),
+]//.reverse() -- reverse should work once the ocean is rendered blue
+const WIND_BLUE: [Color, number][] = WIND_BLUE_BASE.map(colour =>
+{
+    return [colour, get_blue_opacity()]
+})
 
 const WIND_BLUE_NUMBER_OF_BUCKETS = WIND_BLUE.length - 1 // -1 makes math easier
 export function wind_blue(capacity_factor: number): [Color, number]
@@ -33,11 +36,13 @@ const SOLAR_YELLOW: [Color, number][] = Array(8).fill(0).map((_, i) =>
 {
     const capacity_factor = i / 7
     // const capacity_factor2 = 0.2 + capacity_factor * 0.8
-    const r = 1 //capacity_factor2
-    const g = 1 // capacity_factor2
-    const b = 0.3 + capacity_factor * 0.7
+    const r = Math.min(1, 0.8 + capacity_factor * 0.8)
+    const g = Math.min(1, 0.8 + capacity_factor * 0.8)
+    const b = 0.4 // + capacity_factor * 0.6
     // const opacity = 0.4 + Math.min(capacity_factor * 0.7, 0.3)
+    const DEFAULT_OPACITY = 0.9
     const opacity = i === 0 ? 0 : DEFAULT_OPACITY
+    // const opacity = i * 0.1
     return [new Color(r, g, b).convertSRGBToLinear(), opacity]
 })
 
